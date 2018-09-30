@@ -4,7 +4,24 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>vepal</title>
+    <script>
+    (function(win,doc){
+      var baseFontSize=100,baseWidth=1920;
+      var set =function(){
+        var clientWidth =doc.documentElement.clientWidth || win.innerWidth;
+        var rem =baseFontSize;
+        if(clientWidth !=baseWidth){
+          rem =Math.floor(clientWidth/baseWidth*baseFontSize);
+        }
+        doc.querySelector('html').style.fontSize=rem+'px';
+      }
+      set();
+      win.addEventListener('resize',set);
+
+    })(window,document)
+    </script>
   </head>
+ 
   <body>
     <div id="app"></div>
     <!-- built files will be auto injected   -->
