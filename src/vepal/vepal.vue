@@ -245,6 +245,8 @@ export default {
         });
         g.add(rectEl);
         g.add(lineEl);
+        let textGroup =this.createText(data[0])
+        g.add(textGroup)
         group.add(g);
       } else {
         data.forEach((t, i) => {
@@ -286,6 +288,8 @@ export default {
           });
           g.add(rectEl);
           g.add(lineEl);
+          let textGroup =this.createText(t)
+          g.add(textGroup)
           group.add(g);
         });
       }
@@ -393,7 +397,7 @@ export default {
         },
         style: {
           fill: tlData[1].bgColor,
-          text: textFormat(data.suitName, 10, 24),
+          text: textFormat(data.suitName, 8, 16),
           textFill: "#fff",
           fontSize: DEFAULT.fontSize
         },
@@ -618,8 +622,10 @@ export default {
       });
       return arcGroup;
     },
-    //文字
+    //文字 +圆弧
     createText(opt) {
+
+      // 创建 文字  
       let h = DEFAULT.height;
       let option = [
         {
@@ -630,7 +636,7 @@ export default {
             fontSize: rem(10),
             // fontFamily: 'Lato',
             // fontWeight: 'bolder',
-            textFill: "#0ff",
+            textFill: "red",
             blend: "lighten"
           },
           position: [0, 0]
@@ -646,7 +652,7 @@ export default {
             textFill: "#0ff",
             blend: "lighten"
           },
-          position: [0, h / 3]
+          position: [0, parseFloat(h / 3)]
         },
         {
           shape: {
@@ -659,12 +665,13 @@ export default {
             textFill: "#0ff",
             blend: "lighten"
           },
-          position: [0, (2 * h) / 3]
+          position: [0, parseInt((2 * h) / 3)]
         }
       ];
       let textGroup = new zrender.Group();
       option.forEach(t => {
         let ctext = text({ ...t });
+        console.log(t)
         textGroup.add(ctext);
       });
       // 创建圆弧
@@ -713,10 +720,20 @@ export default {
         }
       ];
       let arcGroup = new zrender.Group();
-      arcOpt.forEach(t => {
+      arcGroup.attr({
+          shape:{
+              width:DEFAULT.height/2,
+              height:DEFAULT.height
+          },
+          position:[]
+      })
+      arcOpt.forEach((t) => {
         let Arc = arc({ ...t });
         arcGroup.add(Arc);
       });
+      let group = new zrender.Group()
+      group.add(textGroup)
+      group.add(arcGroup)
       return group;
     }
   }
