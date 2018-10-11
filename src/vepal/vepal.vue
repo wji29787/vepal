@@ -5,7 +5,16 @@
 
 <script>
 import zrender from "zrender";
-import { rect, rem, line, ellipse, circle } from "../assets/js/util.js";
+import {
+  rect,
+  rem,
+  line,
+  ellipse,
+  circle,
+  textFormat,
+  arc,
+  text
+} from "../assets/js/util.js";
 let DEFAULT = {
   hInterval: rem(20), // 上下间隔
   width: rem(150),
@@ -38,13 +47,14 @@ export default {
       w: 0,
       h: 0,
       groupH: rem(50), //元素组起始位置
-      groupArr: []
+      groupArr: [],
+      list: []
     };
   },
   created() {},
   mounted() {
     this.getData();
-    this.render();
+    // this.render();
     let that = this;
     let timer = null;
     window.addEventListener("resize", function() {
@@ -67,7 +77,7 @@ export default {
           xInterval: rem(260),
           lineColor: "#cacaca"
         };
-        that.init();
+        that.init(that.list);
       }, 300);
     });
   },
@@ -77,54 +87,44 @@ export default {
       this.zr = zrender.init(container);
       this.w = this.zr.getWidth();
       this.h = this.zr.getHeight();
-      this.init();
+      this.init(this.list);
     },
     getData() {
-      console.log(this.$http);
-      // this.$http({
-      //   method:'post',
-      //   url:'api/report/findSuitAndProject'
-      //   // headers:{
-      //   //   'Content-Type':'application/json;charset=UTF-8',
-      //   //   'Accept':'application/json;charset=UTF-8',
-      //   //   // 'Access-Control-Allow-Origin':'*'
-      //   // }
-      // }).then((res)=>{
-      //   console.log(res)
-      // })
-      // .catch((err)=>{
-      //   console.log(err)
-      // })
       this.$http
-        .get("report/findSuitAndProject")
+        .post("/api/suit/findAllSuitInfo")
         .then(res => {
-          console.log(res);
+          if (res.data.code === 200) {
+            this.list = res.data.data.suits;
+            this.render();
+          }
+
+          //  init(this.list)
         })
         .catch(err => {
           console.log(err);
         });
     },
-    init() {
+    init(data) {
       this.titleGroup();
       // this.cteateRect(null, { H: 210, L: 20 });
-      let data = [
-        {
-          project: [{ name: "项目项目项目项\n目1" }, { name: "项目211" }],
-          product: [{ name: "版本1" }, { name: "版本2" }],
-          name: "套餐1"
-        }
-        // {
-        //   project: [{ name: "项目1" }, { name: "项目2" }, { name: "项目3" }],
-        //   product: [
-        //     { name: "版本1" },
-        //     { name: "版本2" },
-        //     { name: "版本3" },
-        //     { name: "版本4" },
-        //     { name: "版本5" }
-        //   ],
-        //   name: "套餐2"
-        // }
-      ];
+      //   let data = [
+      //     {
+      //       project: [{ name: "项目项目项目项\n目1" }, { name: "项目211" }],
+      //       product: [{ name: "版本1" }, { name: "版本2" }],
+      //       name: "套餐1"
+      //     }
+      //     // {
+      //     //   project: [{ name: "项目1" }, { name: "项目2" }, { name: "项目3" }],
+      //     //   product: [
+      //     //     { name: "版本1" },
+      //     //     { name: "版本2" },
+      //     //     { name: "版本3" },
+      //     //     { name: "版本4" },
+      //     //     { name: "版本5" }
+      //     //   ],
+      //     //   name: "套餐2"
+      //     // }
+      //   ];
       this.groupPosition(data);
     },
     titleGroup: function() {
@@ -223,13 +223,13 @@ export default {
           },
           style: {
             fill: tlData[0].bgColor,
-            text: data[0].name,
-            textFill: "#fff",
-            fontSize: DEFAULT.fontSize,
-            truncate: {
-              ellipsis: "..."
-            },
-            textAlign: "left"
+            text: textFormat(data[0].projectName, 12, 24),
+            textFill: "red",
+            fontSize: DEFAULT.fontSize
+            // truncate: {
+            //   ellipsis: "..."
+            // },
+            // textAlign: "left"
           }
         });
         let lineEl = line({
@@ -257,7 +257,7 @@ export default {
             },
             style: {
               fill: tlData[0].bgColor,
-              text: t.name,
+              text: textFormat(t.projectName, 12, 24),
               textFill: "red",
               fontSize: DEFAULT.fontSize
               // truncate:{
@@ -318,7 +318,7 @@ export default {
           },
           style: {
             fill: tlData[2].bgColor,
-            text: data[0].name,
+            text: textFormat(data[0].productName, 12, 24),
             textFill: "#fff",
             fontSize: DEFAULT.fontSize
           }
@@ -348,7 +348,7 @@ export default {
             },
             style: {
               fill: tlData[2].bgColor,
-              text: t.name,
+              text: textFormat(t.productName, 12, 24),
               textFill: "#fff",
               fontSize: DEFAULT.fontSize
             }
@@ -393,7 +393,7 @@ export default {
         },
         style: {
           fill: tlData[1].bgColor,
-          text: data.name,
+          text: textFormat(data.suitName, 10, 24),
           textFill: "#fff",
           fontSize: DEFAULT.fontSize
         },
@@ -438,8 +438,8 @@ export default {
       let groupH = this.groupH;
       data.forEach((t, i) => {
         let base = {};
-        let project = t.project;
-        let product = t.product;
+        let project = t.projectList;
+        let product = t.productList;
         let lenPjt = project.length; // 左边
         let lenPdt = product.length; // 右边
         if (lenPjt < 2 && lenPdt < 2) {
@@ -564,8 +564,161 @@ export default {
         that.zr.add(group);
       });
       this.groupArr = groupArr;
+    },
+    // 圆弧
+    createArc() {
+      let deg = c => (c * Math.PI) / 180;
+      let r = DEFAULT.height / 4;
+      let arcOpt = [
+        {
+          shape: {
+            r: r,
+            cx: 0,
+            cy: r,
+            startAngle: 0,
+            endAngle: deg(90),
+            clockwise: false
+          }
+        },
+        {
+          shape: {
+            r: r,
+            cx: 0,
+            cy: 3 * r,
+            startAngle: 0,
+            endAngle: deg(90),
+            clockwise: true
+          }
+        },
+        {
+          shape: {
+            r: r,
+            cx: 2 * r,
+            cy: r,
+            startAngle: deg(180),
+            endAngle: deg(270),
+            clockwise: false
+          }
+        },
+        {
+          shape: {
+            r: r,
+            cx: 2 * r,
+            cy: 3 * r,
+            startAngle: deg(180),
+            endAngle: deg(270),
+            clockwise: true
+          }
+        }
+      ];
+      let arcGroup = new zrender.Group();
+      arcOpt.forEach(t => {
+        let Arc = arc({ ...t });
+        arcGroup.add(Arc);
+      });
+      return arcGroup;
+    },
+    //文字
+    createText(opt) {
+      let h = DEFAULT.height;
+      let option = [
+        {
+          shape: {
+            text: `类型: ${opt.a}`,
+            textAlign: "left",
+            textVerticalAlign: "middle",
+            fontSize: rem(10),
+            // fontFamily: 'Lato',
+            // fontWeight: 'bolder',
+            textFill: "#0ff",
+            blend: "lighten"
+          },
+          position: [0, 0]
+        },
+        {
+          shape: {
+            text: `优先级: ${opt.b}`,
+            textAlign: "left",
+            textVerticalAlign: "middle",
+            fontSize: rem(10),
+            // fontFamily: 'Lato',
+            // fontWeight: 'bolder',
+            textFill: "#0ff",
+            blend: "lighten"
+          },
+          position: [0, h / 3]
+        },
+        {
+          shape: {
+            text: `状态: ${opt.c}`,
+            textAlign: "left",
+            textVerticalAlign: "middle",
+            fontSize: rem(10),
+            // fontFamily: 'Lato',
+            // fontWeight: 'bolder',
+            textFill: "#0ff",
+            blend: "lighten"
+          },
+          position: [0, (2 * h) / 3]
+        }
+      ];
+      let textGroup = new zrender.Group();
+      option.forEach(t => {
+        let ctext = text({ ...t });
+        textGroup.add(ctext);
+      });
+      // 创建圆弧
+      let deg = c => (c * Math.PI) / 180;
+      let r = DEFAULT.height / 4;
+      let arcOpt = [
+        {
+          shape: {
+            r: r,
+            cx: 0,
+            cy: r,
+            startAngle: 0,
+            endAngle: deg(90),
+            clockwise: false
+          }
+        },
+        {
+          shape: {
+            r: r,
+            cx: 0,
+            cy: 3 * r,
+            startAngle: 0,
+            endAngle: deg(90),
+            clockwise: true
+          }
+        },
+        {
+          shape: {
+            r: r,
+            cx: 2 * r,
+            cy: r,
+            startAngle: deg(180),
+            endAngle: deg(270),
+            clockwise: false
+          }
+        },
+        {
+          shape: {
+            r: r,
+            cx: 2 * r,
+            cy: 3 * r,
+            startAngle: deg(180),
+            endAngle: deg(270),
+            clockwise: true
+          }
+        }
+      ];
+      let arcGroup = new zrender.Group();
+      arcOpt.forEach(t => {
+        let Arc = arc({ ...t });
+        arcGroup.add(Arc);
+      });
+      return group;
     }
-    // 文字样式
   }
 };
 </script>

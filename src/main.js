@@ -9,7 +9,7 @@ import axios from 'axios'
 Vue.config.productionTip = false
 // 引入axios
 // axios.defaults.baseURL = 'http://192.168.95.253:8085'
-axios.defaults.baseURL = 'http://localhost:8080'
+// axios.defaults.baseURL = 'http://localhost:8080'
 // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN
 // axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*'
 // axios.defaults.headers['Content-Type'] = 'application/json;charset=UTF-8'
