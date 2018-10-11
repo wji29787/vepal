@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
-import Dinner from '@/components/Dinner'
+import Vepal from '@/vepal/vepal'
+import Login from '@/login/login'
 
 Vue.use(Router)
 
@@ -13,9 +14,14 @@ export default new Router({
       component: HelloWorld
     },
     {
-      path: '/dinner',
-      name: 'Dinner',
-      component: Dinner
+      path: '/vepal',
+      name: 'Vepal',
+      component: Vepal
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: Login
     }
   ]
 })

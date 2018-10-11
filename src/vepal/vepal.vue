@@ -43,7 +43,7 @@ export default {
   },
   created() {},
   mounted() {
-    this.getData()
+    this.getData();
     this.render();
     let that = this;
     let timer = null;
@@ -80,7 +80,7 @@ export default {
       this.init();
     },
     getData() {
-      console.log(this.$http)
+      console.log(this.$http);
       // this.$http({
       //   method:'post',
       //   url:'api/report/findSuitAndProject'
@@ -95,19 +95,21 @@ export default {
       // .catch((err)=>{
       //   console.log(err)
       // })
-      this.$http.get('report/findSuitAndProject').then((res)=>{
-        console.log(res)
-      })
-       .catch((err)=>{
-        console.log(err)
-      })
+      this.$http
+        .get("report/findSuitAndProject")
+        .then(res => {
+          console.log(res);
+        })
+        .catch(err => {
+          console.log(err);
+        });
     },
     init() {
       this.titleGroup();
       // this.cteateRect(null, { H: 210, L: 20 });
       let data = [
         {
-          project: [{ name: "项目1sdfsfdfsdfsdfsdfsdfs" }, { name: "项目211" }],
+          project: [{ name: "项目项目项目项\n目1" }, { name: "项目211" }],
           product: [{ name: "版本1" }, { name: "版本2" }],
           name: "套餐1"
         }
@@ -180,10 +182,35 @@ export default {
       let lineLX = rem(150);
       //项目盒子基准尺寸
       let rectLOpt = {
-        width: rem(150),
-        height: rem(50),
+        width: DEFAULT.width,
+        height: DEFAULT.height,
         r: rem(10)
       };
+      //   let shape = {
+      //     rect: {
+      //       shape: {
+      //         width: rem(150),
+      //         height: rem(50),
+      //         r: rem(10)
+      //       },
+      //       style: {
+      //         fill: tlData[0].bgColor,
+      //         textFill: "#fff",
+      //         fontSize: DEFAULT.fontSize
+      //       }
+      //     },
+      //     line: {
+      //       shape: {
+      //         x1: lineLX,
+      //         y1: groupH / 2,
+      //         x2: lineLX + xInterval,
+      //         y2: groupH / 2
+      //       },
+      //       style: {
+      //         fill: DEFAULT.lineColor
+      //       }
+      //     }
+      //   };
       // 包围盒总高度
       let group = new zrender.Group();
       if (data.length == 1) {
@@ -199,10 +226,10 @@ export default {
             text: data[0].name,
             textFill: "#fff",
             fontSize: DEFAULT.fontSize,
-            truncate:{
-              ellipsis :'...'
+            truncate: {
+              ellipsis: "..."
             },
-            textAlign:'left'
+            textAlign: "left"
           }
         });
         let lineEl = line({
@@ -232,7 +259,7 @@ export default {
               fill: tlData[0].bgColor,
               text: t.name,
               textFill: "red",
-              fontSize: DEFAULT.fontSize,
+              fontSize: DEFAULT.fontSize
               // truncate:{
               //  ellipsis :'...'
               // },
@@ -275,8 +302,8 @@ export default {
       let lineRX = rem(150) * 2 + DEFAULT.xInterval;
       //项目盒子基准尺寸
       let rectLOpt = {
-        width: rem(150),
-        height: rem(50),
+        width: DEFAULT.width,
+        height: DEFAULT.height,
         r: rem(10)
       };
       // 包围盒总高度
@@ -450,6 +477,9 @@ export default {
           position: [(that.w - DEFAULT.groupWidth) / 2, groupH]
         });
         groupH += DEFAULT.hInterval + base.H;
+        let shapeL = {
+          data: project
+        };
         let groupL = that.cteateRectL(project, base);
         let groupR = that.cteateRectR(product, base);
         let groupM = that.cteateRectM(t, base);
@@ -476,59 +506,57 @@ export default {
         groupL.eachChild(t => {
           t.childAt(0)
             .on("mouseover", () => {
-              let style ={
-                 stroke: "red"
-              }
-              t.childAt(0).attr({style})
-              t.childAt(1).attr({style})
-              groupM.childAt(0).attr({style})
-              groupR.eachChild((k)=>{
-                  k.childAt(0).attr({style})
-                  k.childAt(1).attr({style})
-              })
-
+              let style = {
+                stroke: "red"
+              };
+              t.childAt(0).attr({ style });
+              t.childAt(1).attr({ style });
+              groupM.childAt(0).attr({ style });
+              groupR.eachChild(k => {
+                k.childAt(0).attr({ style });
+                k.childAt(1).attr({ style });
+              });
             })
             .on("mouseout", () => {
-              let style ={
-                 stroke: DEFAULT.lineColor
-              }
-              t.childAt(0).attr({style})
-              t.childAt(1).attr({style})
-              groupM.childAt(0).attr({style})
-               groupR.eachChild((k)=>{
-                  k.childAt(0).attr({style})
-                  k.childAt(1).attr({style})
-              })
-            })
-        })
+              let style = {
+                stroke: DEFAULT.lineColor
+              };
+              t.childAt(0).attr({ style });
+              t.childAt(1).attr({ style });
+              groupM.childAt(0).attr({ style });
+              groupR.eachChild(k => {
+                k.childAt(0).attr({ style });
+                k.childAt(1).attr({ style });
+              });
+            });
+        });
         groupR.eachChild(t => {
           t.childAt(0)
             .on("mouseover", () => {
-              let style ={
-                 stroke: "red"
-              }
-              t.childAt(0).attr({style})
-              t.childAt(1).attr({style})
-              groupM.childAt(0).attr({style})
-              groupL.eachChild((k)=>{
-                  k.childAt(0).attr({style})
-                  k.childAt(1).attr({style})
-              })
-
+              let style = {
+                stroke: "red"
+              };
+              t.childAt(0).attr({ style });
+              t.childAt(1).attr({ style });
+              groupM.childAt(0).attr({ style });
+              groupL.eachChild(k => {
+                k.childAt(0).attr({ style });
+                k.childAt(1).attr({ style });
+              });
             })
             .on("mouseout", () => {
-              let style ={
-                 stroke: DEFAULT.lineColor
-              }
-              t.childAt(0).attr({style})
-              t.childAt(1).attr({style})
-              groupM.childAt(0).attr({style})
-               groupL.eachChild((k)=>{
-                  k.childAt(0).attr({style})
-                  k.childAt(1).attr({style})
-              })
-            })
-        })
+              let style = {
+                stroke: DEFAULT.lineColor
+              };
+              t.childAt(0).attr({ style });
+              t.childAt(1).attr({ style });
+              groupM.childAt(0).attr({ style });
+              groupL.eachChild(k => {
+                k.childAt(0).attr({ style });
+                k.childAt(1).attr({ style });
+              });
+            });
+        });
         group.add(groupL);
         group.add(groupR);
         group.add(groupM);
@@ -536,9 +564,8 @@ export default {
         that.zr.add(group);
       });
       this.groupArr = groupArr;
-    },
+    }
     // 文字样式
-
   }
 };
 </script>
