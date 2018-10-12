@@ -48,35 +48,22 @@ export default {
       h: 0,
       groupH: rem(50), //元素组起始位置
       groupArr: [],
-      list: []
+      list: [],
+      dragBox: null // 显示框元素
     };
   },
-  created() {},
-  mounted() {
+  created() {
     this.getData();
-    // this.render();
+  },
+  mounted() {
+    // this.getData();
+    this.render();
     let that = this;
     let timer = null;
     window.addEventListener("resize", function() {
       if (timer) clearTimeout(timer);
       timer = setTimeout(function() {
-        that.groupH = rem(50);
-        that.groupArr = [];
-        that.zr.clear();
-        that.zr.resize();
-        that.w = that.zr.getWidth();
-        that.h = that.zr.getHeight();
-        // DEFAULT =DEFAULT
-        DEFAULT = {
-          hInterval: rem(20), // 上下间隔
-          width: rem(150),
-          height: rem(50),
-          verH: rem(60), //套装盒高度
-          groupWidth: rem(150 * 3 + 260 * 2), //包装盒宽
-          fontSize: rem(20),
-          xInterval: rem(260),
-          lineColor: "#cacaca"
-        };
+        that.resetData();
         that.init(that.list);
       }, 300);
     });
@@ -87,7 +74,35 @@ export default {
       this.zr = zrender.init(container);
       this.w = this.zr.getWidth();
       this.h = this.zr.getHeight();
-      this.init(this.list);
+      this.list = [
+        {
+          projectList: [{ projectName: "aaa" }],
+          productList: [{ productName: "adadadas" }],
+          suitName: "sdfsdfsdfsd"
+        }
+      ];
+      this.$nextTick(() => {
+        this.init(this.list);
+      });
+    },
+    resetData() {
+      this.groupH = rem(50);
+      this.groupArr = [];
+      this.dragBox = null;
+      this.zr.clear();
+      this.zr.resize();
+      this.w = that.zr.getWidth();
+      this.h = that.zr.getHeight();
+      DEFAULT = {
+        hInterval: rem(20), // 上下间隔
+        width: rem(150),
+        height: rem(50),
+        verH: rem(60), //套装盒高度
+        groupWidth: rem(150 * 3 + 260 * 2), //包装盒宽
+        fontSize: rem(20),
+        xInterval: rem(260),
+        lineColor: "#cacaca"
+      };
     },
     getData() {
       this.$http
@@ -95,10 +110,8 @@ export default {
         .then(res => {
           if (res.data.code === 200) {
             this.list = res.data.data.suits;
-            this.render();
+            // this.render();
           }
-
-          //  init(this.list)
         })
         .catch(err => {
           console.log(err);
@@ -106,26 +119,8 @@ export default {
     },
     init(data) {
       this.titleGroup();
-      // this.cteateRect(null, { H: 210, L: 20 });
-      //   let data = [
-      //     {
-      //       project: [{ name: "项目项目项目项\n目1" }, { name: "项目211" }],
-      //       product: [{ name: "版本1" }, { name: "版本2" }],
-      //       name: "套餐1"
-      //     }
-      //     // {
-      //     //   project: [{ name: "项目1" }, { name: "项目2" }, { name: "项目3" }],
-      //     //   product: [
-      //     //     { name: "版本1" },
-      //     //     { name: "版本2" },
-      //     //     { name: "版本3" },
-      //     //     { name: "版本4" },
-      //     //     { name: "版本5" }
-      //     //   ],
-      //     //   name: "套餐2"
-      //     // }
-      //   ];
       this.groupPosition(data);
+      this.dragTextBox();
     },
     titleGroup: function() {
       // 盒子宽
@@ -186,31 +181,6 @@ export default {
         height: DEFAULT.height,
         r: rem(10)
       };
-      //   let shape = {
-      //     rect: {
-      //       shape: {
-      //         width: rem(150),
-      //         height: rem(50),
-      //         r: rem(10)
-      //       },
-      //       style: {
-      //         fill: tlData[0].bgColor,
-      //         textFill: "#fff",
-      //         fontSize: DEFAULT.fontSize
-      //       }
-      //     },
-      //     line: {
-      //       shape: {
-      //         x1: lineLX,
-      //         y1: groupH / 2,
-      //         x2: lineLX + xInterval,
-      //         y2: groupH / 2
-      //       },
-      //       style: {
-      //         fill: DEFAULT.lineColor
-      //       }
-      //     }
-      //   };
       // 包围盒总高度
       let group = new zrender.Group();
       if (data.length == 1) {
@@ -226,10 +196,6 @@ export default {
             text: textFormat(data[0].projectName, 12, 24),
             textFill: "red",
             fontSize: DEFAULT.fontSize
-            // truncate: {
-            //   ellipsis: "..."
-            // },
-            // textAlign: "left"
           }
         });
         let lineEl = line({
@@ -245,8 +211,12 @@ export default {
         });
         g.add(rectEl);
         g.add(lineEl);
-        let textGroup =this.createText(data[0])
-        g.add(textGroup)
+        let textGroup = this.createText(data[0]);
+        textGroup.position = [
+          -((DEFAULT.width * 2) / 3 + DEFAULT.height / 2),
+          (groupH - DEFAULT.height) / 2
+        ];
+        g.add(textGroup);
         group.add(g);
       } else {
         data.forEach((t, i) => {
@@ -262,17 +232,6 @@ export default {
               text: textFormat(t.projectName, 12, 24),
               textFill: "red",
               fontSize: DEFAULT.fontSize
-              // truncate:{
-              //  ellipsis :'...'
-              // },
-              // textPosition:,
-              // textRect:{
-              //   x:0,
-              //   y:0,
-              //   width:rem(30),
-              //   height:rem(120)
-              // }
-              // textAlign:'left'
             }
           });
           let lineEl = line({
@@ -288,8 +247,13 @@ export default {
           });
           g.add(rectEl);
           g.add(lineEl);
-          let textGroup =this.createText(t)
-          g.add(textGroup)
+          let textGroup = this.createText(t);
+          textGroup.position = [
+            -((DEFAULT.width * 2) / 3 + DEFAULT.height / 2),
+            (DEFAULT.height + positionObj.L) * i
+          ];
+          g.add(textGroup);
+
           group.add(g);
         });
       }
@@ -487,78 +451,92 @@ export default {
         let groupL = that.cteateRectL(project, base);
         let groupR = that.cteateRectR(product, base);
         let groupM = that.cteateRectM(t, base);
+        //点击事件判断是否是同一个
+        let flagDrag = false,
+          sameEL = null;
         groupM.eachChild((t, i) => {
           let flag = true;
           t.on("click", function(e) {
             if (t.name == "PL") {
-              if (flag) {
-                groupL.hide();
-              } else {
-                groupL.show();
-              }
+              flag ? groupL.hide() : groupL.show();
               flag = !flag;
             } else if (t.name == "PR") {
-              if (flag) {
-                groupR.hide();
-              } else {
-                groupR.show();
-              }
+              flag ? groupR.hide() : groupR.show();
               flag = !flag;
+            } else if (t.name == "PM") {
+                if(!flagDrag){
+                    that.dragBox.show()
+                         that.dragBox.attr({
+                  position: [e.offsetX + DEFAULT.width / 2, e.offsetY]
+                });
+                    flagDrag=true
+                }else{
+                    that.dragBox.hide()
+                    flagDrag=false
+                }
+              
             }
           });
         });
+        let addHoverL = (el, styOpt) => {
+          el.childAt(0).attr(styOpt);
+          el.childAt(1).attr(styOpt);
+          groupM.childAt(0).attr(styOpt);
+          groupR.eachChild(k => {
+            k.childAt(0).attr(styOpt);
+            k.childAt(1).attr(styOpt);
+          });
+        };
         groupL.eachChild(t => {
+          //   let flag = true;
           t.childAt(0)
             .on("mouseover", () => {
-              let style = {
-                stroke: "red"
-              };
-              t.childAt(0).attr({ style });
-              t.childAt(1).attr({ style });
-              groupM.childAt(0).attr({ style });
-              groupR.eachChild(k => {
-                k.childAt(0).attr({ style });
-                k.childAt(1).attr({ style });
-              });
+              addHoverL(t, { style: { stroke: "red" } });
             })
             .on("mouseout", () => {
-              let style = {
-                stroke: DEFAULT.lineColor
-              };
-              t.childAt(0).attr({ style });
-              t.childAt(1).attr({ style });
-              groupM.childAt(0).attr({ style });
-              groupR.eachChild(k => {
-                k.childAt(0).attr({ style });
-                k.childAt(1).attr({ style });
-              });
+              addHoverL(t, { style: { stroke: DEFAULT.lineColor } });
+            })
+            .on("click", e => {
+             if(!flagDrag){
+                    that.dragBox.show()
+                         that.dragBox.attr({
+                  position: [e.offsetX + DEFAULT.width / 2, e.offsetY]
+                });
+                    flagDrag=true
+                }else{
+                    that.dragBox.hide()
+                    flagDrag=false
+                }
             });
         });
+        let addHoverR = (el, styOpt) => {
+          el.childAt(0).attr(styOpt);
+          el.childAt(1).attr(styOpt);
+          groupM.childAt(0).attr(styOpt);
+          groupL.eachChild(k => {
+            k.childAt(0).attr(styOpt);
+            k.childAt(1).attr(styOpt);
+          });
+        };
         groupR.eachChild(t => {
           t.childAt(0)
             .on("mouseover", () => {
-              let style = {
-                stroke: "red"
-              };
-              t.childAt(0).attr({ style });
-              t.childAt(1).attr({ style });
-              groupM.childAt(0).attr({ style });
-              groupL.eachChild(k => {
-                k.childAt(0).attr({ style });
-                k.childAt(1).attr({ style });
-              });
+              addHoverR(t, { style: { stroke: "red" } });
             })
             .on("mouseout", () => {
-              let style = {
-                stroke: DEFAULT.lineColor
-              };
-              t.childAt(0).attr({ style });
-              t.childAt(1).attr({ style });
-              groupM.childAt(0).attr({ style });
-              groupL.eachChild(k => {
-                k.childAt(0).attr({ style });
-                k.childAt(1).attr({ style });
-              });
+              addHoverR(t, { style: { stroke: DEFAULT.lineColor } });
+            })
+            .on("click", e => {
+            if(!flagDrag){
+                    that.dragBox.show()
+                         that.dragBox.attr({
+                  position: [e.offsetX + DEFAULT.width / 2, e.offsetY]
+                });
+                    flagDrag=true
+                }else{
+                    that.dragBox.hide()
+                    flagDrag=false
+                }
             });
         });
         group.add(groupL);
@@ -569,8 +547,70 @@ export default {
       });
       this.groupArr = groupArr;
     },
-    // 圆弧
-    createArc() {
+    //文字 +圆弧
+    createText(opt) {
+      opt = {
+        a: "mvp",
+        b: "高",
+        c: "未结项"
+      };
+      // 创建 文字
+      let h = DEFAULT.height;
+      let textStyle = {
+        textAlign: "left",
+        text: "aaaa",
+        textVerticalAlign: "middle",
+        fontSize: rem(15),
+        fontFamily: "Lato",
+        textFill: "#999",
+        blend: "lighten"
+      };
+      let option = [
+        {
+          text: `类型:   ${opt.a}`,
+          position: [0, 0]
+        },
+        {
+          text: `优先级: ${opt.b}`,
+          position: [0, h / 3 + rem(3)]
+        },
+        {
+          text: `状态:  ${opt.c}`,
+          position: [0, h - h / 3 + rem(5)]
+        }
+      ];
+      let textGroup = new zrender.Group();
+      option.forEach((t, i) => {
+        let ctext = text({
+          style: {
+            ...textStyle,
+            text: t.text
+          },
+          position: t.position
+        });
+        if (i == 1) {
+          let color;
+          ctext
+            .on("mouseover", function(e) {
+              console.log(e);
+              color = e.target.style.textFill;
+              e.target.attr({
+                style: {
+                  textFill: "red"
+                }
+              });
+            })
+            .on("mouseout", function(e) {
+              e.target.attr({
+                style: {
+                  textFill: color
+                }
+              });
+            });
+        }
+        textGroup.add(ctext);
+      });
+      // 创建圆弧
       let deg = c => (c * Math.PI) / 180;
       let r = DEFAULT.height / 4;
       let arcOpt = [
@@ -580,7 +620,7 @@ export default {
             cx: 0,
             cy: r,
             startAngle: 0,
-            endAngle: deg(90),
+            endAngle: -deg(90),
             clockwise: false
           }
         },
@@ -599,8 +639,8 @@ export default {
             r: r,
             cx: 2 * r,
             cy: r,
-            startAngle: deg(180),
-            endAngle: deg(270),
+            startAngle: -deg(180),
+            endAngle: -deg(270),
             clockwise: false
           }
         },
@@ -620,121 +660,60 @@ export default {
         let Arc = arc({ ...t });
         arcGroup.add(Arc);
       });
-      return arcGroup;
-    },
-    //文字 +圆弧
-    createText(opt) {
+      let group = new zrender.Group();
+      let groupOpt = {
+        width: (DEFAULT.width * 2) / 3 + DEFAULT.height / 2,
+        height: DEFAULT.height
+      };
+      textGroup.attr({
+        style: {
+          width: parseInt((DEFAULT.width * 2) / 3),
+          height: DEFAULT.height
+        },
+        position: [0, rem(4)]
+      });
 
-      // 创建 文字  
-      let h = DEFAULT.height;
-      let option = [
-        {
-          shape: {
-            text: `类型: ${opt.a}`,
-            textAlign: "left",
-            textVerticalAlign: "middle",
-            fontSize: rem(10),
-            // fontFamily: 'Lato',
-            // fontWeight: 'bolder',
-            textFill: "red",
-            blend: "lighten"
-          },
-          position: [0, 0]
-        },
-        {
-          shape: {
-            text: `优先级: ${opt.b}`,
-            textAlign: "left",
-            textVerticalAlign: "middle",
-            fontSize: rem(10),
-            // fontFamily: 'Lato',
-            // fontWeight: 'bolder',
-            textFill: "#0ff",
-            blend: "lighten"
-          },
-          position: [0, parseFloat(h / 3)]
-        },
-        {
-          shape: {
-            text: `状态: ${opt.c}`,
-            textAlign: "left",
-            textVerticalAlign: "middle",
-            fontSize: rem(10),
-            // fontFamily: 'Lato',
-            // fontWeight: 'bolder',
-            textFill: "#0ff",
-            blend: "lighten"
-          },
-          position: [0, parseInt((2 * h) / 3)]
-        }
-      ];
-      let textGroup = new zrender.Group();
-      option.forEach(t => {
-        let ctext = text({ ...t });
-        console.log(t)
-        textGroup.add(ctext);
-      });
-      // 创建圆弧
-      let deg = c => (c * Math.PI) / 180;
-      let r = DEFAULT.height / 4;
-      let arcOpt = [
-        {
-          shape: {
-            r: r,
-            cx: 0,
-            cy: r,
-            startAngle: 0,
-            endAngle: deg(90),
-            clockwise: false
-          }
-        },
-        {
-          shape: {
-            r: r,
-            cx: 0,
-            cy: 3 * r,
-            startAngle: 0,
-            endAngle: deg(90),
-            clockwise: true
-          }
-        },
-        {
-          shape: {
-            r: r,
-            cx: 2 * r,
-            cy: r,
-            startAngle: deg(180),
-            endAngle: deg(270),
-            clockwise: false
-          }
-        },
-        {
-          shape: {
-            r: r,
-            cx: 2 * r,
-            cy: 3 * r,
-            startAngle: deg(180),
-            endAngle: deg(270),
-            clockwise: true
-          }
-        }
-      ];
-      let arcGroup = new zrender.Group();
       arcGroup.attr({
-          shape:{
-              width:DEFAULT.height/2,
-              height:DEFAULT.height
-          },
-          position:[]
-      })
-      arcOpt.forEach((t) => {
-        let Arc = arc({ ...t });
-        arcGroup.add(Arc);
+        shape: {
+          width: DEFAULT.height / 2,
+          height: DEFAULT.height
+        },
+        position: [(DEFAULT.width * 2) / 3, 0]
       });
-      let group = new zrender.Group()
-      group.add(textGroup)
-      group.add(arcGroup)
+      group.add(textGroup);
+      group.add(arcGroup);
+      group.attr({
+        shape: {
+          width: groupOpt.width,
+          height: groupOpt.height
+        }
+      });
       return group;
+    },
+    // 详情弹框
+    dragTextBox(opt) {
+      if (this.dragBox) {
+        return this.dragBox;
+      } else {
+        this.dragBox = rect({
+          shape: {
+            width: 200,
+            height: 200,
+            r: 10
+          },
+          style: {
+            stroke: "red",
+            text: "hahahah",
+            // fill: "#fff",
+            opacity: 0.7
+          },
+          z: 0,
+          position: [0, 0]
+        });
+        this.dragBox.hide();
+        this.zr.add(this.dragBox);
+        return this.dragBox;
+      }
     }
   }
 };
