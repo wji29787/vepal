@@ -49,7 +49,9 @@ export default {
       groupH: rem(50), //元素组起始位置
       groupArr: [],
       list: [],
-      dragBox: null // 显示框元素
+      dragBox: null, // 显示框元素
+      flagDrag:false,
+      sameELId:'',
     };
   },
   created() {
@@ -79,6 +81,11 @@ export default {
           projectList: [{ projectName: "aaa" }],
           productList: [{ productName: "adadadas" }],
           suitName: "sdfsdfsdfsd"
+        },
+         {
+          projectList: [{ projectName: "aaa" }],
+          productList: [{ productName: "adadadas" }],
+          suitName: "sdfsdfsdfsd"
         }
       ];
       this.$nextTick(() => {
@@ -91,8 +98,10 @@ export default {
       this.dragBox = null;
       this.zr.clear();
       this.zr.resize();
-      this.w = that.zr.getWidth();
-      this.h = that.zr.getHeight();
+      this.w = this.zr.getWidth();
+      this.h = this.zr.getHeight();
+      this.flagDrag=false;
+      this.sameELId='';
       DEFAULT = {
         hInterval: rem(20), // 上下间隔
         width: rem(150),
@@ -452,8 +461,8 @@ export default {
         let groupR = that.cteateRectR(product, base);
         let groupM = that.cteateRectM(t, base);
         //点击事件判断是否是同一个
-        let flagDrag = false,
-          sameEL = null;
+        // let flagDrag = false,
+        //   sameELId = null;
         groupM.eachChild((t, i) => {
           let flag = true;
           t.on("click", function(e) {
@@ -464,16 +473,26 @@ export default {
               flag ? groupR.hide() : groupR.show();
               flag = !flag;
             } else if (t.name == "PM") {
-                if(!flagDrag){
-                    that.dragBox.show()
-                         that.dragBox.attr({
-                  position: [e.offsetX + DEFAULT.width / 2, e.offsetY]
-                });
-                    flagDrag=true
-                }else{
-                    that.dragBox.hide()
-                    flagDrag=false
-                }
+               if(that.flagDrag){
+                 if(that.sameELId !==e.target.id){
+                    that.sameELId=e.target.id
+                    that.dragBox.attr({
+                        position: [e.offsetX + DEFAULT.width / 2, e.offsetY]
+                   });
+                 }else{
+                   that.flagDrag=false
+                   that.dragBox.hide()
+                 }
+               }else{
+                     that.flagDrag=true
+                     that.dragBox.show()
+                     that.dragBox.attr({
+                         position: [e.offsetX + DEFAULT.width / 2, e.offsetY]
+                     });
+                    if(that.sameELId !==e.target.id){
+                      that.sameELId=e.target.id
+                    }
+               }
               
             }
           });
@@ -497,17 +516,27 @@ export default {
               addHoverL(t, { style: { stroke: DEFAULT.lineColor } });
             })
             .on("click", e => {
-             if(!flagDrag){
-                    that.dragBox.show()
-                         that.dragBox.attr({
-                  position: [e.offsetX + DEFAULT.width / 2, e.offsetY]
-                });
-                    flagDrag=true
-                }else{
+                if(that.flagDrag){
+                  if(that.sameELId !==e.target.id){
+                      that.sameELId=e.target.id
+                      that.dragBox.attr({
+                          position: [e.offsetX + DEFAULT.width / 2, e.offsetY]
+                    });
+                  }else{
+                    that.flagDrag=false
                     that.dragBox.hide()
-                    flagDrag=false
+                  }
+                }else{
+                      that.flagDrag=true
+                      that.dragBox.show()
+                      that.dragBox.attr({
+                          position: [e.offsetX + DEFAULT.width / 2, e.offsetY]
+                      });
+                      if(that.sameELId !==e.target.id){
+                        that.sameELId=e.target.id
+                      }
                 }
-            });
+            })
         });
         let addHoverR = (el, styOpt) => {
           el.childAt(0).attr(styOpt);
@@ -527,15 +556,25 @@ export default {
               addHoverR(t, { style: { stroke: DEFAULT.lineColor } });
             })
             .on("click", e => {
-            if(!flagDrag){
-                    that.dragBox.show()
-                         that.dragBox.attr({
-                  position: [e.offsetX + DEFAULT.width / 2, e.offsetY]
-                });
-                    flagDrag=true
-                }else{
+                if(that.flagDrag){
+                  if(that.sameELId !==e.target.id){
+                      that.sameELId=e.target.id
+                      that.dragBox.attr({
+                          position: [e.offsetX + DEFAULT.width / 2, e.offsetY]
+                    });
+                  }else{
+                    that.flagDrag=false
                     that.dragBox.hide()
-                    flagDrag=false
+                  }
+                }else{
+                      that.flagDrag=true
+                      that.dragBox.show()
+                      that.dragBox.attr({
+                          position: [e.offsetX + DEFAULT.width / 2, e.offsetY]
+                      });
+                      if(that.sameELId !==e.target.id){
+                        that.sameELId=e.target.id
+                      }
                 }
             });
         });
@@ -557,13 +596,21 @@ export default {
       // 创建 文字
       let h = DEFAULT.height;
       let textStyle = {
-        textAlign: "left",
-        text: "aaaa",
-        textVerticalAlign: "middle",
-        fontSize: rem(15),
-        fontFamily: "Lato",
-        textFill: "#999",
-        blend: "lighten"
+        shape:{
+          width:(DEFAULT.width * 2) / 3,
+          height:h / 3,
+          r:rem(3)
+        },
+        style:{
+          textAlign: "left",
+          text: "aaaa",
+          textVerticalAlign: "middle",
+          fontSize: rem(15),
+          fill:'#fff',
+          // stroke:'gold',
+          textPosition:'left',
+          textDistance:-5
+        }
       };
       let option = [
         {
@@ -572,44 +619,59 @@ export default {
         },
         {
           text: `优先级: ${opt.b}`,
-          position: [0, h / 3 + rem(3)]
+          position: [0, h / 3]
         },
         {
           text: `状态:  ${opt.c}`,
-          position: [0, h - h / 3 + rem(5)]
+          position: [0, h - h / 3]
         }
       ];
       let textGroup = new zrender.Group();
-      option.forEach((t, i) => {
-        let ctext = text({
-          style: {
-            ...textStyle,
-            text: t.text
-          },
-          position: t.position
-        });
-        if (i == 1) {
-          let color;
-          ctext
+     option.forEach((t,i)=>{
+       let textRect
+       if(i ==1){
+         let color
+          textRect =rect({
+                shape:{
+                  ...textStyle.shape
+                },
+                style:{
+                  ...textStyle.style,
+                  text:t.text
+                },
+                position:t.position
+              })
+          textRect
             .on("mouseover", function(e) {
-              console.log(e);
-              color = e.target.style.textFill;
+              color = e.target.style.stroke;
               e.target.attr({
                 style: {
-                  textFill: "red"
+                  stroke: "gold"
                 }
               });
             })
             .on("mouseout", function(e) {
               e.target.attr({
                 style: {
-                  textFill: color
+                  stroke: color
                 }
               });
-            });
-        }
-        textGroup.add(ctext);
-      });
+            })
+        
+       }else{
+        textRect =rect({
+                shape:{
+                  ...textStyle.shape
+                },
+                style:{
+                  ...textStyle.style,
+                  text:t.text
+                },
+                position:t.position
+              })
+       }  
+       textGroup.add(textRect)
+     })
       // 创建圆弧
       let deg = c => (c * Math.PI) / 180;
       let r = DEFAULT.height / 4;
@@ -670,7 +732,7 @@ export default {
           width: parseInt((DEFAULT.width * 2) / 3),
           height: DEFAULT.height
         },
-        position: [0, rem(4)]
+        position: [0, 0]
       });
 
       arcGroup.attr({
