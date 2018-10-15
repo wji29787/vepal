@@ -5,7 +5,8 @@ import './assets/css/base.css'
 import './element'
 import App from './App'
 import router from './router'
-import axios from 'axios'
+import http from './assets/js/axioshttp'
+// import axios from 'axios'
 import custom from './components/dragcontent'
 Vue.use(custom)
 Vue.config.productionTip = false
@@ -15,8 +16,8 @@ Vue.config.productionTip = false
 // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN
 // axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*'
 // axios.defaults.headers['Content-Type'] = 'application/json;charset=UTF-8'
-axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
-Vue.prototype.$http = axios
+// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
+Vue.prototype.$http = http
 
 /* eslint-disable no-new */
 new Vue({

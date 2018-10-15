@@ -2,22 +2,22 @@ import axios from 'axios'
 // import Vue from 'vue'
 import qs from 'qs'
 
-axios.interceptors.request.use(config => { // 这里的config包含每次请求的内容
-  // 判断localStorage中是否存在api_token
-  if (localStorage.getItem('api_token')) {
-    //  存在将api_token写入 request header
-    config.headers.apiToken = `${localStorage.getItem('api_token')}`
-  }
-  return config
-}, err => {
-  return Promise.reject(err)
-})
+// axios.interceptors.request.use(config => { // 这里的config包含每次请求的内容
+//   // 判断localStorage中是否存在api_token
+//   if (localStorage.getItem('api_token')) {
+//     //  存在将api_token写入 request header
+//     config.headers.apiToken = `${localStorage.getItem('api_token')}`
+//   }
+//   return config
+// }, err => {
+//   return Promise.reject(err)
+// })
 
-axios.interceptors.response.use(response => {
-  return response
-}, error => {
-  return Promise.resolve(error.response)
-})
+// axios.interceptors.response.use(response => {
+//   return response
+// }, error => {
+//   return Promise.resolve(error.response)
+// })
 
 // function checkStatus (response) {
 //   // 如果http状态码正常，则直接返回数据
@@ -103,7 +103,12 @@ let http = axios.create({
   }]
 })
 
-function apiAxios (method, url, params, response) {
+function apiAxios(method, url, params, response) {
+  if (typeof params === 'function') {
+    response = params
+    params = null
+  }
+  // method = method.toLocaleUpperCase
   http({
     method: method,
     url: url,

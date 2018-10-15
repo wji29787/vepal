@@ -17,26 +17,34 @@ import {
 } from "../assets/js/util.js";
 let DEFAULT = {
   hInterval: rem(20), // 上下间隔
-  width: rem(150),
-  height: rem(50),
-  verH: rem(60), //套装盒高度
-  groupWidth: rem(150 * 3 + 260 * 2), //包装盒宽
-  fontSize: rem(20),
+  width: rem(200),
+  height: rem(70),
+  verH: rem(80), //套装盒高度
+  groupWidth: rem(200 * 3 + 260 * 2), //包装盒宽
+  fontSize: rem(18),
   xInterval: rem(260),
-  lineColor: "#cacaca"
+  lineColor: "#cacaca",
+  lineHoverColor:'red',
+  mCirclefontSize:rem(15),
+  mCirclefontColor:'',
+  mCircleFillColor:"#F5F5F5"
+
 };
 let tlData = [
   {
     name: "项目名称",
-    bgColor: "rgba(74, 163, 222, 1)"
+    bgColor: "rgba(74, 163, 222, 1)",
+    color:'#fff'
   },
   {
     name: "套装",
-    bgColor: "rgba(153, 0, 204, 1)"
+    bgColor: "rgba(119, 141, 252, 1)",
+    color:'#fff'
   },
   {
     name: "相关版本",
-    bgColor: "rgba(131, 220, 220, 1)"
+    bgColor: "rgba(131, 220, 220, 1)",
+    color:'#fff'
   }
 ];
 export default {
@@ -55,13 +63,22 @@ export default {
     };
   },
   created() {
-    // this.getData();
+
   },
   mounted() {
-    // this.getData();
+   
     this.$custombox({
       data:{
         msg:'hashah'
+      },
+      methods:{
+        success(ctx){
+            console.log(ctx)
+            console.log('dfdfdfdf')
+        },
+        destroy(ctx){
+          console.log('haha')
+        }
       }
     })
     this.render();
@@ -82,21 +99,6 @@ export default {
       this.zr = zrender.init(container);
       this.w = this.zr.getWidth();
       this.h = this.zr.getHeight();
-      // this.list = [
-      //   {
-      //     projectList: [{ projectName: "aaa" }],
-      //     productList: [{ productName: "adadadas" }],
-      //     suitName: "sdfsdfsdfsd"
-      //   },
-      //    {
-      //     projectList: [{ projectName: "aaa" }],
-      //     productList: [{ productName: "adadadas" }],
-      //     suitName: "sdfsdfsdfsd"
-      //   }
-      // ];
-      // this.$nextTick(() => {
-      //   this.init(this.list);
-      // });
     },
     resetData() {
       this.groupH = rem(50);
@@ -109,32 +111,36 @@ export default {
       this.flagDrag=false;
       this.sameELId='';
       DEFAULT = {
-        hInterval: rem(20), // 上下间隔
-        width: rem(150),
-        height: rem(50),
-        verH: rem(60), //套装盒高度
-        groupWidth: rem(150 * 3 + 260 * 2), //包装盒宽
-        fontSize: rem(20),
-        xInterval: rem(260),
-        lineColor: "#cacaca"
+          hInterval: rem(20), // 上下间隔
+          width: rem(200),
+          height: rem(70),
+          verH: rem(80), //套装盒高度
+          groupWidth: rem(200 * 3 + 260 * 2), //包装盒宽
+          fontSize: rem(18),
+          xInterval: rem(260),
+          lineColor: "#cacaca",
+          lineHoverColor:'red',
+          mCirclefontSize:rem(15),
+          mCirclefontColor:'',
+          mCircleFillColor:"#F5F5F5"
       };
     },
     getData() {
-      this.$http
-        .post("/api/suit/findAllSuitInfo")
-        .then(res => {
-          if (res.data.code === 200) {
-            this.list = res.data.data.suits;
-            this.init(res.data.data.suits);
-            // this.render();
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      this.$http.get('/api/suit/findAllSuitInfo',(res)=>{
+         if(res.status===200){
+           if(res.data.code===200){
+                this.list = res.data.data.suits;
+                this.init(res.data.data.suits);
+           }else{
+
+           }
+         }else{
+             console.log(res) 
+         }
+      })
     },
     init(data) {
-      this.titleGroup();
+      // this.titleGroup();
       this.groupPosition(data);
       this.dragTextBox();
     },
@@ -190,7 +196,7 @@ export default {
       // 水平间隔
       let xInterval = DEFAULT.xInterval;
       // line x轴
-      let lineLX = rem(150);
+      let lineLX = DEFAULT.width;
       //项目盒子基准尺寸
       let rectLOpt = {
         width: DEFAULT.width,
@@ -209,10 +215,12 @@ export default {
           },
           style: {
             fill: tlData[0].bgColor,
-            text: textFormat(data[0].projectName, 12, 24),
-            textFill: "red",
-            fontSize: DEFAULT.fontSize
-          }
+            text: textFormat(data[0].projectName, 18, 38),
+            textFill: tlData[0].color,
+            fontSize: DEFAULT.fontSize,
+            // textLineHeight:DEFAULT.fontSize
+          },
+          projectId:data[0].projectId
         });
         let lineEl = line({
           shape: {
@@ -222,7 +230,8 @@ export default {
             y2: groupH / 2
           },
           style: {
-            fill: DEFAULT.lineColor
+            fill: DEFAULT.lineColor,
+            stroke:DEFAULT.lineColor
           }
         });
         g.add(rectEl);
@@ -245,10 +254,12 @@ export default {
             },
             style: {
               fill: tlData[0].bgColor,
-              text: textFormat(t.projectName, 12, 24),
-              textFill: "red",
-              fontSize: DEFAULT.fontSize
-            }
+              text: textFormat(t.projectName, 18, 38),
+              textFill: tlData[0].color,
+              fontSize: DEFAULT.fontSize,
+              // textLineHeight:30
+            },
+            projectId:t.projectId
           });
           let lineEl = line({
             shape: {
@@ -258,7 +269,8 @@ export default {
               y2: groupH / 2
             },
             style: {
-              fill: DEFAULT.lineColor
+              fill: DEFAULT.lineColor,
+              stroke:DEFAULT.lineColor
             }
           });
           g.add(rectEl);
@@ -283,7 +295,7 @@ export default {
       // 水平间隔
       let xInterval = DEFAULT.xInterval;
       // line x轴
-      let lineRX = rem(150) * 2 + DEFAULT.xInterval;
+      let lineRX = DEFAULT.width * 2 + DEFAULT.xInterval;
       //项目盒子基准尺寸
       let rectLOpt = {
         width: DEFAULT.width,
@@ -302,10 +314,11 @@ export default {
           },
           style: {
             fill: tlData[2].bgColor,
-            text: textFormat(data[0].productName, 12, 24),
-            textFill: "#fff",
+            text: textFormat(data[0].productName, 20, 40),
+            textFill: tlData[2].color,
             fontSize: DEFAULT.fontSize
-          }
+          },
+          productId:data[0].productId
         });
         let lineEl = line({
           shape: {
@@ -315,7 +328,8 @@ export default {
             y2: groupH / 2
           },
           style: {
-            fill: DEFAULT.lineColor
+            fill: DEFAULT.lineColor,
+            stroke:DEFAULT.lineColor
           }
         });
         g.add(rectEl);
@@ -332,10 +346,11 @@ export default {
             },
             style: {
               fill: tlData[2].bgColor,
-              text: textFormat(t.productName, 12, 24),
-              textFill: "#fff",
+              text: textFormat(t.productName, 20, 40),
+              textFill: tlData[2].color,
               fontSize: DEFAULT.fontSize
-            }
+            },
+            productId:t.productId
           });
           let lineEl = line({
             shape: {
@@ -345,7 +360,8 @@ export default {
               y2: DEFAULT.height / 2 + (DEFAULT.height + positionObj.R) * i
             },
             style: {
-              fill: DEFAULT.lineColor
+              fill: DEFAULT.lineColor,
+              stroke:DEFAULT.lineColor
             }
           });
           g.add(rectEl);
@@ -377,8 +393,8 @@ export default {
         },
         style: {
           fill: tlData[1].bgColor,
-          text: textFormat(data.suitName, 8, 16),
-          textFill: "#fff",
+          text: textFormat(data.suitName, 12, 24),
+          textFill: tlData[1].color,
           fontSize: DEFAULT.fontSize
         },
         name: "PM"
@@ -390,9 +406,9 @@ export default {
           r: DEFAULT.width / 5 / 2
         },
         style: {
-          fill: "#fff",
+          fill: DEFAULT.mCircleFillColor,
           text: "项目",
-          fontSize: rem(10)
+          fontSize:DEFAULT.mCirclefontSize
         },
         name: "PL"
       });
@@ -403,9 +419,9 @@ export default {
           r: DEFAULT.width / 5 / 2
         },
         style: {
-          fill: "#fff",
+          fill: DEFAULT.mCircleFillColor,
           text: "版本",
-          fontSize: rem(10)
+          fontSize: DEFAULT.mCirclefontSize
         },
         name: "PR"
       });
@@ -504,63 +520,119 @@ export default {
             }
           });
         });
-        let addHoverL = (el, styOpt) => {
-          el.childAt(0).attr(styOpt);
+        let addHoverL = (el, styOpt,data) => {
+           let rectOpt={
+             style:{
+               stroke: styOpt.style.stroke
+             }
+           }
+          el.childAt(0).attr(rectOpt);
           el.childAt(1).attr(styOpt);
-          groupM.childAt(0).attr(styOpt);
-          groupR.eachChild(k => {
-            k.childAt(0).attr(styOpt);
-            k.childAt(1).attr(styOpt);
-          });
+          groupM.childAt(0).attr(rectOpt);
+          if(data){
+            data.forEach(t=>{
+              groupR.eachChild(k => {
+                if(t.productId== k.childAt(0).productId){
+                    k.childAt(0).attr(rectOpt);
+                    k.childAt(1).attr(styOpt);
+                }          
+              });
+            })
+          }else{
+            groupR.eachChild(k => {
+                  k.childAt(0).attr(rectOpt);
+                  k.childAt(1).attr(styOpt);
+                        
+            });
+          }
+          
         };
         groupL.eachChild(t => {
-          //   let flag = true;
           t.childAt(0)
-            .on("mouseover", () => {
-              addHoverL(t, { style: { stroke: "red" } });
+            .on("mouseover", (e) => {
+              that.getproRelation('L',e.target.projectId,(res)=>{
+                 if(res.code==200){
+                      addHoverL(t, { style: { stroke: DEFAULT.lineHoverColor } },res.data);
+                 }
+              })
+              
             })
-            .on("mouseout", () => {
-              addHoverL(t, { style: { stroke: DEFAULT.lineColor } });
+            .on("mouseout", (e) => {
+              addHoverL(t, { style: { stroke: DEFAULT.lineColor,fill: DEFAULT.lineColor} });
             })
             .on("click", e => {
-                if(that.flagDrag){
-                  if(that.sameELId !==e.target.id){
-                      that.sameELId=e.target.id
-                      that.dragBox.attr({
-                          position: [e.offsetX + DEFAULT.width / 2, e.offsetY]
-                    });
-                  }else{
-                    that.flagDrag=false
-                    that.dragBox.hide()
+                // if(that.flagDrag){
+                //   if(that.sameELId !==e.target.id){
+                //       that.sameELId=e.target.id
+                //       that.dragBox.attr({
+                //           position: [e.offsetX + DEFAULT.width / 2, e.offsetY]
+                //     });
+                //   }else{
+                //     that.flagDrag=false
+                //     that.dragBox.hide()
+                //   }
+                // }else{
+                //       that.flagDrag=true
+                //       that.dragBox.show()
+                //       that.dragBox.attr({
+                //           position: [e.offsetX + DEFAULT.width / 2, e.offsetY]
+                //       });
+                //       if(that.sameELId !==e.target.id){
+                //         that.sameELId=e.target.id
+                //       }
+                // }
+                console.log(e)
+                let offset=[e.target.transform[4],e.target.transform[5]]
+                console.log(offset)
+                that.$custombox({
+                  data:{
+                    msg:'adadsdfd',
                   }
-                }else{
-                      that.flagDrag=true
-                      that.dragBox.show()
-                      that.dragBox.attr({
-                          position: [e.offsetX + DEFAULT.width / 2, e.offsetY]
-                      });
-                      if(that.sameELId !==e.target.id){
-                        that.sameELId=e.target.id
-                      }
-                }
+                })
             })
         });
-        let addHoverR = (el, styOpt) => {
-          el.childAt(0).attr(styOpt);
+        let addHoverR = (el, styOpt,data) => {
+           let rectOpt={
+             style:{
+               stroke: styOpt.style.stroke
+             }
+           }
+          el.childAt(0).attr(rectOpt);
           el.childAt(1).attr(styOpt);
-          groupM.childAt(0).attr(styOpt);
-          groupL.eachChild(k => {
-            k.childAt(0).attr(styOpt);
-            k.childAt(1).attr(styOpt);
-          });
+          groupM.childAt(0).attr(rectOpt);
+          if(data){
+            data.forEach(t=>{
+              groupL.eachChild(k => {
+                if(t.projectId== k.childAt(0).projectId){
+                    k.childAt(0).attr(rectOpt);
+                    k.childAt(1).attr(styOpt);
+                }          
+              });
+            })
+          }else{
+            groupL.eachChild(k => {
+                  k.childAt(0).attr(rectOpt);
+                  k.childAt(1).attr(styOpt);
+                        
+            });
+          }
+          // groupL.eachChild(k => {
+          //   k.childAt(0).attr(rectOpt);
+          //   k.childAt(1).attr(styOpt);
+          // });
         };
         groupR.eachChild(t => {
           t.childAt(0)
-            .on("mouseover", () => {
-              addHoverR(t, { style: { stroke: "red" } });
+            .on("mouseover", (e) => {
+              that.getproRelation('R',e.target.productId,(res)=>{
+                 if(res.code==200){
+                      addHoverR(t, { style: { stroke: DEFAULT.lineHoverColor } },res.data);
+                 }
+              })
+              // addHoverR(t, { style: { stroke: DEFAULT.lineHoverColor } });
             })
             .on("mouseout", () => {
-              addHoverR(t, { style: { stroke: DEFAULT.lineColor } });
+              addHoverR(t, { style: { stroke: DEFAULT.lineColor,fill: DEFAULT.lineColor } });
             })
             .on("click", e => {
                 if(that.flagDrag){
@@ -594,9 +666,7 @@ export default {
           height:groupH
         })
       });
-      // this.zr.resize({
-      //   height:groupH
-      // })
+     
       this.groupArr = groupArr;
     },
     //文字 +圆弧
@@ -830,6 +900,21 @@ export default {
         this.zr.add(this.dragBox);
         return this.dragBox;
       }
+    },
+    getproRelation(type,id,callback){
+      let url = type ==='L' ? '/api/suit/findProductListByProjectId':'/api/suit/findProjectListByProductId'
+      
+      this.$http.get(url,{
+        issueId:id
+      },(res)=>{
+         if(res.status===200){
+           if(callback){
+                  callback(res.data)
+           }
+         }else{
+             console.log(res) 
+         }
+      })
     }
   }
 };

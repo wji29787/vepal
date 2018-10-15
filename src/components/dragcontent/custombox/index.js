@@ -5,20 +5,11 @@ let Custombox = function (opt) {
   if (typeof opt !== 'object') {
     return
   }
-  let optionData = opt.data || {}
-  let optionMethods = opt.methods || {}
-  let instance = new CustomboxConstructor({
-    data: {
-      ...optionData
-    },
-    methods: {
-      ...optionMethods
-    }
-  })
+  let instance = new CustomboxConstructor(opt)
 
   instance.$mount()
-  if (opt.el) {
-    opt.el.appendChild(instance.$el)
+  if (opt.data.el) {
+    opt.data.el.appendChild(instance.$el)
   } else {
     document.body.appendChild(instance.$el)
   }
