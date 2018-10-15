@@ -28,7 +28,7 @@ let DEFAULT = {
 let tlData = [
   {
     name: "项目名称",
-    bgColor: "rgba(0, 204, 102, 1)"
+    bgColor: "rgba(74, 163, 222, 1)"
   },
   {
     name: "套装",
@@ -59,6 +59,11 @@ export default {
   },
   mounted() {
     // this.getData();
+    this.$custombox({
+      data:{
+        msg:'hashah'
+      }
+    })
     this.render();
     this.getData();
     let that = this;
@@ -585,10 +590,13 @@ export default {
         group.add(groupM);
         groupArr.push(group);
         that.zr.add(group);
+        this.zr.resize({
+          height:groupH
+        })
       });
-      this.zr.resize({
-        height:groupH
-      })
+      // this.zr.resize({
+      //   height:groupH
+      // })
       this.groupArr = groupArr;
     },
     //文字 +圆弧

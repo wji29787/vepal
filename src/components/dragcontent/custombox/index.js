@@ -1,10 +1,18 @@
 import Vue from 'vue'
-import CustomBox from './Custombox'
+import CustomBox from './CustomBox'
 let CustomboxConstructor = Vue.extend(CustomBox)
 let Custombox = function (opt) {
+  if (typeof opt !== 'object') {
+    return
+  }
+  let optionData = opt.data || {}
+  let optionMethods = opt.methods || {}
   let instance = new CustomboxConstructor({
     data: {
-      msg: opt.msg
+      ...optionData
+    },
+    methods: {
+      ...optionMethods
     }
   })
 
