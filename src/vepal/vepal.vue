@@ -55,11 +55,12 @@ export default {
     };
   },
   created() {
-    this.getData();
+    // this.getData();
   },
   mounted() {
     // this.getData();
     this.render();
+    this.getData();
     let that = this;
     let timer = null;
     window.addEventListener("resize", function() {
@@ -76,21 +77,21 @@ export default {
       this.zr = zrender.init(container);
       this.w = this.zr.getWidth();
       this.h = this.zr.getHeight();
-      this.list = [
-        {
-          projectList: [{ projectName: "aaa" }],
-          productList: [{ productName: "adadadas" }],
-          suitName: "sdfsdfsdfsd"
-        },
-         {
-          projectList: [{ projectName: "aaa" }],
-          productList: [{ productName: "adadadas" }],
-          suitName: "sdfsdfsdfsd"
-        }
-      ];
-      this.$nextTick(() => {
-        this.init(this.list);
-      });
+      // this.list = [
+      //   {
+      //     projectList: [{ projectName: "aaa" }],
+      //     productList: [{ productName: "adadadas" }],
+      //     suitName: "sdfsdfsdfsd"
+      //   },
+      //    {
+      //     projectList: [{ projectName: "aaa" }],
+      //     productList: [{ productName: "adadadas" }],
+      //     suitName: "sdfsdfsdfsd"
+      //   }
+      // ];
+      // this.$nextTick(() => {
+      //   this.init(this.list);
+      // });
     },
     resetData() {
       this.groupH = rem(50);
@@ -119,6 +120,7 @@ export default {
         .then(res => {
           if (res.data.code === 200) {
             this.list = res.data.data.suits;
+            this.init(res.data.data.suits);
             // this.render();
           }
         })
@@ -584,6 +586,9 @@ export default {
         groupArr.push(group);
         that.zr.add(group);
       });
+      this.zr.resize({
+        height:groupH
+      })
       this.groupArr = groupArr;
     },
     //文字 +圆弧
@@ -672,6 +677,10 @@ export default {
        }  
        textGroup.add(textRect)
      })
+      // let prodjBox=this.createDragBox()
+      // prodjBox.attr({zlevel:1})
+      // prodjBox.position=[0,DEFAULT.height*2/3+5]
+      // textGroup.add(prodjBox)
       // 创建圆弧
       let deg = c => (c * Math.PI) / 180;
       let r = DEFAULT.height / 4;
@@ -751,6 +760,43 @@ export default {
         }
       });
       return group;
+    },
+    //项目优先级盒子
+    createDragBox(opt){
+      opt= [{
+        type:'高'
+      },{
+        type:'中'
+      },{
+        type:'低'
+      }]
+        
+      let group =new zrender.Group()
+      let boxRect =rect({
+        shape:{
+          width:DEFAULT.width*2/3,
+          height:DEFAULT.height ,
+          x:0,
+          y:0
+        },
+        style:{
+          fill:'#fff',
+          stroke:'red'
+        }
+      })
+      group.add(boxRect)
+      // opt.forEach((t,i)=>{
+      //   let box=rect({
+      //     shape:{
+
+      //     },
+      //     style:{
+
+      //     }
+      //   })
+      // })
+
+      return group
     },
     // 详情弹框
     dragTextBox(opt) {
