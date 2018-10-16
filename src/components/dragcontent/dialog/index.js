@@ -1,6 +1,6 @@
 import Vue from 'vue'
-import CustomBox from './CustomBox'
-let CustomboxConstructor = Vue.extend(CustomBox)
+import dialog from './dialog'
+let CustomboxConstructor = Vue.extend(dialog)
 let Custombox = function (opt) {
   if (typeof opt !== 'object') {
     return

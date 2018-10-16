@@ -15,7 +15,8 @@ const defaults={
     layerMsg:'l-msg-style-doc'
 }
 export default {
-    name:'layerMsg',
+    name:'sl-Msg',
+    type:'singleton',
     data(){
         return {
             ...Object.assign({},defaults),

@@ -1,14 +1,20 @@
 <template>
-    <div class="custom-contanier" :style="style">
-        <button @click="close()">clode</button>
-        <div :style="{'cursor':'pointer','color':'red'}" @click="aa()">{{msg}}</div>
-
+    <div class="sl-dialog-container" :style="style">
+        <div class ="sl-dialog-header">
+            <slot name="header"></slot>
+        </div>
+        <div class ="sl-dialog-body">
+            <slot name="body"></slot>
+        </div>
+        <div class ="sl-dialog-foot">
+            <slot name="foot"></slot>
+        </div>
     </div>
 </template>
 
 <script>
 export default {
-    name :'custombox',
+    name :'sl-dialog',
     data(){
         return{
             offset:[],
@@ -18,6 +24,9 @@ export default {
                 height:'2rem'
             }
         }
+    },
+    props:{
+
     },
     mounted(){
        if(this.success){
@@ -36,7 +45,7 @@ export default {
 </script>
 
 <style scoped>
-  .custom-contanier{
+  .sl-dialog-container{
       position: fixed;
       top:50%;
       left: 50%;
