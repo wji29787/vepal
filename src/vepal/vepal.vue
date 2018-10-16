@@ -11,8 +11,8 @@
     <sl-dialog :value="showProduct" :offset="offsetProduct" :position="'absolute'">
        <!-- {{deilProduct[0][actionbody]}} -->
        <div  class="dialogStyle">
-          <div 
-             v-for = "(item, index) in deilProduct" 
+          <div
+             v-for = "(item, index) in deilProduct"
              :key = "item.actionbody"
           >
             <p>{{item.actionbody}}</p>
@@ -20,7 +20,7 @@
        </div>
     </sl-dialog>
   </div>
-  
+
 </template>
 
 <script>
@@ -144,7 +144,9 @@ export default {
       };
     },
     getData() {
+      console.log("11111");
       this.$http.get('/api/suit/findAllSuitInfo',(res)=>{
+        console.log(res);
          if(res.status===200){
            if(res.data.code===200){
                 this.list = res.data.data.suits;
@@ -153,7 +155,7 @@ export default {
 
            }
          }else{
-             console.log(res) 
+             console.log(res)
          }
       })
     },
@@ -511,14 +513,14 @@ export default {
             } else if (k.name == "PR") {
               flag ? groupR.hide() : groupR.show();
               flag = !flag;
-            } else if (k.name == "PM") {    
+            } else if (k.name == "PM") {
                 // console.log(e)
                 let position=[e.target.shape.rx,e.target.shape.ry]
                 // 鼠标相对文档偏移
                 let offset=[e.target.transform[4],e.target.transform[5]]
                 //元素相对文档偏移
-                let p =[offset[0],offset[1]] 
-                let poffset =   [`${parseInt(p[0] + DEFAULT.width)}px`,`${parseInt(p[1]+DEFAULT.verH /2)}px`]  
+                let p =[offset[0],offset[1]]
+                let poffset =   [`${parseInt(p[0] + DEFAULT.width)}px`,`${parseInt(p[1]+DEFAULT.verH /2)}px`]
                 if(!t.suitDescription){
                   return
                 }
@@ -531,7 +533,7 @@ export default {
                   }
                 }else{
                     that.deilSp.suitDescription=t.suitDescription
-                    that.showSp=true 
+                    that.showSp=true
                     that.offsetSp = poffset
                 }
             }
@@ -552,32 +554,32 @@ export default {
                 if(t.productId== k.childAt(0).productId){
                     k.childAt(0).attr(rectOpt);
                     k.childAt(1).attr(styOpt);
-                }          
+                }
               });
             })
           }else{
             groupR.eachChild(k => {
                   k.childAt(0).attr(rectOpt);
                   k.childAt(1).attr(styOpt);
-                        
+
             });
           }
-          
+
         };
         groupL.eachChild((k,i) => {
           let hoverL =false
           k.childAt(0)
             .on("mouseover", (e) => {
-              hoverL = true 
+              hoverL = true
               that.getproRelation('L',e.target.projectId,(res)=>{
                  if(res.code==200){
                      if(hoverL){
                         addHoverL(k, { style: { stroke: DEFAULT.lineHoverColor } },res.data)
                      }
-                      
+
                  }
               })
-              
+
             })
             .on("mouseout", (e) => {
               hoverL =false
@@ -588,8 +590,8 @@ export default {
                 // 鼠标相对文档偏移
                 let offset=[e.target.transform[4],e.target.transform[5]]
                 //元素相对文档偏移
-                let p =[position[0]+offset[0],position[1]+offset[1]] 
-                let poffset =   [`${parseInt(p[0] + DEFAULT.width)}px`,`${parseInt(p[1]+DEFAULT.height / 2)}px`]  
+                let p =[position[0]+offset[0],position[1]+offset[1]]
+                let poffset =   [`${parseInt(p[0] + DEFAULT.width)}px`,`${parseInt(p[1]+DEFAULT.height / 2)}px`]
                 if(that.showProject){
                   if(that.offsetProject[1] === poffset[1]){
                     that.showProject= false
@@ -599,11 +601,11 @@ export default {
                   }
                 }else{
                     that.deilProject=project[i]
-                    that.showProject=true 
+                    that.showProject=true
                     that.offsetProject = poffset
                 }
-                 console.log(that.deilProject) 
-                
+                 console.log(that.deilProject)
+
             })
         });
         let addHoverR = (el, styOpt,data) => {
@@ -621,14 +623,14 @@ export default {
                 if(t.projectId== k.childAt(0).projectId){
                     k.childAt(0).attr(rectOpt);
                     k.childAt(1).attr(styOpt);
-                }          
+                }
               });
             })
           }else{
             groupL.eachChild(k => {
                   k.childAt(0).attr(rectOpt);
                   k.childAt(1).attr(styOpt);
-                        
+
             });
           }
           // groupL.eachChild(k => {
@@ -648,7 +650,7 @@ export default {
                         // that.$slloading.hide()
                         addHoverR(k, { style: { stroke: DEFAULT.lineHoverColor } },res.data);
                      }
-                      
+
                  }
               })
             })
@@ -662,11 +664,11 @@ export default {
                 // 鼠标相对文档偏移
                 let offset=[e.target.transform[4],e.target.transform[5]]
                 //元素相对文档偏移
-                let p =[position[0]+offset[0],position[1]+offset[1]] 
-                let poffset =   [`${parseInt(p[0] + DEFAULT.width)}px`,`${parseInt(p[1]+DEFAULT.height / 2)}px`] 
+                let p =[position[0]+offset[0],position[1]+offset[1]]
+                let poffset =   [`${parseInt(p[0] + DEFAULT.width)}px`,`${parseInt(p[1]+DEFAULT.height / 2)}px`]
                 if(!product[i].remark||product[i].remark.length===0){
                   return
-                } 
+                }
                 if(that.showProduct){
                   if(that.offsetProduct[1] === poffset[1]){
                     that.showProduct= false
@@ -676,7 +678,7 @@ export default {
                   }
                 }else{
                     that.deilProduct=product[i].remark
-                    that.showProduct=true 
+                    that.showProduct=true
                     that.offsetProduct = poffset
                 }
                 // console.log(that.deilProduct)
@@ -691,7 +693,7 @@ export default {
           height:groupH
         })
       });
-     
+
       this.groupArr = groupArr;
     },
     //文字 +圆弧
@@ -765,7 +767,7 @@ export default {
                 }
               });
             })
-        
+
        }else{
         textRect =rect({
                 shape:{
@@ -777,7 +779,7 @@ export default {
                 },
                 position:t.position
               })
-       }  
+       }
        textGroup.add(textRect)
      })
       // let prodjBox=this.createDragBox()
@@ -873,7 +875,7 @@ export default {
       },{
         type:'低'
       }]
-        
+
       let group =new zrender.Group()
       let boxRect =rect({
         shape:{
@@ -928,7 +930,7 @@ export default {
     },
     getproRelation(type,id,callback){
       let url = type ==='L' ? '/api/suit/findProductListByProjectId':'/api/suit/findProjectListByProductId'
-      
+
       this.$http.get(url,{
         issueId:id
       },(res)=>{
@@ -937,7 +939,7 @@ export default {
                   callback(res.data)
            }
          }else{
-             console.log(res) 
+             console.log(res)
          }
       })
     }
