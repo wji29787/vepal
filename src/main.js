@@ -7,8 +7,8 @@ import App from './App'
 import router from './router'
 import http from './assets/js/axioshttp'
 // import axios from 'axios'
-import custom from './components/dragcontent'
-Vue.use(custom)
+import slcomponent from './components/slcomponent'
+Vue.use(slcomponent)
 Vue.config.productionTip = false
 // 引入axios
 // axios.defaults.baseURL = 'http://192.168.95.253:8085'

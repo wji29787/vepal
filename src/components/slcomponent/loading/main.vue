@@ -14,7 +14,8 @@ const defaults={
     isShow:true,
 }
 export default {
-    name:'loading',
+    name:'sl-loading',
+    type:'singleton',
     data(){
         return {
             ...Object.assign({},defaults),
@@ -39,6 +40,9 @@ export default {
             }
         },
         destroy(){
+            if(this.$el){
+                
+            }
             this.element.removeChild(this.$el);
             this.inited=false;
         },
@@ -59,7 +63,7 @@ export default {
         },
         hide(){
             this.shown =false;
-            this.destroy();
+            // this.destroy();
         },
         showng(el){
             this.show(el);

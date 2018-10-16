@@ -1,6 +1,26 @@
 <template>
-  <div class="dinner" id="container">
+  <div>
+    <div id="container">
+    </div>
+    <sl-dialog :value="showProject" :offset="offsetProject" :position="'absolute'" class="">
+       dfsdfsdfsf
+    </sl-dialog>
+    <sl-dialog :value="showSp" :offset="offsetSp" :position="'absolute'">
+      <div class="dialogStyle"> {{deilSp.suitDescription}}</div>
+    </sl-dialog>
+    <sl-dialog :value="showProduct" :offset="offsetProduct" :position="'absolute'">
+       <!-- {{deilProduct[0][actionbody]}} -->
+       <div  class="dialogStyle">
+          <div 
+             v-for = "(item, index) in deilProduct" 
+             :key = "item.actionbody"
+          >
+            <p>{{item.actionbody}}</p>
+          </div>
+       </div>
+    </sl-dialog>
   </div>
+  
 </template>
 
 <script>
@@ -58,29 +78,29 @@ export default {
       groupArr: [],
       list: [],
       dragBox: null, // 显示框元素
-      flagDrag:false,
-      sameELId:'',
+      tipShow:false,
+      // 项目详情
+      showProject:false,
+      offsetProject:[0,0],
+      deilProject:{},
+      //产品详情
+      showProduct:false,
+      offsetProduct:[0,0],
+      deilProduct:[],
+      //套装详情
+      showSp:false,
+      offsetSp:[0,0],
+      deilSp:{suitDescription:''},
     };
   },
   created() {
 
   },
+  watch:{
+    // offset
+  },
   mounted() {
-   
-    this.$custombox({
-      data:{
-        msg:'hashah'
-      },
-      methods:{
-        success(ctx){
-            console.log(ctx)
-            console.log('dfdfdfdf')
-        },
-        destroy(ctx){
-          console.log('haha')
-        }
-      }
-    })
+    // this.$slMsg.show('sdfdf')
     this.render();
     this.getData();
     let that = this;
@@ -108,8 +128,6 @@ export default {
       this.zr.resize();
       this.w = this.zr.getWidth();
       this.h = this.zr.getHeight();
-      this.flagDrag=false;
-      this.sameELId='';
       DEFAULT = {
           hInterval: rem(20), // 上下间隔
           width: rem(200),
@@ -393,7 +411,7 @@ export default {
         },
         style: {
           fill: tlData[1].bgColor,
-          text: textFormat(data.suitName, 12, 24),
+          text: `${textFormat(data.suitName, 12, 24)}${data.suitDate? '\n'+data.suitDate:''}`,
           textFill: tlData[1].color,
           fontSize: DEFAULT.fontSize
         },
@@ -483,40 +501,39 @@ export default {
         let groupL = that.cteateRectL(project, base);
         let groupR = that.cteateRectR(product, base);
         let groupM = that.cteateRectM(t, base);
-        //点击事件判断是否是同一个
-        // let flagDrag = false,
-        //   sameELId = null;
-        groupM.eachChild((t, i) => {
+        // 遍历 各子节点元素 做业务处理
+        groupM.eachChild((k, i) => {
           let flag = true;
-          t.on("click", function(e) {
-            if (t.name == "PL") {
+          k.on("click", function(e) {
+            if (k.name == "PL") {
               flag ? groupL.hide() : groupL.show();
               flag = !flag;
-            } else if (t.name == "PR") {
+            } else if (k.name == "PR") {
               flag ? groupR.hide() : groupR.show();
               flag = !flag;
-            } else if (t.name == "PM") {
-               if(that.flagDrag){
-                 if(that.sameELId !==e.target.id){
-                    that.sameELId=e.target.id
-                    that.dragBox.attr({
-                        position: [e.offsetX + DEFAULT.width / 2, e.offsetY]
-                   });
-                 }else{
-                   that.flagDrag=false
-                   that.dragBox.hide()
-                 }
-               }else{
-                     that.flagDrag=true
-                     that.dragBox.show()
-                     that.dragBox.attr({
-                         position: [e.offsetX + DEFAULT.width / 2, e.offsetY]
-                     });
-                    if(that.sameELId !==e.target.id){
-                      that.sameELId=e.target.id
-                    }
-               }
-              
+            } else if (k.name == "PM") {    
+                // console.log(e)
+                let position=[e.target.shape.rx,e.target.shape.ry]
+                // 鼠标相对文档偏移
+                let offset=[e.target.transform[4],e.target.transform[5]]
+                //元素相对文档偏移
+                let p =[offset[0],offset[1]] 
+                let poffset =   [`${parseInt(p[0] + DEFAULT.width)}px`,`${parseInt(p[1]+DEFAULT.verH /2)}px`]  
+                if(!t.suitDescription){
+                  return
+                }
+                if(that.showSp){
+                  if(that.offsetSp[1] === poffset[1]){
+                    that.showSp= false
+                  }else{
+                    that.deilSp.suitDescription=t.suitDescription
+                    that.offsetSp = poffset
+                  }
+                }else{
+                    that.deilSp.suitDescription=t.suitDescription
+                    that.showSp=true 
+                    that.offsetSp = poffset
+                }
             }
           });
         });
@@ -547,48 +564,46 @@ export default {
           }
           
         };
-        groupL.eachChild(t => {
-          t.childAt(0)
+        groupL.eachChild((k,i) => {
+          let hoverL =false
+          k.childAt(0)
             .on("mouseover", (e) => {
+              hoverL = true 
               that.getproRelation('L',e.target.projectId,(res)=>{
                  if(res.code==200){
-                      addHoverL(t, { style: { stroke: DEFAULT.lineHoverColor } },res.data);
+                     if(hoverL){
+                        addHoverL(k, { style: { stroke: DEFAULT.lineHoverColor } },res.data)
+                     }
+                      
                  }
               })
               
             })
             .on("mouseout", (e) => {
-              addHoverL(t, { style: { stroke: DEFAULT.lineColor,fill: DEFAULT.lineColor} });
+              hoverL =false
+              addHoverL(k, { style: { stroke: DEFAULT.lineColor,fill: DEFAULT.lineColor} });
             })
             .on("click", e => {
-                // if(that.flagDrag){
-                //   if(that.sameELId !==e.target.id){
-                //       that.sameELId=e.target.id
-                //       that.dragBox.attr({
-                //           position: [e.offsetX + DEFAULT.width / 2, e.offsetY]
-                //     });
-                //   }else{
-                //     that.flagDrag=false
-                //     that.dragBox.hide()
-                //   }
-                // }else{
-                //       that.flagDrag=true
-                //       that.dragBox.show()
-                //       that.dragBox.attr({
-                //           position: [e.offsetX + DEFAULT.width / 2, e.offsetY]
-                //       });
-                //       if(that.sameELId !==e.target.id){
-                //         that.sameELId=e.target.id
-                //       }
-                // }
-                console.log(e)
+                let position=[e.target.shape.x,e.target.shape.y]
+                // 鼠标相对文档偏移
                 let offset=[e.target.transform[4],e.target.transform[5]]
-                console.log(offset)
-                that.$custombox({
-                  data:{
-                    msg:'adadsdfd',
+                //元素相对文档偏移
+                let p =[position[0]+offset[0],position[1]+offset[1]] 
+                let poffset =   [`${parseInt(p[0] + DEFAULT.width)}px`,`${parseInt(p[1]+DEFAULT.height / 2)}px`]  
+                if(that.showProject){
+                  if(that.offsetProject[1] === poffset[1]){
+                    that.showProject= false
+                  }else{
+                    that.deilProject=project[i]
+                    that.offsetProject = poffset
                   }
-                })
+                }else{
+                    that.deilProject=project[i]
+                    that.showProject=true 
+                    that.offsetProject = poffset
+                }
+                 console.log(that.deilProject) 
+                
             })
         });
         let addHoverR = (el, styOpt,data) => {
@@ -621,40 +636,50 @@ export default {
           //   k.childAt(1).attr(styOpt);
           // });
         };
-        groupR.eachChild(t => {
-          t.childAt(0)
+        groupR.eachChild((k,i) => {
+           let hoverR =false
+          k.childAt(0)
             .on("mouseover", (e) => {
+              hoverR=true
+              // that.$slloading.show()
               that.getproRelation('R',e.target.productId,(res)=>{
                  if(res.code==200){
-                      addHoverR(t, { style: { stroke: DEFAULT.lineHoverColor } },res.data);
+                     if(hoverR){
+                        // that.$slloading.hide()
+                        addHoverR(k, { style: { stroke: DEFAULT.lineHoverColor } },res.data);
+                     }
+                      
                  }
               })
-              // addHoverR(t, { style: { stroke: DEFAULT.lineHoverColor } });
             })
             .on("mouseout", () => {
-              addHoverR(t, { style: { stroke: DEFAULT.lineColor,fill: DEFAULT.lineColor } });
+              hoverR=false
+              // that.$slloading.hide()
+              addHoverR(k, { style: { stroke: DEFAULT.lineColor,fill: DEFAULT.lineColor } });
             })
             .on("click", e => {
-                if(that.flagDrag){
-                  if(that.sameELId !==e.target.id){
-                      that.sameELId=e.target.id
-                      that.dragBox.attr({
-                          position: [e.offsetX + DEFAULT.width / 2, e.offsetY]
-                    });
+                let position=[e.target.shape.x,e.target.shape.y]
+                // 鼠标相对文档偏移
+                let offset=[e.target.transform[4],e.target.transform[5]]
+                //元素相对文档偏移
+                let p =[position[0]+offset[0],position[1]+offset[1]] 
+                let poffset =   [`${parseInt(p[0] + DEFAULT.width)}px`,`${parseInt(p[1]+DEFAULT.height / 2)}px`] 
+                if(!product[i].remark||product[i].remark.length===0){
+                  return
+                } 
+                if(that.showProduct){
+                  if(that.offsetProduct[1] === poffset[1]){
+                    that.showProduct= false
                   }else{
-                    that.flagDrag=false
-                    that.dragBox.hide()
+                    that.deilProduct=product[i].remark
+                    that.offsetProduct = poffset
                   }
                 }else{
-                      that.flagDrag=true
-                      that.dragBox.show()
-                      that.dragBox.attr({
-                          position: [e.offsetX + DEFAULT.width / 2, e.offsetY]
-                      });
-                      if(that.sameELId !==e.target.id){
-                        that.sameELId=e.target.id
-                      }
+                    that.deilProduct=product[i].remark
+                    that.showProduct=true 
+                    that.offsetProduct = poffset
                 }
+                // console.log(that.deilProduct)
             });
         });
         group.add(groupL);
@@ -672,9 +697,9 @@ export default {
     //文字 +圆弧
     createText(opt) {
       opt = {
-        a: "mvp",
-        b: "高",
-        c: "未结项"
+        a: opt.typeName,
+        b: opt.priorityName,
+        c: opt.statusName
       };
       // 创建 文字
       let h = DEFAULT.height;
@@ -697,7 +722,7 @@ export default {
       };
       let option = [
         {
-          text: `类型:   ${opt.a}`,
+          text: `类型: ${opt.a}`,
           position: [0, 0]
         },
         {
@@ -705,7 +730,7 @@ export default {
           position: [0, h / 3]
         },
         {
-          text: `状态:  ${opt.c}`,
+          text: `状态: ${opt.c}`,
           position: [0, h - h / 3]
         }
       ];
@@ -922,8 +947,16 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.dialogStyle{
+  background:rgba(74, 163, 222, 1);
+  line-height: 0.3rem;
+  padding: 0.2rem;
+  font-family: 微软雅黑;
+  width: 4rem;
+}
 .dinner {
-  width: 100%;
-  height: 100%;
+  /* width: 100%;
+  height: 100%; */
+  /* position: absolute */
 }
 </style>
