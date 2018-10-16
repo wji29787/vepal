@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
 import Vepal from '@/vepal/vepal'
+import AddVepal from '@/vepal/addvepal'
 // import Login from '@/login/login'
 
 Vue.use(Router)
@@ -17,6 +18,11 @@ export default new Router({
       path: '/vepal',
       name: 'Vepal',
       component: Vepal
+    },
+    {
+      path: '/addvepal',
+      name: 'AddVepal',
+      component: AddVepal
     }
     // {
     //   path: '/login',

@@ -903,7 +903,6 @@ export default {
     },
     getproRelation(type,id,callback){
       let url = type ==='L' ? '/api/suit/findProductListByProjectId':'/api/suit/findProjectListByProductId'
-      
       this.$http.get(url,{
         issueId:id
       },(res)=>{
