@@ -230,6 +230,22 @@ export default {
       if(sueIdstr.length>0){
           _this.issueId=sueIdstr.substring(0,sueIdstr.length-1);
       }
+      if(_this.suitName.length==0){
+          alert("SP名称不能为空");
+          return;
+      }
+      if(_this.suitDate.length==0){
+          alert("套装日期不能为空");
+          return;
+      }
+      if(_this.suitDescription.length==0){
+          alert("套装描述不能为空");
+          return;
+      }
+      if(_this.issueId.length==0){
+          alert("请选择套装产品");
+          return;
+      }
       //请求保存接口
       this.$http.get('/dev/suit/addSuit',{
               suitName:_this.suitName,
