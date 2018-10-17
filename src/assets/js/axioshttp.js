@@ -103,22 +103,25 @@ let http = axios.create({
   }]
 })
 
-function apiAxios(method, url, params, response) {
+function apiAxios (method, url, params, response) {
   if (typeof params === 'function') {
     response = params
     params = null
   }
-  // method = method.toLocaleUpperCase
-  http({
+  let config = {
     method: method,
     url: url,
     data: method === 'POST' || method === 'PUT' ? params : null,
     params: method === 'GET' || method === 'DELETE' ? params : null
-  }).then(function (res) {
-    response(res)
-  }).catch(function (err) {
-    response(err)
-  })
+  }
+  // config = Object.assign({}, config, opt)
+  http(config)
+    .then(function (res) {
+      response(res)
+      return res
+    }).catch(function (err) {
+      response(err)
+    })
 }
 
 export default {

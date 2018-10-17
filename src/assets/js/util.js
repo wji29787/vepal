@@ -11,10 +11,10 @@ let ellipse = (opt) => {
 let circle = (opt) => {
   return new zrender.Circle(opt)
 }
-let arc = opt =>{
+let arc = opt => {
   return new zrender.Arc(opt)
 }
-let text = opt =>{
+let text = opt => {
   return new zrender.Text(opt)
 }
 let rem = (size) => {
@@ -44,7 +44,7 @@ let getTextLen = str => {
  * param L 要截取的字节长度，注意是字节不是字符，一个汉字两个字节
  * return 截取后的字符串
  */
-function textFormat (str, L, L1) {
+function textFormat(str, L, L1) {
   let arr = []
   if (L1) {
     let strlen = str.length // 字符串长度
@@ -68,7 +68,7 @@ function textFormat (str, L, L1) {
 
   cutStr(str, L)
 
-  function cutStr (str, L) {
+  function cutStr(str, L) {
     let result = ''
     let strlen = str.length // 字符串长度
     let chrlen = str.replace(/[^\x00-\xff]/g, '**').length // 字节长度
@@ -96,6 +96,26 @@ function textFormat (str, L, L1) {
   return arr.join('\n')
 }
 
+// 类型转换
+let toType = o => Object.prototype.toString.call(o).match(/\s([a-zA-Z]+)/)[1].toLowerCase()
+
+// 参数过滤函数
+let filterNull = function filterNull(o) {
+  for (var key in o) {
+    if (o[key] === null) {
+      delete o[key]
+    }
+    if (toType(o[key]) === 'string') {
+      o[key] = o[key].trim()
+    } else if (toType(o[key]) === 'object') {
+      o[key] = filterNull(o[key])
+    } else if (toType(o[key]) === 'array') {
+      o[key] = filterNull(o[key])
+    }
+  }
+  return o
+}
+
 export {
   rect,
   rem,
@@ -105,5 +125,7 @@ export {
   textFormat,
   getTextLen,
   arc,
-  text
+  text,
+  toType,
+  filterNull
 }

@@ -1,9 +1,9 @@
 <template>
   <div>
-    <el-button type="text"  @click="getzt">新增套装</el-button>
+    <el-button type="text" class="elbutton"  @click="getzt">新增套装</el-button>
 <el-dialog 
   title="添加套装"
-  :visible="dialogVisible" width="35%">
+  :visible="dialogVisible" width="50%">
       <div class="addvepal-layer">
         <ul>
             <li>
@@ -88,27 +88,26 @@ let DEFAULT = {
   fontSize: rem(18),
   xInterval: rem(260),
   lineColor: "#cacaca",
-  lineHoverColor:'red',
-  mCirclefontSize:rem(15),
-  mCirclefontColor:'',
-  mCircleFillColor:"#F5F5F5"
-
+  lineHoverColor: "red",
+  mCirclefontSize: rem(15),
+  mCirclefontColor: "",
+  mCircleFillColor: "#F5F5F5"
 };
 let tlData = [
   {
     name: "项目名称",
     bgColor: "rgba(74, 163, 222, 1)",
-    color:'#fff'
+    color: "#fff"
   },
   {
     name: "套装",
     bgColor: "rgba(119, 141, 252, 1)",
-    color:'#fff'
+    color: "#fff"
   },
   {
     name: "相关版本",
     bgColor: "rgba(131, 220, 220, 1)",
-    color:'#fff'
+    color: "#fff"
   }
 ];
 export default {
@@ -122,19 +121,18 @@ export default {
       groupArr: [],
       list: [],
       dragBox: null, // 显示框元素
-      tipShow:false,
+      tipShow: false,
       // 项目详情
-      showProject:false,
-      offsetProject:[0,0],
-      deilProject:{},
+      showProject: false,
+      offsetProject: [0, 0],
+      deilProject: {},
       //产品详情
-      showProduct:false,
-      offsetProduct:[0,0],
-      deilProduct:[],
+      showProduct: false,
+      offsetProduct: [0, 0],
+      deilProduct: [],
       //套装详情
       showSp:false,
       offsetSp:[0,0],
-      deilSp:{suitDescription:''},
       dialogVisible: false,
       nodeData:[
           { id:1, pId:0, name:"Pamir", open:true},
@@ -165,17 +163,15 @@ export default {
       suitName:'', //SP名称
       suitDate:'', //时间
       suitDescription:'', //详细信息
-      issueId:''  //产品
+      issueId:'',//产品
+      deilSp: { suitDescription: "sdsdsd" }
     };
   },
-  created() {
-
-  },
-  watch:{
+  created() {},
+  watch: {
     // offset
   },
   mounted() {
-    // this.$slMsg.show('sdfdf')
     this.render();
     this.getData();
     let that = this;
@@ -189,26 +185,35 @@ export default {
     });
   },
   methods: {
+    /**获取ztree数据并且渲染**/
     getzt(){
-        this.dialogVisible=true;
+      var _this=this;
+        _this.dialogVisible=true;
         setTimeout(()=>{
            this.$http.get('/dev/product/findAllProduct',(res)=>{
-             console.log(res);
                     if(res.status===200){
-                        if(callback){
-                            callback(res.data)
-                            var nodeList=[];
+                          var nodeList=[];
                           // { id:1, pId:0, name:"Pamir", open:true},
                           // { id:11, pId:1, name:"5.5.5", open:true},
-                            for(var i=0;i<res.data.length;i++){
-                               
+                           var productslist=res.data.data.products;
+                            for(var i=0;i<productslist.length;i++){
+                                var obj={"id":productslist[i].productId,pId:0,"name":productslist[i].productName,open:true};
+                                nodeList.push(obj);
+                                if(productslist[i].projectList.length>0){
+                                    var cplist=productslist[i].projectList;
+                                    for(var j=0;j<cplist.length;j++){
+                                        var obj={"id":cplist[j].projectId,pId:productslist[i].productId,"name":cplist[j].projectName,open:true};
+                                        nodeList.push(obj);
+                                    }
+                                }
                             }
-                        }
+                        _this.nodeData=nodeList;
+                        $.fn.zTree.init($("#ztreedemo"),_this.setting,_this.nodeData);
                     }else{
                         console.log(res) 
                     }
             })
-           $.fn.zTree.init($("#ztreedemo"),this.setting,this.nodeData);
+         
         },100)
     },
     save(){
@@ -218,12 +223,13 @@ export default {
       nodes=treeObj.getCheckedNodes(true),
       sueIdstr="";
       for(var i=0;i<nodes.length;i++){
-          sueIdstr+=nodes[i].id + ",";
+          if(nodes[i].pId==0||nodes[i].pId==null){
+             sueIdstr+=nodes[i].id + ",";
+          }
       }
       if(sueIdstr.length>0){
           _this.issueId=sueIdstr.substring(0,sueIdstr.length-1);
       }
-      return;
       //请求保存接口
       this.$http.get('/dev/suit/addSuit',{
               suitName:_this.suitName,
@@ -232,15 +238,12 @@ export default {
               issueId:_this.issueId
           },(res)=>{
               if(res.status===200){
-                  if(callback){
-                      callback(res.data)
                       alert("保存成功");
-                  }
               }else{
                   console.log(res) 
               }
       })
-      dialogVisible = false;
+      _this.dialogVisible = false;
   },
     render() {
       let container = document.getElementById("container");
@@ -257,34 +260,32 @@ export default {
       this.w = this.zr.getWidth();
       this.h = this.zr.getHeight();
       DEFAULT = {
-          hInterval: rem(20), // 上下间隔
-          width: rem(200),
-          height: rem(70),
-          verH: rem(80), //套装盒高度
-          groupWidth: rem(200 * 3 + 260 * 2), //包装盒宽
-          fontSize: rem(18),
-          xInterval: rem(260),
-          lineColor: "#cacaca",
-          lineHoverColor:'red',
-          mCirclefontSize:rem(15),
-          mCirclefontColor:'',
-          mCircleFillColor:"#F5F5F5"
+        hInterval: rem(20), // 上下间隔
+        width: rem(200),
+        height: rem(70),
+        verH: rem(80), //套装盒高度
+        groupWidth: rem(200 * 3 + 260 * 2), //包装盒宽
+        fontSize: rem(18),
+        xInterval: rem(260),
+        lineColor: "#cacaca",
+        lineHoverColor: "red",
+        mCirclefontSize: rem(15),
+        mCirclefontColor: "",
+        mCircleFillColor: "#F5F5F5"
       };
     },
     getData() {
-      this.$http.get('/api/suit/findAllSuitInfo',(res)=>{
-        
-         if(res.status===200){
-           if(res.data.code===200){
-                this.list = res.data.data.suits;
-                this.init(res.data.data.suits);
-           }else{
-
-           }
-         }else{
-             console.log(res)
-         }
-      })
+      var aa = this.$http.get("/api/suit/findAllSuitInfo", res => {
+        if (res.status === 200) {
+          if (res.data.code === 200) {
+            this.list = res.data.data.suits;
+            this.init(res.data.data.suits);
+          } else {
+          }
+        } else {
+          console.log(res);
+        }
+      });
     },
     init(data) {
       // this.titleGroup();
@@ -364,10 +365,10 @@ export default {
             fill: tlData[0].bgColor,
             text: textFormat(data[0].projectName, 18, 38),
             textFill: tlData[0].color,
-            fontSize: DEFAULT.fontSize,
+            fontSize: DEFAULT.fontSize
             // textLineHeight:DEFAULT.fontSize
           },
-          projectId:data[0].projectId
+          projectId: data[0].projectId
         });
         let lineEl = line({
           shape: {
@@ -378,7 +379,7 @@ export default {
           },
           style: {
             fill: DEFAULT.lineColor,
-            stroke:DEFAULT.lineColor
+            stroke: DEFAULT.lineColor
           }
         });
         g.add(rectEl);
@@ -403,10 +404,10 @@ export default {
               fill: tlData[0].bgColor,
               text: textFormat(t.projectName, 18, 38),
               textFill: tlData[0].color,
-              fontSize: DEFAULT.fontSize,
+              fontSize: DEFAULT.fontSize
               // textLineHeight:30
             },
-            projectId:t.projectId
+            projectId: t.projectId
           });
           let lineEl = line({
             shape: {
@@ -417,7 +418,7 @@ export default {
             },
             style: {
               fill: DEFAULT.lineColor,
-              stroke:DEFAULT.lineColor
+              stroke: DEFAULT.lineColor
             }
           });
           g.add(rectEl);
@@ -465,7 +466,7 @@ export default {
             textFill: tlData[2].color,
             fontSize: DEFAULT.fontSize
           },
-          productId:data[0].productId
+          productId: data[0].productId
         });
         let lineEl = line({
           shape: {
@@ -476,7 +477,7 @@ export default {
           },
           style: {
             fill: DEFAULT.lineColor,
-            stroke:DEFAULT.lineColor
+            stroke: DEFAULT.lineColor
           }
         });
         g.add(rectEl);
@@ -497,7 +498,7 @@ export default {
               textFill: tlData[2].color,
               fontSize: DEFAULT.fontSize
             },
-            productId:t.productId
+            productId: t.productId
           });
           let lineEl = line({
             shape: {
@@ -508,7 +509,7 @@ export default {
             },
             style: {
               fill: DEFAULT.lineColor,
-              stroke:DEFAULT.lineColor
+              stroke: DEFAULT.lineColor
             }
           });
           g.add(rectEl);
@@ -540,7 +541,9 @@ export default {
         },
         style: {
           fill: tlData[1].bgColor,
-          text: `${textFormat(data.suitName, 12, 24)}${data.suitDate? '\n'+data.suitDate:''}`,
+          text: `${textFormat(data.suitName, 12, 24)}${
+            data.suitDate ? "\n" + data.suitDate : ""
+          }`,
           textFill: tlData[1].color,
           fontSize: DEFAULT.fontSize
         },
@@ -555,7 +558,7 @@ export default {
         style: {
           fill: DEFAULT.mCircleFillColor,
           text: "项目",
-          fontSize:DEFAULT.mCirclefontSize
+          fontSize: DEFAULT.mCirclefontSize
         },
         name: "PL"
       });
@@ -577,44 +580,61 @@ export default {
       group.add(circleElR);
       return group;
     },
+    /**
+     * 每组元素的占用的高度
+     * 左右间隔
+     * return {
+     * h ：元素盒的高度
+     * L:左边间隔
+     * R:右边间隔
+     * }
+     */
+    getBaseposition(data) {
+      let project = data.projectList;
+      let product = data.productList;
+      let lenPjt = project ? project.length : 0; // 左边
+      let lenPdt = product ? product.length : 0; // 右边
+      let base = {};
+      //左右元素都小于2时 以中间的元素高度为盒子高度
+      if (lenPjt < 2 && lenPdt < 2) {
+        base.H = DEFAULT.verH; // 包围盒高度
+        base.L = 0; // 左元素 高间距
+        base.R = 0; // 右元素 高间距
+      } else {
+        //
+        if (lenPjt === lenPdt) {
+          base.H = DEFAULT.height * lenPjt + (lenPjt - 1) * DEFAULT.hInterval;
+          base.L = base.R = DEFAULT.hInterval;
+        } else if (lenPjt > lenPdt) {
+          base.H = DEFAULT.height * lenPjt + (lenPjt - 1) * DEFAULT.hInterval;
+          base.L = DEFAULT.hInterval;
+          if (lenPdt < 2) {
+            base.R = 0; //没有元素
+          } else {
+            base.R = (base.H - DEFAULT.height * lenPdt) / (lenPdt - 1);
+          }
+        } else if (lenPjt < lenPdt) {
+          base.H = DEFAULT.height * lenPdt + (lenPdt - 1) * DEFAULT.hInterval;
+          base.R = DEFAULT.hInterval;
+          if (lenPjt < 2) {
+            base.L = 0; //没有元素
+          } else {
+            base.L = (base.H - DEFAULT.height * lenPjt) / (lenPjt - 1);
+          }
+        }
+      }
+      return base;
+    },
     //包围盒定位
     groupPosition(data) {
       let that = this;
       // 组得初始高度
-      let groupArr = [];
+      // let groupArr = [];
       let groupH = this.groupH;
       data.forEach((t, i) => {
-        let base = {};
         let project = t.projectList;
         let product = t.productList;
-        let lenPjt = project.length; // 左边
-        let lenPdt = product.length; // 右边
-        if (lenPjt < 2 && lenPdt < 2) {
-          base.H = DEFAULT.verH; // 包围盒高度
-          base.L = 0; // 左元素 高间距
-          base.R = 0; // 右元素 高间距
-        } else {
-          if (lenPjt === lenPdt) {
-            base.H = DEFAULT.height * lenPjt + (lenPjt - 1) * DEFAULT.hInterval;
-            base.L = base.R = DEFAULT.hInterval;
-          } else if (lenPjt > lenPdt) {
-            base.H = DEFAULT.height * lenPjt + (lenPjt - 1) * DEFAULT.hInterval;
-            base.L = DEFAULT.hInterval;
-            if (lenPdt < 2) {
-              base.R = 0; //没有元素
-            } else {
-              base.R = (base.H - DEFAULT.height * lenPdt) / (lenPdt - 1);
-            }
-          } else if (lenPjt < lenPdt) {
-            base.H = DEFAULT.height * lenPdt + (lenPdt - 1) * DEFAULT.hInterval;
-            base.R = DEFAULT.hInterval;
-            if (lenPjt < 2) {
-              base.L = 0; //没有元素
-            } else {
-              base.L = (base.H - DEFAULT.height * lenPjt) / (lenPjt - 1);
-            }
-          }
-        }
+        let base = this.getBaseposition(t);
         let group = new zrender.Group();
         group.attr({
           shape: {
@@ -633,195 +653,218 @@ export default {
         // 遍历 各子节点元素 做业务处理
         groupM.eachChild((k, i) => {
           let flag = true;
-          k.on("click", function(e) {
+          k.on("click", e =>{
             if (k.name == "PL") {
-              flag ? groupL.hide() : groupL.show();
-              flag = !flag;
+              if(groupL){
+                   flag ? groupL.hide() : groupL.show();
+                   flag = !flag;
+              }
+              this.showProject=false
             } else if (k.name == "PR") {
-              flag ? groupR.hide() : groupR.show();
-              flag = !flag;
+              if(groupR){
+                flag ? groupR.hide() : groupR.show();
+                flag = !flag;
+                this.showProduct=false
+              }
+
             } else if (k.name == "PM") {
-                // console.log(e)
-                let position=[e.target.shape.rx,e.target.shape.ry]
-                // 鼠标相对文档偏移
-                let offset=[e.target.transform[4],e.target.transform[5]]
-                //元素相对文档偏移
-                let p =[offset[0],offset[1]]
-                let poffset =   [`${parseInt(p[0] + DEFAULT.width)}px`,`${parseInt(p[1]+DEFAULT.verH /2)}px`]
-                if(!t.suitDescription){
-                  return
+              let position=[e.target.shape.rx,e.target.shape.ry]
+              // 鼠标相对文档偏移
+              let offset = [e.target.transform[4], e.target.transform[5]];
+              //元素相对文档偏移
+              let p = [offset[0], offset[1]];
+              let poffset = [
+                `${parseInt(p[0] + DEFAULT.width)}px`,
+                `${parseInt(p[1] + DEFAULT.verH / 2)}px`
+              ];
+              if (!t.suitDescription) {
+                return;
+              }
+              if (that.showSp) {
+                if (that.offsetSp[1] === poffset[1]) {
+                  that.showSp = false;
+                } else {
+                  that.deilSp.suitDescription = t.suitDescription;
+                  that.offsetSp = poffset;
                 }
-                if(that.showSp){
-                  if(that.offsetSp[1] === poffset[1]){
-                    that.showSp= false
-                  }else{
-                    that.deilSp.suitDescription=t.suitDescription
-                    that.offsetSp = poffset
-                  }
-                }else{
-                    that.deilSp.suitDescription=t.suitDescription
-                    that.showSp=true
-                    that.offsetSp = poffset
-                }
+              } else {
+                that.deilSp.suitDescription = t.suitDescription;
+                that.showSp = true;
+                that.offsetSp = poffset;
+              }
             }
           });
         });
-        let addHoverL = (el, styOpt,data) => {
-           let rectOpt={
-             style:{
-               stroke: styOpt.style.stroke
-             }
-           }
+        // 鼠标 添加 hover 事件
+        let addHover = (el, styOpt, type, data) => {
+          let rectOpt = {
+            style: {
+              stroke: styOpt.style.stroke
+            }
+          };
+          let fn = null,
+            ID;
+          if (type === "L") {
+            fn = groupR;
+            ID = "productId";
+          } else {
+            fn = groupL;
+            ID = "projectId";
+          }
           el.childAt(0).attr(rectOpt);
           el.childAt(1).attr(styOpt);
           groupM.childAt(0).attr(rectOpt);
-          if(data){
-            data.forEach(t=>{
-              groupR.eachChild(k => {
-                if(t.productId== k.childAt(0).productId){
-                    k.childAt(0).attr(rectOpt);
-                    k.childAt(1).attr(styOpt);
-                }
-              });
-            })
-          }else{
-            groupR.eachChild(k => {
+          if (data) {
+            data.forEach(t => {
+              fn.eachChild(k => {
+                if (t[ID] == k.childAt(0)[ID]) {
                   k.childAt(0).attr(rectOpt);
                   k.childAt(1).attr(styOpt);
-
-            });
-          }
-
-        };
-        groupL.eachChild((k,i) => {
-          let hoverL =false
-          k.childAt(0)
-            .on("mouseover", (e) => {
-              hoverL = true
-              that.getproRelation('L',e.target.projectId,(res)=>{
-                 if(res.code==200){
-                     if(hoverL){
-                        addHoverL(k, { style: { stroke: DEFAULT.lineHoverColor } },res.data)
-                     }
-
-                 }
-              })
-
-            })
-            .on("mouseout", (e) => {
-              hoverL =false
-              addHoverL(k, { style: { stroke: DEFAULT.lineColor,fill: DEFAULT.lineColor} });
-            })
-            .on("click", e => {
-                let position=[e.target.shape.x,e.target.shape.y]
-                // 鼠标相对文档偏移
-                let offset=[e.target.transform[4],e.target.transform[5]]
-                //元素相对文档偏移
-                let p =[position[0]+offset[0],position[1]+offset[1]]
-                let poffset =   [`${parseInt(p[0] + DEFAULT.width)}px`,`${parseInt(p[1]+DEFAULT.height / 2)}px`]
-                if(that.showProject){
-                  if(that.offsetProject[1] === poffset[1]){
-                    that.showProject= false
-                  }else{
-                    that.deilProject=project[i]
-                    that.offsetProject = poffset
-                  }
-                }else{
-                    that.deilProject=project[i]
-                    that.showProject=true
-                    that.offsetProject = poffset
-                }
-                 console.log(that.deilProject)
-
-            })
-        });
-        let addHoverR = (el, styOpt,data) => {
-           let rectOpt={
-             style:{
-               stroke: styOpt.style.stroke
-             }
-           }
-          el.childAt(0).attr(rectOpt);
-          el.childAt(1).attr(styOpt);
-          groupM.childAt(0).attr(rectOpt);
-          if(data){
-            data.forEach(t=>{
-              groupL.eachChild(k => {
-                if(t.projectId== k.childAt(0).projectId){
-                    k.childAt(0).attr(rectOpt);
-                    k.childAt(1).attr(styOpt);
                 }
               });
-            })
-          }else{
-            groupL.eachChild(k => {
-                  k.childAt(0).attr(rectOpt);
-                  k.childAt(1).attr(styOpt);
-
+            });
+          } else {
+            fn.eachChild(k => {
+              k.childAt(0).attr(rectOpt);
+              k.childAt(1).attr(styOpt);
             });
           }
-          // groupL.eachChild(k => {
-          //   k.childAt(0).attr(rectOpt);
-          //   k.childAt(1).attr(styOpt);
-          // });
         };
-        groupR.eachChild((k,i) => {
-           let hoverR =false
-          k.childAt(0)
-            .on("mouseover", (e) => {
-              hoverR=true
-              // that.$slloading.show()
-              that.getproRelation('R',e.target.productId,(res)=>{
-                 if(res.code==200){
-                     if(hoverR){
-                        // that.$slloading.hide()
-                        addHoverR(k, { style: { stroke: DEFAULT.lineHoverColor } },res.data);
-                     }
-
-                 }
-              })
-            })
-            .on("mouseout", () => {
-              hoverR=false
-              // that.$slloading.hide()
-              addHoverR(k, { style: { stroke: DEFAULT.lineColor,fill: DEFAULT.lineColor } });
-            })
-            .on("click", e => {
-                let position=[e.target.shape.x,e.target.shape.y]
-                // 鼠标相对文档偏移
-                let offset=[e.target.transform[4],e.target.transform[5]]
-                //元素相对文档偏移
-                let p =[position[0]+offset[0],position[1]+offset[1]]
-                let poffset =   [`${parseInt(p[0] + DEFAULT.width)}px`,`${parseInt(p[1]+DEFAULT.height / 2)}px`]
-                if(!product[i].remark||product[i].remark.length===0){
-                  return
-                }
-                if(that.showProduct){
-                  if(that.offsetProduct[1] === poffset[1]){
-                    that.showProduct= false
-                  }else{
-                    that.deilProduct=product[i].remark
-                    that.offsetProduct = poffset
+        if (groupL) {
+          groupL.eachChild((k, i) => {
+            let hoverL = false;
+            k.childAt(0)
+              .on("mouseover", e => {
+                hoverL = true;
+                this.getproRelation("L", e.target.projectId, res => {
+                  if (res.code == 200) {
+                    if (hoverL) {
+                      addHover(
+                        k,
+                        { style: { stroke: DEFAULT.lineHoverColor } },
+                        "L",
+                        res.data
+                      );
+                    }
                   }
-                }else{
-                    that.deilProduct=product[i].remark
-                    that.showProduct=true
-                    that.offsetProduct = poffset
+                });
+              })
+              .on("mouseout", e => {
+                hoverL = false;
+                addHover(
+                  k,
+                  {
+                    style: {
+                      stroke: DEFAULT.lineColor,
+                      fill: DEFAULT.lineColor
+                    }
+                  },
+                  "L"
+                );
+              })
+              .on("click", e => {
+                let position = [e.target.shape.x, e.target.shape.y];
+                // 鼠标相对文档偏移
+                let offset = [e.target.transform[4], e.target.transform[5]];
+                //元素相对文档偏移
+                let p = [position[0] + offset[0], position[1] + offset[1]];
+                let poffset = [
+                  `${parseInt(p[0] + DEFAULT.width)}px`,
+                  `${parseInt(p[1] + DEFAULT.height / 2)}px`
+                ];
+                if (this.showProject) {
+                  if (this.offsetProject[1] === poffset[1]) {
+                    this.showProject = false;
+                  } else {
+                    this.deilProject = project[i];
+                    this.offsetProject = poffset;
+                  }
+                } else {
+                  this.deilProject = project[i];
+                  this.showProject = true;
+                  this.offsetProject = poffset;
                 }
-                // console.log(that.deilProduct)
-            });
-        });
-        group.add(groupL);
-        group.add(groupR);
+              });
+          });
+           group.add(groupL);
+        }
+        if (groupR) {
+          groupR.eachChild((k, i) => {
+            let hoverR = false;
+            k.childAt(0)
+              .on("mouseover", e => {
+                hoverR = true;
+                // that.$slloading.show()
+                this.getproRelation("R", e.target.productId, res => {
+                  if (res.code == 200) {
+                    if (hoverR) {
+                      hoverR = false;
+                      // that.$slloading.hide()
+                      addHover(
+                        k,
+                        { style: { stroke: DEFAULT.lineHoverColor } },
+                        "R",
+                        res.data
+                      );
+                    }
+                  }
+                });
+              })
+              .on("mouseout", () => {
+                hoverR = false;
+                // that.$slloading.hide()
+                addHover(
+                  k,
+                  {
+                    style: {
+                      stroke: DEFAULT.lineColor,
+                      fill: DEFAULT.lineColor
+                    }
+                  },
+                  "R"
+                );
+              })
+              .on("click", e => {
+                let position = [e.target.shape.x, e.target.shape.y];
+                // 鼠标相对文档偏移
+                let offset = [e.target.transform[4], e.target.transform[5]];
+                //元素相对文档偏移
+                let p = [position[0] + offset[0], position[1] + offset[1]];
+                let poffset = [
+                  `${parseInt(p[0] + DEFAULT.width)}px`,
+                  `${parseInt(p[1] + DEFAULT.height / 2)}px`
+                ];
+                if (!product[i].remark || product[i].remark.length === 0) {
+                  return;
+                }
+                if (this.showProduct) {
+                  if (this.offsetProduct[1] === poffset[1]) {
+                    this.showProduct = false;
+                  } else {
+                    this.deilProduct = product[i].remark;
+                    this.offsetProduct = poffset;
+                  }
+                } else {
+                  this.deilProduct = product[i].remark;
+                  this.showProduct = true;
+                  this.offsetProduct = poffset;
+                }
+              });
+          });
+          group.add(groupR);
+        }
         group.add(groupM);
-        groupArr.push(group);
-        that.zr.add(group);
+        // 保存下次渲染的初始高度
+        this.groupH = groupH;
+        // groupArr.push(group);
+        this.zr.add(group);
         this.zr.resize({
-          height:groupH
-        })
+          height: groupH
+        });
+        // this.zr.refreshImmediately()
       });
 
-      this.groupArr = groupArr;
+      // this.groupArr = groupArr;
     },
     //文字 +圆弧
     createText(opt) {
@@ -833,20 +876,20 @@ export default {
       // 创建 文字
       let h = DEFAULT.height;
       let textStyle = {
-        shape:{
-          width:(DEFAULT.width * 2) / 3,
-          height:h / 3,
-          r:rem(3)
+        shape: {
+          width: (DEFAULT.width * 2) / 3,
+          height: h / 3,
+          r: rem(3)
         },
-        style:{
+        style: {
           textAlign: "left",
           text: "aaaa",
           textVerticalAlign: "middle",
           fontSize: rem(15),
-          fill:'#fff',
+          fill: "#fff",
           // stroke:'gold',
-          textPosition:'left',
-          textDistance:-5
+          textPosition: "left",
+          textDistance: -5
         }
       };
       let option = [
@@ -864,20 +907,20 @@ export default {
         }
       ];
       let textGroup = new zrender.Group();
-     option.forEach((t,i)=>{
-       let textRect
-       if(i ==1){
-         let color
-          textRect =rect({
-                shape:{
-                  ...textStyle.shape
-                },
-                style:{
-                  ...textStyle.style,
-                  text:t.text
-                },
-                position:t.position
-              })
+      option.forEach((t, i) => {
+        let textRect;
+        if (i == 1) {
+          let color;
+          textRect = rect({
+            shape: {
+              ...textStyle.shape
+            },
+            style: {
+              ...textStyle.style,
+              text: t.text
+            },
+            position: t.position
+          });
           textRect
             .on("mouseover", function(e) {
               color = e.target.style.stroke;
@@ -893,22 +936,21 @@ export default {
                   stroke: color
                 }
               });
-            })
-
-       }else{
-        textRect =rect({
-                shape:{
-                  ...textStyle.shape
-                },
-                style:{
-                  ...textStyle.style,
-                  text:t.text
-                },
-                position:t.position
-              })
-       }
-       textGroup.add(textRect)
-     })
+            });
+        } else {
+          textRect = rect({
+            shape: {
+              ...textStyle.shape
+            },
+            style: {
+              ...textStyle.style,
+              text: t.text
+            },
+            position: t.position
+          });
+        }
+        textGroup.add(textRect);
+      });
       // let prodjBox=this.createDragBox()
       // prodjBox.attr({zlevel:1})
       // prodjBox.position=[0,DEFAULT.height*2/3+5]
@@ -994,29 +1036,33 @@ export default {
       return group;
     },
     //项目优先级盒子
-    createDragBox(opt){
-      opt= [{
-        type:'高'
-      },{
-        type:'中'
-      },{
-        type:'低'
-      }]
-
-      let group =new zrender.Group()
-      let boxRect =rect({
-        shape:{
-          width:DEFAULT.width*2/3,
-          height:DEFAULT.height ,
-          x:0,
-          y:0
+    createDragBox(opt) {
+      opt = [
+        {
+          type: "高"
         },
-        style:{
-          fill:'#fff',
-          stroke:'red'
+        {
+          type: "中"
+        },
+        {
+          type: "低"
         }
-      })
-      group.add(boxRect)
+      ];
+
+      let group = new zrender.Group();
+      let boxRect = rect({
+        shape: {
+          width: (DEFAULT.width * 2) / 3,
+          height: DEFAULT.height,
+          x: 0,
+          y: 0
+        },
+        style: {
+          fill: "#fff",
+          stroke: "red"
+        }
+      });
+      group.add(boxRect);
       // opt.forEach((t,i)=>{
       //   let box=rect({
       //     shape:{
@@ -1028,46 +1074,56 @@ export default {
       //   })
       // })
 
-      return group
+      return group;
     },
     // 详情弹框
     dragTextBox(opt) {
+      let deOpt = {
+        style: {
+          stroke: "red",
+          text: "loading...",
+          opacity: 0.7
+        },
+        shape: {
+          width: rem(100),
+          height: rem(50),
+          r: 10
+        },
+        z: 0,
+        position: [0, 0]
+      };
+      deOpt = Object.assign({}, deOpt, opt);
       if (this.dragBox) {
         return this.dragBox;
       } else {
-        this.dragBox = rect({
-          shape: {
-            width: 200,
-            height: 200,
-            r: 10
-          },
-          style: {
-            stroke: "red",
-            text: "hahahah",
-            // fill: "#fff",
-            opacity: 0.7
-          },
-          z: 0,
-          position: [0, 0]
-        });
+        this.dragBox = rect(deOpt);
         this.dragBox.hide();
         this.zr.add(this.dragBox);
         return this.dragBox;
       }
     },
-    getproRelation(type,id,callback){
-      let url = type ==='L' ? '/api/suit/findProductListByProjectId':'/api/suit/findProjectListByProductId'
-      this.$http.get(url,{
-        issueId:id
-      },(res)=>{
-         if(res.status===200){
-           if(callback){
-                  callback(res.data)
-           }
-         }else{
-             console.log(res)
-         }
-      })
+    loadingBox(value) {},
+    getproRelation(type, id, callback) {
+      let url =
+        type === "L"
+          ? "/api/suit/findProductListByProjectId"
+          : "/api/suit/findProjectListByProductId";
+
+      this.$http.get(
+        url,
+        {
+          issueId: id
+        },
+        res => {
+          if (res.status === 200) {
+            if (callback) {
+              callback(res.data);
+            }
+          } else {
+            console.log(res);
+          }
+        }
+      );
     }
   }
 };
@@ -1075,8 +1131,8 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.dialogStyle{
-  background:rgba(74, 163, 222, 1);
+.dialogStyle {
+  background: rgba(74, 163, 222, 1);
   line-height: 0.3rem;
   padding: 0.2rem;
   font-family: 微软雅黑;
@@ -1098,36 +1154,30 @@ export default {
     line-height: 0.5rem;
     margin-top:0.1rem;
     height: auto;
-    width: 6rem;
+    width: 9rem;
 }
 .addvepal-layer ul li label{
     float: left;
     width:1.2rem;
     text-align: right;
 }
-.addvepal-layer ul li input{
-    height: 0.3rem;
-    line-height: 0.3rem;
-    width:4rem;
-    padding:0 0.1rem;
-    border:1px solid #ccc;
-}
 .elinput{
-    width:4.2rem;
+    width:7rem;
 }
  .addvepal-layer ul li textarea{
     height: 0.8rem;
-    width:4rem;
+    width:6.8rem;
     resize: none;
     padding:0.1rem;
     border:1px solid #dcdfe6;
  }
  .producttree{
-     width:4.2rem;
-     height: 2rem;
+     width:7.2rem;
+     height: 4rem;
      border:1px solid #dcdfe6;
      float: left;
      overflow-y:auto;
+     overflow-x: hidden;
  }
  .addbtn{
      background: rgba(74, 163, 222, 1);
@@ -1140,7 +1190,13 @@ export default {
      margin-left:2.5rem;
  }
  .suitDate{
-     width:4.2rem;
+     width:7rem;
+ }
+ .elbutton{
+   background: #409EFF;
+   color:#fff;
+   padding:0.1rem;
+   margin:0.1rem;
  }
  /***addvepal end***/
 </style>
