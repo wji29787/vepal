@@ -4,11 +4,19 @@
         <ul>
             <li>
                 <label>SP名称：</label>
-                <input type="text" v-model="suitName" />
+                <el-input v-model="suitName" class="elinput" placeholder="请输入内容"></el-input>
             </li>
              <li>
                 <label>时间：</label>
-                <input type="text"  v-model="suitDate"/>
+                <div class="block">
+                    <el-date-picker
+                    v-model="suitDate"
+                    type="date"
+                    placeholder="选择日期"
+                    class="suitDate"
+                    >
+                    </el-date-picker>
+                </div>
             </li>
              <li>
                 <label>详细信息：</label>
@@ -78,20 +86,21 @@ import 'ztree/js/jquery.ztree.excheck.js'
                 var _this=this;
 
                 //获取ztree被选中节点的值
-                // var treeObj=$.fn.zTree.getZTreeObj("treeDemo"),
-                // nodes=treeObj.getCheckedNodes(true),
-                // sueIdstr="";
-                // for(var i=0;i<nodes.length;i++){
-                //     sueIdstr+=nodes[i].id + ",";
-                // }
-                // _this.issueId=sueIdstr;
-
+                var treeObj=$.fn.zTree.getZTreeObj("ztreedemo"),
+                nodes=treeObj.getCheckedNodes(true),
+                sueIdstr="";
+                for(var i=0;i<nodes.length;i++){
+                    sueIdstr+=nodes[i].id + ",";
+                }
+                if(sueIdstr.length>0){
+                    _this.issueId=sueIdstr.substring(0,sueIdstr.length-1);
+                }
                 //请求保存接口
                 this.$http.get('http://192.168.95.74:8085/suit/addSuit',{
                         suitName:_this.suitName,
                         suitDate:_this.suitDate,
                         suitDescription:_this.suitDescription, 
-                        issueId:2
+                        issueId:_this.issueId
                     },(res)=>{
                         if(res.status===200){
                             if(callback){
@@ -144,17 +153,20 @@ import 'ztree/js/jquery.ztree.excheck.js'
     padding:0 0.1rem;
     border:1px solid #ccc;
 }
+.elinput{
+    width:4.2rem;
+}
  .addvepal-layer ul li textarea{
     height: 0.8rem;
     width:4rem;
     resize: none;
     padding:0.1rem;
-    border:1px solid #ccc;
+    border:1px solid #dcdfe6;
  }
  .producttree{
      width:4.2rem;
      height: 2rem;
-     background: #f5f5f5;
+     border:1px solid #dcdfe6;
      float: left;
      overflow-y:auto;
  }
@@ -167,5 +179,8 @@ import 'ztree/js/jquery.ztree.excheck.js'
      display: block;
      color:#fff;
      margin-left:2.5rem;
+ }
+ .suitDate{
+     width:4.2rem;
  }
 </style>

@@ -1,5 +1,45 @@
 <template>
   <div>
+    <el-button type="text"  @click="getzt">新增套装</el-button>
+<el-dialog 
+  title="添加套装"
+  :visible="dialogVisible" width="35%">
+      <div class="addvepal-layer">
+        <ul>
+            <li>
+                <label>SP名称：</label>
+                <el-input v-model="suitName" class="elinput" placeholder="请输入内容"></el-input>
+            </li>
+             <li>
+                <label>时间：</label>
+                <div class="block">
+                    <el-date-picker
+                    v-model="suitDate"
+                    type="date"
+                    placeholder="选择日期"
+                    class="suitDate"
+                    >
+                    </el-date-picker>
+                </div>
+            </li>
+             <li>
+                <label>详细信息：</label>
+                <textarea v-model="suitDescription"></textarea>
+            </li>
+            <li class="clearfix">
+                <label>产品：</label>
+                <div  class="producttree">
+                    <ul class="ztree" id="ztreedemo"></ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="save()">确 定</el-button>
+  </span>
+</el-dialog>
+
     <div id="container">
     </div>
     <sl-dialog :value="showProject" :offset="offsetProject" :position="'absolute'" class="">
@@ -11,8 +51,8 @@
     <sl-dialog :value="showProduct" :offset="offsetProduct" :position="'absolute'">
        <!-- {{deilProduct[0][actionbody]}} -->
        <div  class="dialogStyle">
-          <div 
-             v-for = "(item, index) in deilProduct" 
+          <div
+             v-for = "(item, index) in deilProduct"
              :key = "item.actionbody"
           >
             <p>{{item.actionbody}}</p>
@@ -20,10 +60,14 @@
        </div>
     </sl-dialog>
   </div>
-  
+
 </template>
 
 <script>
+import 'ztree'
+import 'ztree/css/zTreeStyle/zTreeStyle.css'
+import 'ztree/js/jquery.ztree.core.js'
+import 'ztree/js/jquery.ztree.excheck.js'
 import zrender from "zrender";
 import {
   rect,
@@ -91,6 +135,37 @@ export default {
       showSp:false,
       offsetSp:[0,0],
       deilSp:{suitDescription:''},
+      dialogVisible: false,
+      nodeData:[
+          { id:1, pId:0, name:"Pamir", open:true},
+          { id:11, pId:1, name:"5.5.5", open:true},
+          { id:111, pId:11, name:"TOP录播支持"},
+          { id:12, pId:1, name:"5.6.x", open:true},
+          { id:121, pId:12, name:"TOP音频录制"},
+          { id:2, pId:0, name:"Gis天眼", open:true},
+          { id:22, pId:2, name:"1.15.0", open:true},
+          { id:221, pId:22, name:"TOP会议支持", open:true},
+          { id:3, pId:0, name:"启明2视联终端", checked:true, open:true},
+          { id:2, pId:0, name:"PamirMobile"},
+      ],
+      setting:{
+          view:{
+              showIcon:false
+          },
+          check: {
+              enable: true,
+              chkboxType:{"Y":"ps","N":"ps"}
+          },
+          data: {
+              simpleData: {
+                  enable: true
+              }
+          }
+      },
+      suitName:'', //SP名称
+      suitDate:'', //时间
+      suitDescription:'', //详细信息
+      issueId:''  //产品
     };
   },
   created() {
@@ -114,6 +189,59 @@ export default {
     });
   },
   methods: {
+    getzt(){
+        this.dialogVisible=true;
+        setTimeout(()=>{
+           this.$http.get('/dev/product/findAllProduct',(res)=>{
+             console.log(res);
+                    if(res.status===200){
+                        if(callback){
+                            callback(res.data)
+                            var nodeList=[];
+                          // { id:1, pId:0, name:"Pamir", open:true},
+                          // { id:11, pId:1, name:"5.5.5", open:true},
+                            for(var i=0;i<res.data.length;i++){
+                               
+                            }
+                        }
+                    }else{
+                        console.log(res) 
+                    }
+            })
+           $.fn.zTree.init($("#ztreedemo"),this.setting,this.nodeData);
+        },100)
+    },
+    save(){
+      var _this=this;
+      //获取ztree被选中节点的值
+      var treeObj=$.fn.zTree.getZTreeObj("ztreedemo"),
+      nodes=treeObj.getCheckedNodes(true),
+      sueIdstr="";
+      for(var i=0;i<nodes.length;i++){
+          sueIdstr+=nodes[i].id + ",";
+      }
+      if(sueIdstr.length>0){
+          _this.issueId=sueIdstr.substring(0,sueIdstr.length-1);
+      }
+      return;
+      //请求保存接口
+      this.$http.get('/dev/suit/addSuit',{
+              suitName:_this.suitName,
+              suitDate:_this.suitDate,
+              suitDescription:_this.suitDescription, 
+              issueId:_this.issueId
+          },(res)=>{
+              if(res.status===200){
+                  if(callback){
+                      callback(res.data)
+                      alert("保存成功");
+                  }
+              }else{
+                  console.log(res) 
+              }
+      })
+      dialogVisible = false;
+  },
     render() {
       let container = document.getElementById("container");
       this.zr = zrender.init(container);
@@ -145,6 +273,7 @@ export default {
     },
     getData() {
       this.$http.get('/api/suit/findAllSuitInfo',(res)=>{
+        
          if(res.status===200){
            if(res.data.code===200){
                 this.list = res.data.data.suits;
@@ -153,7 +282,7 @@ export default {
 
            }
          }else{
-             console.log(res) 
+             console.log(res)
          }
       })
     },
@@ -511,14 +640,14 @@ export default {
             } else if (k.name == "PR") {
               flag ? groupR.hide() : groupR.show();
               flag = !flag;
-            } else if (k.name == "PM") {    
+            } else if (k.name == "PM") {
                 // console.log(e)
                 let position=[e.target.shape.rx,e.target.shape.ry]
                 // 鼠标相对文档偏移
                 let offset=[e.target.transform[4],e.target.transform[5]]
                 //元素相对文档偏移
-                let p =[offset[0],offset[1]] 
-                let poffset =   [`${parseInt(p[0] + DEFAULT.width)}px`,`${parseInt(p[1]+DEFAULT.verH /2)}px`]  
+                let p =[offset[0],offset[1]]
+                let poffset =   [`${parseInt(p[0] + DEFAULT.width)}px`,`${parseInt(p[1]+DEFAULT.verH /2)}px`]
                 if(!t.suitDescription){
                   return
                 }
@@ -531,7 +660,7 @@ export default {
                   }
                 }else{
                     that.deilSp.suitDescription=t.suitDescription
-                    that.showSp=true 
+                    that.showSp=true
                     that.offsetSp = poffset
                 }
             }
@@ -552,32 +681,32 @@ export default {
                 if(t.productId== k.childAt(0).productId){
                     k.childAt(0).attr(rectOpt);
                     k.childAt(1).attr(styOpt);
-                }          
+                }
               });
             })
           }else{
             groupR.eachChild(k => {
                   k.childAt(0).attr(rectOpt);
                   k.childAt(1).attr(styOpt);
-                        
+
             });
           }
-          
+
         };
         groupL.eachChild((k,i) => {
           let hoverL =false
           k.childAt(0)
             .on("mouseover", (e) => {
-              hoverL = true 
+              hoverL = true
               that.getproRelation('L',e.target.projectId,(res)=>{
                  if(res.code==200){
                      if(hoverL){
                         addHoverL(k, { style: { stroke: DEFAULT.lineHoverColor } },res.data)
                      }
-                      
+
                  }
               })
-              
+
             })
             .on("mouseout", (e) => {
               hoverL =false
@@ -588,8 +717,8 @@ export default {
                 // 鼠标相对文档偏移
                 let offset=[e.target.transform[4],e.target.transform[5]]
                 //元素相对文档偏移
-                let p =[position[0]+offset[0],position[1]+offset[1]] 
-                let poffset =   [`${parseInt(p[0] + DEFAULT.width)}px`,`${parseInt(p[1]+DEFAULT.height / 2)}px`]  
+                let p =[position[0]+offset[0],position[1]+offset[1]]
+                let poffset =   [`${parseInt(p[0] + DEFAULT.width)}px`,`${parseInt(p[1]+DEFAULT.height / 2)}px`]
                 if(that.showProject){
                   if(that.offsetProject[1] === poffset[1]){
                     that.showProject= false
@@ -599,11 +728,11 @@ export default {
                   }
                 }else{
                     that.deilProject=project[i]
-                    that.showProject=true 
+                    that.showProject=true
                     that.offsetProject = poffset
                 }
-                 console.log(that.deilProject) 
-                
+                 console.log(that.deilProject)
+
             })
         });
         let addHoverR = (el, styOpt,data) => {
@@ -621,14 +750,14 @@ export default {
                 if(t.projectId== k.childAt(0).projectId){
                     k.childAt(0).attr(rectOpt);
                     k.childAt(1).attr(styOpt);
-                }          
+                }
               });
             })
           }else{
             groupL.eachChild(k => {
                   k.childAt(0).attr(rectOpt);
                   k.childAt(1).attr(styOpt);
-                        
+
             });
           }
           // groupL.eachChild(k => {
@@ -648,7 +777,7 @@ export default {
                         // that.$slloading.hide()
                         addHoverR(k, { style: { stroke: DEFAULT.lineHoverColor } },res.data);
                      }
-                      
+
                  }
               })
             })
@@ -662,11 +791,11 @@ export default {
                 // 鼠标相对文档偏移
                 let offset=[e.target.transform[4],e.target.transform[5]]
                 //元素相对文档偏移
-                let p =[position[0]+offset[0],position[1]+offset[1]] 
-                let poffset =   [`${parseInt(p[0] + DEFAULT.width)}px`,`${parseInt(p[1]+DEFAULT.height / 2)}px`] 
+                let p =[position[0]+offset[0],position[1]+offset[1]]
+                let poffset =   [`${parseInt(p[0] + DEFAULT.width)}px`,`${parseInt(p[1]+DEFAULT.height / 2)}px`]
                 if(!product[i].remark||product[i].remark.length===0){
                   return
-                } 
+                }
                 if(that.showProduct){
                   if(that.offsetProduct[1] === poffset[1]){
                     that.showProduct= false
@@ -676,7 +805,7 @@ export default {
                   }
                 }else{
                     that.deilProduct=product[i].remark
-                    that.showProduct=true 
+                    that.showProduct=true
                     that.offsetProduct = poffset
                 }
                 // console.log(that.deilProduct)
@@ -691,7 +820,7 @@ export default {
           height:groupH
         })
       });
-     
+
       this.groupArr = groupArr;
     },
     //文字 +圆弧
@@ -765,7 +894,7 @@ export default {
                 }
               });
             })
-        
+
        }else{
         textRect =rect({
                 shape:{
@@ -777,7 +906,7 @@ export default {
                 },
                 position:t.position
               })
-       }  
+       }
        textGroup.add(textRect)
      })
       // let prodjBox=this.createDragBox()
@@ -873,7 +1002,7 @@ export default {
       },{
         type:'低'
       }]
-        
+
       let group =new zrender.Group()
       let boxRect =rect({
         shape:{
@@ -936,7 +1065,7 @@ export default {
                   callback(res.data)
            }
          }else{
-             console.log(res) 
+             console.log(res)
          }
       })
     }
@@ -958,4 +1087,60 @@ export default {
   height: 100%; */
   /* position: absolute */
 }
+
+/***addvepal csy add***/
+.addvepal-layer{
+    font-family:微软雅黑;
+    font-size: 0.16rem;
+}
+
+.addvepal-layer ul li{
+    line-height: 0.5rem;
+    margin-top:0.1rem;
+    height: auto;
+    width: 6rem;
+}
+.addvepal-layer ul li label{
+    float: left;
+    width:1.2rem;
+    text-align: right;
+}
+.addvepal-layer ul li input{
+    height: 0.3rem;
+    line-height: 0.3rem;
+    width:4rem;
+    padding:0 0.1rem;
+    border:1px solid #ccc;
+}
+.elinput{
+    width:4.2rem;
+}
+ .addvepal-layer ul li textarea{
+    height: 0.8rem;
+    width:4rem;
+    resize: none;
+    padding:0.1rem;
+    border:1px solid #dcdfe6;
+ }
+ .producttree{
+     width:4.2rem;
+     height: 2rem;
+     border:1px solid #dcdfe6;
+     float: left;
+     overflow-y:auto;
+ }
+ .addbtn{
+     background: rgba(74, 163, 222, 1);
+     width:1rem;
+     text-align: center;
+     height: 0.3rem;
+     line-height: 0.3rem;
+     display: block;
+     color:#fff;
+     margin-left:2.5rem;
+ }
+ .suitDate{
+     width:4.2rem;
+ }
+ /***addvepal end***/
 </style>
