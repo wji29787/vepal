@@ -1,47 +1,49 @@
 <template>
   <div>
     <el-button type="text" class="elbutton"  @click="getzt">新增套装</el-button>
-<el-dialog 
-  title="添加套装"
-  :visible="dialogVisible" width="50%">
-      <div class="addvepal-layer">
-        <ul>
-            <li>
-                <label>SP名称：</label>
-                <el-input v-model="suitName" class="elinput" placeholder="请输入内容"></el-input>
-            </li>
-             <li>
-                <label>时间：</label>
-                <div class="block">
-                    <el-date-picker
-                    v-model="suitDate"
-                    type="date"
-                    placeholder="选择日期"
-                    class="suitDate"
-                    >
-                    </el-date-picker>
-                </div>
-            </li>
-             <li>
-                <label>详细信息：</label>
-                <textarea v-model="suitDescription"></textarea>
-            </li>
-            <li class="clearfix">
-                <label>产品：</label>
-                <div  class="producttree">
-                    <ul class="ztree" id="ztreedemo"></ul>
-                </div>
-            </li>
-        </ul>
-    </div>
-  <span slot="footer" class="dialog-footer">
-    <el-button @click="dialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="save()">确 定</el-button>
-  </span>
-</el-dialog>
-
+    <el-dialog 
+      title="添加套装"
+      :visible="dialogVisible" width="50%">
+          <div class="addvepal-layer">
+            <ul>
+                <li>
+                    <label>SP名称：</label>
+                    <el-input v-model="suitName" class="elinput" placeholder="请输入内容"></el-input>
+                </li>
+                <li>
+                    <label>时间：</label>
+                    <div class="block">
+                        <el-date-picker
+                        v-model="suitDate"
+                        type="date"
+                        placeholder="选择日期"
+                        class="suitDate"
+                        >
+                        </el-date-picker>
+                    </div>
+                </li>
+                <li>
+                    <label>详细信息：</label>
+                    <textarea v-model="suitDescription"></textarea>
+                </li>
+                <li class="clearfix">
+                    <label>产品：</label>
+                    <div  class="producttree">
+                        <ul class="ztree" id="ztreedemo"></ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="save()">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- <el-scrollbar>
+      
+    </el-scrollbar> -->
     <div id="container">
-    </div>
+      </div>
     <sl-dialog :value="showProject" :offset="offsetProject" :position="'absolute'" class="">
        dfsdfsdfsf
     </sl-dialog>
@@ -1154,9 +1156,9 @@ export default {
   font-family: 微软雅黑;
   width: 4rem;
 }
-.dinner {
-  /* width: 100%;
-  height: 100%; */
+.container {
+  /* width: 100%; */
+  /* height: 100%; */
   /* position: absolute */
 }
 

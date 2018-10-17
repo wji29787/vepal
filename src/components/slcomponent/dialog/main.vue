@@ -1,6 +1,14 @@
 <template>
     <div> 
-        <transition name = "fade">
+        <transition name = "fade" 
+        @before-enter = "beforeEnter"
+        @enter = "enter"
+        @after-enter = "afterEnter"    
+        @enter-cancelled = "enterCancelled"
+        @before-leave = "beforeLeave"
+        @leave = "leave"
+        @after-leave = "afterLeave" 
+        @leave-cancelled = "leaveCancelled" >
             <div class="sl-dialog-container" v-show="insideValue" :style="style">
                 <slot></slot>
             </div>
@@ -61,7 +69,50 @@ export default {
       if (this.destroy) {
         this.destroy(this);
       }
-    }
+    },
+    beforeEnter(el){
+        // console.log(el)
+        // el.style.transition="top 2s"
+        // el.style.transition="top 0.3s ease"
+        // el.style.opacity=1
+    },
+    enter(el,done){
+        // el.style.top=`${this.offset[1]}px`
+        // el.style.transition="top 2s"
+        // el.style.opacity=1
+        // el.style.opacity=1
+        el.style.transition="top 0.3s ease,opacity 0.3s,height 0.3s"
+        // el.style.opacity=0
+        done()
+        
+        
+    },
+    afterEnter(el){
+        // el.style.transition="top 2s"
+        // el.style.opacity=0
+    },
+    enterCancelled(el){
+        // el.style.transition="top 2s"
+        // el.style.opacity=0
+    },
+    beforeLeave(el){
+        // el.style.transition="top 2s"
+        // el.style.opacity=0
+    },
+    leave(el,done){
+        // el.style.transition="top 2s"
+        // el.style.transition="opacity 0.3s"
+        // el.style.opacity=0
+        // done()
+    },
+    afterLeave(el){
+        // el.style.transition="top 2s"
+        // el.style.opacity=0
+    },
+    leaveCancelled(el){
+        // el.style.transition="top 2s"
+        // el.style.opacity=0
+    },
   }
 };
 </script>
@@ -76,8 +127,23 @@ export default {
 .fade-leave-active {
   transition: opacity 0.3s;
   /* transition: all 0.5s; */
-
+    /* transition :top 1.5s */
 }
+/* .fade-enter{
+    transition :top 1.5s
+}
+.fade-enter-active {
+  transition :top 1.5s
+}
+.fade-enter-to{
+    transition :top 1.5s
+}
+.fade-leave-to{
+    transition :top 1.5s
+}
+.fade-leave{
+    transition :top 1.5s
+} */
 .fade-enter,
 .fade-leave-to {
   opacity: 0;
