@@ -1,6 +1,7 @@
 <template>
   <div>
     <el-button type="text" class="elbutton"  @click="getzt">新增套装</el-button>
+    <span class="version">套装展示<strong>v1.0.1</strong></span>
 <el-dialog 
   title="添加套装"
   :visible="dialogVisible" width="50%">
@@ -260,7 +261,7 @@ export default {
               }
       })
       _this.dialogVisible = false;
-    },
+  },
     render() {
       let container = document.getElementById("container");
       this.zr = zrender.init(container);
@@ -420,7 +421,7 @@ export default {
               fill: tlData[0].bgColor,
               text: textFormat(t.projectName, 18, 38),
               textFill: tlData[0].color,
-              fontSize: DEFAULT.fontSize,
+              fontSize: DEFAULT.fontSize
               // textLineHeight:30
             },
             projectId: t.projectId
@@ -1164,7 +1165,6 @@ export default {
 .addvepal-layer{
     font-family:微软雅黑;
     font-size: 0.16rem;
-    
 }
 
 .addvepal-layer ul li{
@@ -1210,15 +1210,25 @@ export default {
      width:7rem;
  }
  .elbutton{
+   position: fixed;
+   right:0rem;
+   top:0;
    background: #409EFF;
    color:#fff;
    padding:0.1rem;
    margin:0.1rem;
+   z-index: 30;
  }
- .elbutton{
-   position: fixed;
-   top:0.3rem;
-   right: 0rem;
+ .version{
+   position: absolute;
+   left:0.1rem;
+   top:0.1rem;
+   font-size: 0.2rem;
+   font-family: Arial, Helvetica, sans-serif;
+ }
+ .version strong{
+    font-size: 12px;
+    padding-left: 0.1rem;
  }
  /***addvepal end***/
 </style>
