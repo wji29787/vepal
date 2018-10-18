@@ -42,8 +42,11 @@
     <!-- <el-scrollbar>
       
     </el-scrollbar> -->
-    <div id="container">
+    <div class = "dinner">
+      <div id="container">
       </div>
+    </div>
+    
     <sl-dialog :value="showProject" :offset="offsetProject" :position="'absolute'" class="">
        dfsdfsdfsf
     </sl-dialog>
@@ -112,6 +115,31 @@ let tlData = [
     color: "#fff"
   }
 ];
+
+// 获取窗口可视范围的高度
+function getClientHeight(){  
+    var clientHeight=0;  
+    if(document.body.clientHeight&&document.documentElement.clientHeight){  
+        var clientHeight=(document.body.clientHeight<document.documentElement.clientHeight)?document.body.clientHeight:document.documentElement.clientHeight;
+    }else{  
+        var clientHeight=(document.body.clientHeight>document.documentElement.clientHeight)?document.body.clientHeight:document.documentElement.clientHeight;
+    }  
+    return clientHeight;  
+}
+// 获取窗口滚动条高度
+function getScrollTop(){  
+    var scrollTop=0;  
+    if(document.documentElement&&document.documentElement.scrollTop){  
+        scrollTop=document.documentElement.scrollTop;  
+    }else if(document.body){  
+        scrollTop=document.body.scrollTop;  
+    }  
+    return scrollTop;  
+}
+// 获取文档内容实际高度
+function getScrollHeight(){  
+    return Math.max(document.body.scrollHeight,document.documentElement.scrollHeight);  
+}
 export default {
   name: "Dinner",
   data() {
@@ -124,6 +152,7 @@ export default {
       list: [],
       dragBox: null, // 显示框元素
       tipShow: false,
+      bscroll:true, // 是否加载
       // 项目详情
       showProject: false,
       offsetProject: [0, 0],
@@ -175,6 +204,7 @@ export default {
   },
   mounted() {
     this.render();
+    this.dragTextBox();
     this.getData();
     let that = this;
     let timer = null;
@@ -185,6 +215,7 @@ export default {
         that.init(that.list);
       }, 300);
     });
+    this.fnScroll()
   },
   methods: {
     /**获取ztree数据并且渲染**/
@@ -293,12 +324,27 @@ export default {
       };
     },
     getData() {
-      var aa = this.$http.get("/api/suit/findAllSuitInfo", res => {
+      if(!this.bscroll){
+        return 
+      } 
+      this.bscroll =false
+      this.$http.get("/api/suit/findAllSuitInfo", res => {
+        setTimeout(()=>{
+               this.bscroll =true 
+            },350)
         if (res.status === 200) {
           if (res.data.code === 200) {
-            this.list = res.data.data.suits;
-            this.init(res.data.data.suits);
+            
+            if(this.list.length===0){
+                this.list = res.data.data.suits;
+            }else{
+             this.list= this.list.concat(res.data.data.suits)
+            }
+            
+            this.groupPosition(res.data.data.suits);
+            // this.init(res.data.data.suits);
           } else {
+
           }
         } else {
           console.log(res);
@@ -306,6 +352,7 @@ export default {
       });
     },
     init(data) {
+      console.log(data)
       // this.titleGroup();
       this.groupPosition(data);
       this.dragTextBox();
@@ -1142,6 +1189,25 @@ export default {
           }
         }
       );
+    },
+    fnScroll(){
+      let that =this
+      let fn =function(e){
+       
+            // 窗口可视范围的高度
+        var height=getClientHeight(),
+            // 窗口滚动条高度
+            theight=getScrollTop(),
+            // 窗口可视范围的高度
+            rheight=getScrollHeight(),
+            // 滚动条距离底部的高度
+            bheight=rheight-theight-height;
+            if(bheight<=100){
+              // that.getData()
+            }
+      }
+      window.addEventListener('scroll',fn)
+      
     }
   }
 };
@@ -1156,9 +1222,9 @@ export default {
   font-family: 微软雅黑;
   width: 4rem;
 }
-.container {
-  /* width: 100%; */
-  /* height: 100%; */
+.dinner {
+  width: 100%;
+  height: 100%;
   /* position: absolute */
 }
 
