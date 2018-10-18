@@ -293,7 +293,7 @@ export default {
               }
       })
       _this.dialogVisible = false;
-  },
+    },
     render() {
       let container = document.getElementById("container");
       this.zr = zrender.init(container);
@@ -469,7 +469,7 @@ export default {
               fill: tlData[0].bgColor,
               text: textFormat(t.projectName, 18, 38),
               textFill: tlData[0].color,
-              fontSize: DEFAULT.fontSize
+              fontSize: DEFAULT.fontSize,
               // textLineHeight:30
             },
             projectId: t.projectId
@@ -1232,6 +1232,7 @@ export default {
 .addvepal-layer{
     font-family:微软雅黑;
     font-size: 0.16rem;
+    
 }
 
 .addvepal-layer ul li{
@@ -1281,6 +1282,11 @@ export default {
    color:#fff;
    padding:0.1rem;
    margin:0.1rem;
+ }
+ .elbutton{
+   position: fixed;
+   top:0.3rem;
+   right: 0rem;
  }
  /***addvepal end***/
 </style>
