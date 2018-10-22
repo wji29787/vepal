@@ -332,7 +332,7 @@ export default {
       });
     },
     init(data) {
-      console.log(data)
+      // console.log(data)
       // this.titleGroup();
       this.groupPosition(data);
       this.dragTextBox();
