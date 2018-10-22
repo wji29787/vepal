@@ -2,44 +2,47 @@
   <div>
     <el-button type="text" class="elbutton"  @click="getzt">新增套装</el-button>
     <span class="version">套装展示<strong>v1.0.1</strong></span>
-<el-dialog 
-  title="添加套装"
-  :visible="dialogVisible" width="50%">
-      <div class="addvepal-layer">
-        <ul>
-            <li>
-                <label>SP名称：</label>
-                <el-input v-model="suitName" class="elinput" placeholder="请输入内容"></el-input>
-            </li>
-             <li>
-                <label>时间：</label>
-                <div class="block">
-                    <el-date-picker
-                    v-model="suitDate"
-                    type="date"
-                    placeholder="选择日期"
-                    class="suitDate"
-                    >
-                    </el-date-picker>
-                </div>
-            </li>
-             <li>
-                <label>详细信息：</label>
-                <textarea v-model="suitDescription"></textarea>
-            </li>
-            <li class="clearfix">
-                <label>产品：</label>
-                <div  class="producttree">
-                    <ul class="ztree" id="ztreedemo"></ul>
-                </div>
-            </li>
-        </ul>
-    </div>
-  <span slot="footer" class="dialog-footer">
-    <el-button @click="dialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="save()">确 定</el-button>
-  </span>
-</el-dialog>
+    <el-dialog 
+      title="添加套装"
+      :visible="dialogVisible" width="50%"
+      @close="dialogVisible = false"
+      >
+          <div class="addvepal-layer">
+            <ul>
+                <li>
+                    <label>SP名称：</label>
+                    <el-input v-model="suitName" class="elinput" placeholder="请输入内容"></el-input>
+                </li>
+                <li>
+                    <label>时间：</label>
+                    <div class="block">
+                        <el-date-picker
+                        v-model="suitDate"
+                        type="date"
+                        placeholder="选择日期"
+                        class="suitDate"
+                        >
+                        </el-date-picker>
+                    </div>
+                </li>
+                <li>
+                    <label>详细信息：</label>
+                    <textarea v-model="suitDescription"></textarea>
+                </li>
+                <li class="clearfix">
+                    <label>产品：</label>
+                    <div  class="producttree">
+                        <ul class="ztree" id="ztreedemo"></ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    
+      <span slot="footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="save()">确 定</el-button>
+      </span>
+    </el-dialog>
 
    <!-- <el-scrollbar>
       
@@ -49,14 +52,13 @@
       </div>
     </div> 
     
-    <sl-dialog :value="showProject" :offset="offsetProject" :position="'absolute'" class="">
+    <!-- <sl-dialog :value="showProject" :offset="offsetProject" :position="'absolute'" class="">
        dfsdfsdfsf
-    </sl-dialog>
-    <sl-dialog :value="showSp" :offset="offsetSp" :position="'absolute'">
+    </sl-dialog> -->
+    <!-- <sl-dialog :value="showSp" :offset="offsetSp" :position="'absolute'">
       <div class="dialogStyle"> {{deilSp.suitDescription}}</div>
-    </sl-dialog>
-    <sl-dialog :value="showProduct" :offset="offsetProduct" :position="'absolute'">
-       <!-- {{deilProduct[0][actionbody]}} -->
+    </sl-dialog> -->
+    <!-- <sl-dialog :value="showProduct" :offset="offsetProduct" :position="'absolute'">
        <div  class="dialogStyle">
           <div
              v-for = "(item, index) in deilProduct"
@@ -65,7 +67,57 @@
             <p>{{item.actionbody}}</p>
           </div>
        </div>
-    </sl-dialog>
+    </sl-dialog> -->
+    <!-- project-dialog -->
+    <el-dialog  
+    :visible="projectDetil.visible"
+    @close="projectDetil.visible=false"
+    :title = "projectDetil.title"
+    center
+    width = "6rem"
+    >
+      <el-container direction="vertical">
+          <el-row  class = "sp-item" :gutter = 20
+            v-for = "(item, $index) in projectDetil.data"
+            :key ="$index"
+          >
+            <el-col class="sp-item-label" :span = "6">{{item.name}}:</el-col>
+            <el-col class="sp-item-val" :span = "18">{{item.val}}</el-col>
+          </el-row>
+        </el-container>
+    </el-dialog>
+    <!-- sp-dialog -->
+    <el-dialog 
+    :visible="spDetil.visible"
+    @close="spDetil.visible=false"
+    :title = "spDetil.title"
+    center
+    width = "6rem"
+    >
+        <el-container direction="vertical">
+          <el-row  class = "sp-item" :gutter = 20
+            v-for = "(item, $index) in spDetil.data"
+            :key ="$index"
+          >
+            <el-col class="sp-item-label" :span = "6">{{item.name}}:</el-col>
+            <el-col class="sp-item-val" :span = "18">{{item.val}}</el-col>
+          </el-row>
+        </el-container>
+        <!-- <div slot="footer" class ="sp-footer">
+          <el-button >取 消</el-button>
+          <el-button type="primary">确 定</el-button>
+        </div> -->
+    </el-dialog>
+    <!-- product-dialog -->
+    <el-dialog
+    :visible="productDetil.visible"
+    @close="productDetil.visible=false"
+    :title = "productDetil.title"
+    center
+    width = "6rem"
+    >
+      
+    </el-dialog>
   </div>
 
 </template>
@@ -133,17 +185,86 @@ export default {
       dragBox: null, // 显示框元素
       tipShow: false,
       bscroll:true, // 是否加载
+      pageNo:1,
+      pageSize:10, // 初始每页数据数
       // 项目详情
-      showProject: false,
-      offsetProject: [0, 0],
-      deilProject: {},
+      projectDetil:{
+        title:'项目详细',
+        visible:false,
+        data:[{
+          name:'项目名称',
+          val:'',
+          type:'projectName'
+        },{
+          name:'创建时间',
+          val:'',
+          type:'createDate'
+        },{
+          name:'相关文档',
+          val:'',
+          type:'projectId'
+        },{
+          name:'需求描述',
+          val:'',
+          type:'description'
+        }]
+      },
+      // showProject: false,
+      // offsetProject: [0, 0],
+      // deilProject: {},
       //产品详情
-      showProduct: false,
-      offsetProduct: [0, 0],
-      deilProduct: [],
+      productDetil:{
+        title:'产品详细',
+        visible:false,
+        data:[{
+          name:'项目名称',
+          val:'',
+          type:'suitName'
+        },{
+          name:'创建时间',
+          val:'',
+          type:'suitDate'
+        },{
+          name:'相关文档',
+          val:'',
+          type:'suitAdjustingPerson'
+        },{
+          name:'需求描述',
+          val:'',
+          type:'suitsuitTestPersonName'
+        }] 
+      },
+      // showProduct: false,
+      // offsetProduct: [0, 0],
+      // deilProduct: [],
       //套装详情
-      showSp:false,
-      offsetSp:[0,0],
+      spDetil:{
+         title:'套装详细',
+         visible:false,
+         data:[{
+           name:'套装名称',
+           val:'',
+           type:'suitName'
+         },{
+            name:'发布时间',
+            val:'',
+            type:'suitDate'
+         },{
+            name:'联调负责人',
+            val:'',
+            type:'suitAdjustingPerson'
+         },{
+            name:'测试负责人',
+            val:'',
+            type:'suitsuitTestPersonName'
+         },{
+            name:'功能详情',
+            val:'',
+            type:'suitDescription'
+         }]    
+      },
+      // showSp:false,
+      // offsetSp:[0,0],
       dialogVisible: false,
       nodeData:[
           { id:1, pId:0, name:"Pamir", open:true},
@@ -178,7 +299,9 @@ export default {
       deilSp: { suitDescription: "sdsdsd" }
     };
   },
-  created() {},
+  created() {
+    // this.$slMsg.show('sdfsdf')
+  },
   watch: {
     // offset
   },
@@ -303,12 +426,12 @@ export default {
         mCircleFillColor: "#F5F5F5"
       };
     },
-    getData() {
+    getData(pageNo) {
       if(!this.bscroll){
         return 
       } 
       this.bscroll =false
-      this.$http.get("/api/suit/findAllSuitInfo", res => {
+      this.$http.post("/api/suit/findAllSuitInfo",res => {
         setTimeout(()=>{
                this.bscroll =true 
             },350)
@@ -324,9 +447,14 @@ export default {
             this.groupPosition(res.data.data.suits);
             // this.init(res.data.data.suits);
           } else {
-
+            // if(this.pageNo >1){
+            //   this.pageNo -1
+            // }
           }
         } else {
+          // if(this.pageNo >1){
+          //     this.pageNo -1
+          // }
           console.log(res);
         }
       });
@@ -587,7 +715,7 @@ export default {
         style: {
           fill: tlData[1].bgColor,
           text: `${textFormat(data.suitName, 12, 24)}${
-            data.suitDate ? "\n" + data.suitDate : ""
+            data.suitDate ? "\n\n" + data.suitDate : ""
           }`,
           textFill: tlData[1].color,
           fontSize: DEFAULT.fontSize
@@ -704,39 +832,53 @@ export default {
                    flag ? groupL.hide() : groupL.show();
                    flag = !flag;
               }
-              this.showProject=false
+              // this.showProject=false
             } else if (k.name == "PR") {
               if(groupR){
                 flag ? groupR.hide() : groupR.show();
                 flag = !flag;
-                this.showProduct=false
+                // this.showProduct=false
               }
 
             } else if (k.name == "PM") {
-              let position=[e.target.shape.rx,e.target.shape.ry]
-              // 鼠标相对文档偏移
-              let offset = [e.target.transform[4], e.target.transform[5]];
-              //元素相对文档偏移
-              let p = [offset[0], offset[1]];
-              let poffset = [
-                `${parseInt(p[0] + DEFAULT.width)}px`,
-                `${parseInt(p[1] + DEFAULT.verH / 2)}px`
-              ];
-              if (!t.suitDescription) {
-                return;
-              }
-              if (that.showSp) {
-                if (that.offsetSp[1] === poffset[1]) {
-                  that.showSp = false;
-                } else {
-                  that.deilSp.suitDescription = t.suitDescription;
-                  that.offsetSp = poffset;
-                }
-              } else {
-                that.deilSp.suitDescription = t.suitDescription;
-                that.showSp = true;
-                that.offsetSp = poffset;
-              }
+              // let position=[e.target.shape.rx,e.target.shape.ry]
+              // // 鼠标相对文档偏移
+              // let offset = [e.target.transform[4], e.target.transform[5]];
+              // //元素相对文档偏移
+              // let p = [offset[0], offset[1]];
+              // let poffset = [
+              //   `${parseInt(p[0] + DEFAULT.width)}px`,
+              //   `${parseInt(p[1] + DEFAULT.verH / 2)}px`
+              // ];
+              // if (!t.suitDescription) {
+              //   return;
+              // }
+              // if (that.showSp) {
+              //   if (that.offsetSp[1] === poffset[1]) {
+              //     that.showSp = false;
+              //   } else {
+              //     that.deilSp.suitDescription = t.suitDescription;
+              //     that.offsetSp = poffset;
+              //   }
+              // } else {
+              //   that.deilSp.suitDescription = t.suitDescription;
+              //   that.showSp = true;
+              //   that.offsetSp = poffset;
+              // }
+
+
+              that.spDetil.visible =true
+           
+             // let spStrType = ['suitName','suitDate','suitAdjustingPerson','suitTestPerson','suitDescription']
+             let spData = that.spDetil.data 
+              spData.forEach((item)=>{
+                  if(t[item.type]){
+                     item.val = t[item.type] 
+                  }else{
+                    item.val=''
+                  }
+              })
+              that.spDetil.data = spData
             }
           });
         });
@@ -808,27 +950,38 @@ export default {
                 );
               })
               .on("click", e => {
-                let position = [e.target.shape.x, e.target.shape.y];
-                // 鼠标相对文档偏移
-                let offset = [e.target.transform[4], e.target.transform[5]];
-                //元素相对文档偏移
-                let p = [position[0] + offset[0], position[1] + offset[1]];
-                let poffset = [
-                  `${parseInt(p[0] + DEFAULT.width)}px`,
-                  `${parseInt(p[1] + DEFAULT.height / 2)}px`
-                ];
-                if (this.showProject) {
-                  if (this.offsetProject[1] === poffset[1]) {
-                    this.showProject = false;
-                  } else {
-                    this.deilProject = project[i];
-                    this.offsetProject = poffset;
-                  }
-                } else {
-                  this.deilProject = project[i];
-                  this.showProject = true;
-                  this.offsetProject = poffset;
-                }
+                // let position = [e.target.shape.x, e.target.shape.y];
+                // // 鼠标相对文档偏移
+                // let offset = [e.target.transform[4], e.target.transform[5]];
+                // //元素相对文档偏移
+                // let p = [position[0] + offset[0], position[1] + offset[1]];
+                // let poffset = [
+                //   `${parseInt(p[0] + DEFAULT.width)}px`,
+                //   `${parseInt(p[1] + DEFAULT.height / 2)}px`
+                // ];
+                // if (this.showProject) {
+                //   if (this.offsetProject[1] === poffset[1]) {
+                //     this.showProject = false;
+                //   } else {
+                //     this.deilProject = project[i];
+                //     this.offsetProject = poffset;
+                //   }
+                // } else {
+                //   this.deilProject = project[i];
+                //   this.showProject = true;
+                //   this.offsetProject = poffset;
+                // }
+                that.projectDetil.visible =true
+                let projectData = that.projectDetil.data 
+                  projectData.forEach((item)=>{
+                      if(project[i][item.type]){
+                        item.val = project[i][item.type] 
+                      }else{
+                        item.val=''
+                      }
+                  })
+                  console.log(projectData)
+                  that.projectDetil.data = projectData
               });
           });
            group.add(groupL);
@@ -870,30 +1023,30 @@ export default {
                 );
               })
               .on("click", e => {
-                let position = [e.target.shape.x, e.target.shape.y];
-                // 鼠标相对文档偏移
-                let offset = [e.target.transform[4], e.target.transform[5]];
-                //元素相对文档偏移
-                let p = [position[0] + offset[0], position[1] + offset[1]];
-                let poffset = [
-                  `${parseInt(p[0] + DEFAULT.width)}px`,
-                  `${parseInt(p[1] + DEFAULT.height / 2)}px`
-                ];
-                if (!product[i].remark || product[i].remark.length === 0) {
-                  return;
-                }
-                if (this.showProduct) {
-                  if (this.offsetProduct[1] === poffset[1]) {
-                    this.showProduct = false;
-                  } else {
-                    this.deilProduct = product[i].remark;
-                    this.offsetProduct = poffset;
-                  }
-                } else {
-                  this.deilProduct = product[i].remark;
-                  this.showProduct = true;
-                  this.offsetProduct = poffset;
-                }
+                // let position = [e.target.shape.x, e.target.shape.y];
+                // // 鼠标相对文档偏移
+                // let offset = [e.target.transform[4], e.target.transform[5]];
+                // //元素相对文档偏移
+                // let p = [position[0] + offset[0], position[1] + offset[1]];
+                // let poffset = [
+                //   `${parseInt(p[0] + DEFAULT.width)}px`,
+                //   `${parseInt(p[1] + DEFAULT.height / 2)}px`
+                // ];
+                // if (!product[i].remark || product[i].remark.length === 0) {
+                //   return;
+                // }
+                // if (this.showProduct) {
+                //   if (this.offsetProduct[1] === poffset[1]) {
+                //     this.showProduct = false;
+                //   } else {
+                //     this.deilProduct = product[i].remark;
+                //     this.offsetProduct = poffset;
+                //   }
+                // } else {
+                //   this.deilProduct = product[i].remark;
+                //   this.showProduct = true;
+                //   this.offsetProduct = poffset;
+                // }
               });
           });
           group.add(groupR);
@@ -1173,7 +1326,7 @@ export default {
     fnScroll(){
       let that =this
       let fn =function(e){
-       
+        if(!that.bscroll) return 
             // 窗口可视范围的高度
         var height=util.getClientHeight(),
             // 窗口滚动条高度
@@ -1183,7 +1336,8 @@ export default {
             // 滚动条距离底部的高度
             bheight=rheight-theight-height;
             if(bheight<=100){
-              // that.getData()
+              // that.pageNo+=1
+              // that.getData(that.pageNo)
             }
       }
       window.addEventListener('scroll',fn)
@@ -1278,4 +1432,21 @@ export default {
     padding-left: 0.1rem;
  }
  /***addvepal end***/
+ /* sp-dialog  start*/
+ .sp-item {
+   /* height: 0.4rem; */
+   /* padding: 0.1rem 0 */
+   line-height: 0.3rem;
+ } 
+ .sp-item .sp-item-label {
+   text-align: right ;
+   /* font-weight: bold */
+ }
+ .sp-item .sp-item-val {
+   /* line-height: 0.3rem; */
+ }
+ .sp-footer{
+   /* margin-top:0.4rem; */
+ }
+  /* sp-dialog  end*/
 </style>
