@@ -82,7 +82,7 @@
             :key ="$index"
           >
             <el-col class="sp-item-label" :span = "6">{{item.name}}:</el-col>
-            <el-col class="sp-item-val" :span = "18">{{item.val}}</el-col>
+            <el-col class="sp-item-val" :class = "{'dialog-item-val' : $index ===3}" :span = "18">{{item.val}}</el-col>
           </el-row>
         </el-container>
     </el-dialog>
@@ -100,7 +100,7 @@
             :key ="$index"
           >
             <el-col class="sp-item-label" :span = "6">{{item.name}}:</el-col>
-            <el-col class="sp-item-val" :span = "18">{{item.val}}</el-col>
+            <el-col class="sp-item-val" :class = "{'dialog-item-val' : $index ===4}" :span = "18">{{item.val}}</el-col>
           </el-row>
         </el-container>
         <!-- <div slot="footer" class ="sp-footer">
@@ -326,14 +326,14 @@ export default {
       var _this=this;
         _this.dialogVisible=true;
         setTimeout(()=>{
-           this.$http.get('/dev/product/findAllProduct',(res)=>{
+           this.$http.get('/api/product/findAllProduct',(res)=>{
                     if(res.status===200){
                           var nodeList=[];
                           // { id:1, pId:0, name:"Pamir", open:true},
                           // { id:11, pId:1, name:"5.5.5", open:true},
                            var productslist=res.data.data.products;
                             for(var i=0;i<productslist.length;i++){
-                                var obj={"id":productslist[i].productId,pId:0,"name":productslist[i].productName,open:true};
+                                var obj={"id":productslist[i].productId,pId:0,"name":productslist[i].productName + productslist[i].productVersion||'',open:true};
                                 nodeList.push(obj);
                                 if(productslist[i].projectList.length>0){
                                     var cplist=productslist[i].projectList;
@@ -383,7 +383,7 @@ export default {
           return;
       }
       //请求保存接口
-      this.$http.get('/dev/suit/addSuit',{
+      this.$http.get('/api/suit/addSuit',{
               suitName:_this.suitName,
               suitDate:_this.suitDate,
               suitDescription:_this.suitDescription, 
@@ -635,7 +635,7 @@ export default {
           },
           style: {
             fill: tlData[2].bgColor,
-            text: textFormat(data[0].productName, 20, 40),
+            text: textFormat(`${data[0].productName+data[0].productVersion}`, 20, 40),
             textFill: tlData[2].color,
             fontSize: DEFAULT.fontSize
           },
@@ -667,7 +667,7 @@ export default {
             },
             style: {
               fill: tlData[2].bgColor,
-              text: textFormat(t.productName, 20, 40),
+              text: textFormat(`${t.productName+t.productVersion}`, 20, 40),
               textFill: tlData[2].color,
               fontSize: DEFAULT.fontSize
             },
@@ -1449,4 +1449,9 @@ export default {
    /* margin-top:0.4rem; */
  }
   /* sp-dialog  end*/
+
+.dialog-item-val{
+  max-height: 3rem;
+  overflow: auto
+}
 </style>
