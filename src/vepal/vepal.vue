@@ -43,7 +43,7 @@
         <el-button type="primary" @click="save()">确 定</el-button>
       </span>
     </el-dialog>
-
+    
    <!-- <el-scrollbar>
       
     </el-scrollbar> -->
@@ -51,7 +51,42 @@
       <div id="container">
       </div>
     </div> 
-    
+    <!-- editproject -->
+    <el-dialog
+      :visible="projectEdit.visible"
+      @close="projectEdit.visible=false"
+      :title = "projectEdit.title"
+      center
+      width = "6rem"
+      >
+      <el-container direction="vertical">
+         <el-row  class = "edit-item" :gutter = 20
+          >
+            <el-col class="edit-item-label" :span = "6">项目名称:</el-col>
+            <el-col  :span = "18"><el-input size="small" v-model="projectEdit.projectName"></el-input></el-col>      
+        </el-row>
+          <el-row  class = "edit-item" :gutter = 20
+          >
+            <el-col class="edit-item-label" :span = "6">项目优先级:</el-col>
+            <el-col :span = "18">
+              <el-select v-model="projectEdit.priorityID" placeholder="请选择" size="small" class = "edit-select">
+                <el-option
+                  v-for="item in projectEdit.data"
+                  :key="item.priorityID"
+                  :label="item.priorityName"
+                  :value="item.priorityID">
+                </el-option>
+              </el-select>
+            </el-col>      
+          </el-row>
+      </el-container>
+      <div slot="footer" class ="sp-footer">
+        <el-button @click="projectEdit.visible=false">取 消</el-button>
+        <el-button type="primary" @click="editProjectSave">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- <el-input ref = "editText" v-model="input" class = "edit-text"  @blur = "saveText" @change="handleText" placeholder="请输入内容"></el-input> -->
+    <!-- <input type="text" class = "edit-text"/> -->
     <!-- <sl-dialog :value="showProject" :offset="offsetProject" :position="'absolute'" class="">
        dfsdfsdfsf
     </sl-dialog> -->
@@ -70,30 +105,30 @@
     </sl-dialog> -->
     <!-- project-dialog -->
     <el-dialog  
-    :visible="projectDetil.visible"
-    @close="projectDetil.visible=false"
-    :title = "projectDetil.title"
-    center
-    width = "6rem"
-    >
+      :visible="projectDetil.visible"
+      @close="projectDetil.visible=false"
+      :title = "projectDetil.title"
+      center
+      width = "6rem"
+      >
       <el-container direction="vertical">
           <el-row  class = "sp-item" :gutter = 20
             v-for = "(item, $index) in projectDetil.data"
             :key ="$index"
           >
             <el-col class="sp-item-label" :span = "6">{{item.name}}:</el-col>
-            <el-col class="sp-item-val" :class = "{'dialog-item-val' : $index ===3}" :span = "18">{{item.val}}</el-col>
+            <el-col :class = "{'dialog-item-val' : $index ===3}" :span = "18">{{item.val}}</el-col>
           </el-row>
         </el-container>
     </el-dialog>
     <!-- sp-dialog -->
     <el-dialog 
-    :visible="spDetil.visible"
-    @close="spDetil.visible=false"
-    :title = "spDetil.title"
-    center
-    width = "6rem"
-    >
+      :visible="spDetil.visible"
+      @close="spDetil.visible=false"
+      :title = "spDetil.title"
+      center
+      width = "6rem"
+      >
         <el-container direction="vertical">
           <el-row  class = "sp-item" :gutter = 20
             v-for = "(item, $index) in spDetil.data"
@@ -103,20 +138,43 @@
             <el-col class="sp-item-val" :class = "{'dialog-item-val' : $index ===4}" :span = "18">{{item.val}}</el-col>
           </el-row>
         </el-container>
-        <!-- <div slot="footer" class ="sp-footer">
-          <el-button >取 消</el-button>
-          <el-button type="primary">确 定</el-button>
-        </div> -->
     </el-dialog>
     <!-- product-dialog -->
     <el-dialog
-    :visible="productDetil.visible"
-    @close="productDetil.visible=false"
-    :title = "productDetil.title"
-    center
-    width = "6rem"
-    >
-      
+      :visible="productDetil.visible"
+      @close="productDetil.visible=false"
+      :title = "productDetil.title"
+      center
+      width = "6rem"
+      >
+      <el-container direction="vertical">
+          <el-row  class = "sp-item" :gutter = 20
+            v-for = "(item, $index) in productDetil.data"
+            :key ="$index"
+          >
+            <el-col class="sp-item-label" :span = "8">{{item.name}}:</el-col>
+            <el-col class="sp-item-val" :class = "{'dialog-item-val' : $index ===3 || $index ===4}" :span = "16">
+              <template v-if="$index === 4">
+                  <div 
+                    v-for = "(kval, $l) in item.val"
+                     :key="kval.id">
+                     {{($l+1)+': '+kval.actionbody}}
+                  </div> 
+              </template>
+              <template v-else> -->
+                  {{item.val}}
+             </template>
+              
+            </el-col>
+          </el-row>
+          <br>
+          
+          <hr>
+          <br>
+          <el-container>
+            <el-col :span = "24">历史版本</el-col>
+          </el-container>
+        </el-container>
     </el-dialog>
   </div>
 
@@ -137,7 +195,8 @@ import  {
   circle,
   textFormat,
   arc,
-  text
+  text,
+  image
 } from "../assets/js/util.js";
 let DEFAULT = {
   hInterval: rem(20), // 上下间隔
@@ -151,7 +210,9 @@ let DEFAULT = {
   lineHoverColor: "red",
   mCirclefontSize: rem(15),
   mCirclefontColor: "",
-  mCircleFillColor: "#F5F5F5"
+  mCircleFillColor: "#F5F5F5",
+  imageW:rem(30),
+  imageH:rem(30)
 };
 let tlData = [
   {
@@ -187,6 +248,7 @@ export default {
       bscroll:true, // 是否加载
       pageNo:1,
       pageSize:10, // 初始每页数据数
+      lastPage:false, //最后一页
       // 项目详情
       projectDetil:{
         title:'项目详细',
@@ -217,21 +279,25 @@ export default {
         title:'产品详细',
         visible:false,
         data:[{
-          name:'项目名称',
+          name:'产品名称',
           val:'',
-          type:'suitName'
+          type:'productName'
         },{
-          name:'创建时间',
+          name:'版本',
           val:'',
-          type:'suitDate'
+          type:'productVersion'
         },{
-          name:'相关文档',
+          name:'版本研发负责人',
           val:'',
-          type:'suitAdjustingPerson'
+          type:'productRDPerson'
         },{
-          name:'需求描述',
+          name:'描述',
           val:'',
-          type:'suitsuitTestPersonName'
+          type:'productDesc'
+        },{
+          name:'备注',
+          val:'',
+          type:'remark'
         }] 
       },
       // showProduct: false,
@@ -262,6 +328,19 @@ export default {
             val:'',
             type:'suitDescription'
          }]    
+      },
+      // 项目编辑
+      projectEdit:{
+        title:'项目编辑',
+        visible:false,
+        data:[],
+        projectName:'',
+        priorityID:'',
+        projectId:'',
+        curtPriorityEl:null,
+        curtEl:null,
+        index:-1,
+        spData:[]
       },
       // showSp:false,
       // offsetSp:[0,0],
@@ -319,8 +398,25 @@ export default {
       }, 300);
     });
     this.fnScroll()
+    
   },
   methods: {
+    handleText(val){
+      // console.log(this.input);
+      console.log(val)
+      // this.curtEl.attr({
+      //   style:{
+      //     text :val
+      //   }
+      // })
+    },
+    saveText(){
+      this.curtEl.attr({
+        style:{
+          text : textFormat(this.input, 18, 38)
+        }
+      })
+    },
     /**获取ztree数据并且渲染**/
     getzt(){
       var _this=this;
@@ -407,6 +503,10 @@ export default {
       this.groupH = rem(50);
       this.groupArr = [];
       this.dragBox = null;
+      this.bscroll = true // 是否加载
+      this.pageNo = 1
+      //this.pageSize = 10 // 初始每页数据数
+      this.lastPage = false //最后一页
       this.zr.clear();
       this.zr.resize();
       this.w = this.zr.getWidth();
@@ -423,7 +523,9 @@ export default {
         lineHoverColor: "red",
         mCirclefontSize: rem(15),
         mCirclefontColor: "",
-        mCircleFillColor: "#F5F5F5"
+        mCircleFillColor: "#F5F5F5",
+        imageW:rem(30),
+        imageH:rem(30)
       };
     },
     getData(pageNo) {
@@ -431,13 +533,26 @@ export default {
         return 
       } 
       this.bscroll =false
-      this.$http.post("/api/suit/findAllSuitInfo",res => {
+      const loading = this.$loading({
+        lock: true,
+        text: 'Loading',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      });
+      this.$http.post("/api/suit/findAllSuitInfo",{
+        pageNo:pageNo?pageNo:1,
+        pageSize:this.pageSize
+      },res => {
+        loading.close()
         setTimeout(()=>{
                this.bscroll =true 
             },350)
         if (res.status === 200) {
           if (res.data.code === 200) {
-            
+           
+            if(res.data.data.suits && res.data.data.suits.length <this.pageSize){
+              this.lastPage =true;
+            }
             if(this.list.length===0){
                 this.list = res.data.data.suits;
             }else{
@@ -445,18 +560,20 @@ export default {
             }
             
             this.groupPosition(res.data.data.suits);
-            // this.init(res.data.data.suits);
+            
           } else {
-            // if(this.pageNo >1){
-            //   this.pageNo -1
-            // }
+            if(pageNo >1){
+              this.pageNo -= 1
+            }
+            this.$message(res.data.msg);
           }
         } else {
-          // if(this.pageNo >1){
-          //     this.pageNo -1
-          // }
-          console.log(res);
+          if(pageNo >1){
+              this.pageNo -= 1
+          }
+          this.$message(res.status);
         }
+        
       });
     },
     init(data) {
@@ -555,8 +672,20 @@ export default {
             stroke: DEFAULT.lineColor
           }
         });
-        g.add(rectEl);
-        g.add(lineEl);
+        let imageEl = image({
+          style:{
+            image:require('./edit.png'),
+            x:DEFAULT.width - DEFAULT.imageW + 3,
+            y:(groupH - DEFAULT.imageH) / 2,
+            width:DEFAULT.imageW,
+            height:DEFAULT.imageH
+          }
+        })
+        imageEl.hide()
+        g.add(rectEl)
+        g.add(lineEl)
+        g.add(imageEl)
+        
         let textGroup = this.createText(data[0]);
         textGroup.position = [
           -((DEFAULT.width * 2) / 3 + DEFAULT.height / 2),
@@ -594,8 +723,19 @@ export default {
               stroke: DEFAULT.lineColor
             }
           });
+          let imageEl = image({
+            style:{
+              image:require('./edit.png'),
+              x:DEFAULT.width - DEFAULT.imageW + 3,
+              y:(DEFAULT.height -DEFAULT.imageH) / 2 + (DEFAULT.height + positionObj.L) * i,
+              width:DEFAULT.imageW,
+              height:DEFAULT.imageH 
+            }
+          })
+          imageEl.hide()
           g.add(rectEl);
           g.add(lineEl);
+          g.add(imageEl);
           let textGroup = this.createText(t);
           textGroup.position = [
             -((DEFAULT.width * 2) / 3 + DEFAULT.height / 2),
@@ -635,7 +775,7 @@ export default {
           },
           style: {
             fill: tlData[2].bgColor,
-            text: textFormat(`${data[0].productName+data[0].productVersion}`, 20, 40),
+            text: textFormat(`${data[0].productName+' '+data[0].productVersion}`, 20, 40),
             textFill: tlData[2].color,
             fontSize: DEFAULT.fontSize
           },
@@ -667,7 +807,7 @@ export default {
             },
             style: {
               fill: tlData[2].bgColor,
-              text: textFormat(`${t.productName+t.productVersion}`, 20, 40),
+              text: textFormat(`${t.productName+' '+t.productVersion}`, 20, 40),
               textFill: tlData[2].color,
               fontSize: DEFAULT.fontSize
             },
@@ -715,10 +855,22 @@ export default {
         style: {
           fill: tlData[1].bgColor,
           text: `${textFormat(data.suitName, 12, 24)}${
-            data.suitDate ? "\n\n" + data.suitDate : ""
+            data.suitDate ? "\n" + data.suitDate : ""
           }`,
+          // text:'{a1|haha}\n{a2|sdfdf}',
           textFill: tlData[1].color,
-          fontSize: DEFAULT.fontSize
+          fontSize: DEFAULT.fontSize,
+          rich:{
+            a1:{
+              textFill: 'rgb(199,86,83)',
+              textLineHeight:10,
+              textBorderColor:'#000'
+            },
+            a2:{
+              textFill: 'yellow',
+              textPadding:3
+            }
+          }
         },
         name: "PM"
       });
@@ -935,6 +1087,7 @@ export default {
                     }
                   }
                 });
+                k.childAt(2).show()
               })
               .on("mouseout", e => {
                 hoverL = false;
@@ -948,6 +1101,7 @@ export default {
                   },
                   "L"
                 );
+                 k.childAt(2).hide()
               })
               .on("click", e => {
                 // let position = [e.target.shape.x, e.target.shape.y];
@@ -979,10 +1133,20 @@ export default {
                       }else{
                         item.val=''
                       }
-                  })
-                  console.log(projectData)
+                  })   
                   that.projectDetil.data = projectData
               });
+              k.childAt(2).on('click',e =>{
+                //当前项目实例
+                that.projectEdit.curtEl = k.childAt(0)  || null
+                // 当前项目优先级元素实例
+                that.projectEdit.curtPriorityEl = k.childAt(3).childAt(0).childAt(1) ||null 
+                that.projectEdit.visible = true 
+                that.projectEdit.projectName=project[i].projectName
+                that.projectEdit.projectId=project[i].projectId
+                that.editProject(project[i].priorityName)  
+              })
+
           });
            group.add(groupL);
         }
@@ -1023,30 +1187,19 @@ export default {
                 );
               })
               .on("click", e => {
-                // let position = [e.target.shape.x, e.target.shape.y];
-                // // 鼠标相对文档偏移
-                // let offset = [e.target.transform[4], e.target.transform[5]];
-                // //元素相对文档偏移
-                // let p = [position[0] + offset[0], position[1] + offset[1]];
-                // let poffset = [
-                //   `${parseInt(p[0] + DEFAULT.width)}px`,
-                //   `${parseInt(p[1] + DEFAULT.height / 2)}px`
-                // ];
-                // if (!product[i].remark || product[i].remark.length === 0) {
-                //   return;
-                // }
-                // if (this.showProduct) {
-                //   if (this.offsetProduct[1] === poffset[1]) {
-                //     this.showProduct = false;
-                //   } else {
-                //     this.deilProduct = product[i].remark;
-                //     this.offsetProduct = poffset;
-                //   }
-                // } else {
-                //   this.deilProduct = product[i].remark;
-                //   this.showProduct = true;
-                //   this.offsetProduct = poffset;
-                // }
+                that.productDetil.visible =true
+                let productData = that.productDetil.data 
+                  productData.forEach((item,index)=>{
+                      if(product[i][item.type]){
+                        item.val = product[i][item.type] 
+                      }else{
+                        item.val=''
+                        if(index ===4){
+                          item.val=[]
+                        }
+                      }
+                  })
+                  that.productDetil.data = productData
               });
           });
           group.add(groupR);
@@ -1325,7 +1478,12 @@ export default {
     },
     fnScroll(){
       let that =this
+      let scrollTop = 0
       let fn =function(e){
+         
+        if(that.lastPage){
+          return
+        }
         if(!that.bscroll) return 
             // 窗口可视范围的高度
         var height=util.getClientHeight(),
@@ -1335,13 +1493,66 @@ export default {
             rheight=util.getScrollHeight(),
             // 滚动条距离底部的高度
             bheight=rheight-theight-height;
+            if(theight > scrollTop)
+            
             if(bheight<=100){
-              // that.pageNo+=1
-              // that.getData(that.pageNo)
+              if(theight > scrollTop){             
+                that.pageNo+=1
+                that.getData(that.pageNo)
+              }             
             }
+             scrollTop = theight
       }
       window.addEventListener('scroll',fn)
       
+    },
+    editProject(priorityName){
+      this.$http.post('/api/project/findAllProjectPriority',res=>{
+        if(res.status === 200){
+          // this.productEdit.data = res.data
+          if(res.data.code === 200){
+            this.projectEdit.data = res.data.data
+            let data =res.data.data;
+            this.projectEdit.priorityID = data.find(t =>{
+              return t.priorityName === priorityName.trim()
+            }).priorityID
+          }
+          // console.log(res.data)
+        }
+      })
+    },
+    editProjectSave(){
+      this.$http.post('/api/project/updateProject',{
+        projectName:this.projectEdit.projectName,
+        priorityId:this.projectEdit.priorityID,
+        projectId:this.projectEdit.projectId
+      },res=>{
+        if(res.status === 200){
+          if(res.data.code === 200){
+              this.projectEdit.visible =false
+              //修改当前项
+              // console.log(this.projectEdit.curtEl)
+              // this.projectEdit.curtEl.attr({
+              //   style:{
+              //     text:textFormat(this.projectEdit.projectName, 18, 38)
+              //   }
+              // })
+              // let priorityName = this.projectEdit.data.find(t =>{
+              //     return t.priorityID == this.projectEdit.priorityID 
+              // }).priorityName
+              // this.projectEdit.curtPriorityEl.attr({
+              //   style:{
+              //     text:`优先级: ${priorityName}`
+              //   }
+              // })
+              // window.location ='#/vepal'
+              this.resetData()
+              this.getData()
+          }else{
+
+          }
+        }
+      })
     }
   }
 };
@@ -1453,5 +1664,29 @@ export default {
 .dialog-item-val{
   max-height: 3rem;
   overflow: auto
+}
+.edit-text {
+  position: fixed;
+  transform: translate(50%);
+  top: 50%;
+  /* width: 50%; */
+  z-index: -1000;
+  /* border:none */
+  outline: none;
+  -webkit-appearance: none;
+  border-radius: 0;
+  /* visibility: hidden; */
+  opacity: 0;
+}
+.edit-item{
+  /* height: 0.4rem; */
+ line-height: 0.4rem;
+ margin-bottom: 0.1rem;
+}
+.edit-item .edit-item-label{
+  text-align: right ;
+}
+.edit-item .edit-select{
+  width: 100%;
 }
 </style>

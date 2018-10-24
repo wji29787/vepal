@@ -20,7 +20,7 @@ module.exports = {
         },
       },   
       '/dev': { 
-        target: 'http://192.168.95.93:8085', 
+        target: 'http://192.168.95.93:8084', 
         changeOrigin: true,
         // ws: true,
         pathRewrite: {

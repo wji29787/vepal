@@ -17,6 +17,10 @@ let arc = opt => {
 let text = opt => {
   return new zrender.Text(opt)
 }
+
+let image = opt => {
+  return new zrender.Image(opt)
+}
 let rem = (size) => {
   let baseSize = parseInt(document.querySelector('html').style.fontSize)
   // if(baseSize <= 50){
@@ -154,6 +158,6 @@ export {
   filterNull,
   getClientHeight,
   getScrollTop,
-  getScrollHeight
-
+  getScrollHeight,
+  image
 }
