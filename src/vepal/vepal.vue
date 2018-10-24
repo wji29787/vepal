@@ -145,15 +145,15 @@
       @close="productDetil.visible=false"
       :title = "productDetil.title"
       center
-      width = "6rem"
+      width = "8rem"
       >
       <el-container direction="vertical">
           <el-row  class = "sp-item" :gutter = 20
             v-for = "(item, $index) in productDetil.data"
             :key ="$index"
           >
-            <el-col class="sp-item-label" :span = "8">{{item.name}}:</el-col>
-            <el-col class="sp-item-val" :class = "{'dialog-item-val' : $index ===3 || $index ===4}" :span = "16">
+            <el-col class="sp-item-label" :span = "6">{{item.name}}:</el-col>
+            <el-col class="sp-item-val" :class = "{'dialog-item-val' : $index ===3 || $index ===4}" :span = "18">
               <template v-if="$index === 4">
                   <div 
                     v-for = "(kval, $l) in item.val"
@@ -161,7 +161,7 @@
                      {{($l+1)+': '+kval.actionbody}}
                   </div> 
               </template>
-              <template v-else> -->
+              <template v-else> 
                   {{item.val}}
              </template>
               
@@ -171,8 +171,25 @@
           
           <hr>
           <br>
-          <el-container>
+          <el-container direction="vertical">
             <el-col :span = "24">历史版本</el-col>
+            <el-table 
+             :data="productDetil.spData"
+              max-height="250"
+              width="100%"
+              :show-header = "false"
+             >
+              <el-table-column prop="sp" label="版本" width="100">
+              </el-table-column>
+              <el-table-column prop="fileSize" label="文件大小fileSize" width="100">
+              </el-table-column>
+              <el-table-column prop="upRecord" label="更新记录">
+              </el-table-column>
+              <el-table-column prop="down" label="下载">
+              </el-table-column>
+              <el-table-column prop="data" label="时间">
+              </el-table-column>
+            </el-table>
           </el-container>
         </el-container>
     </el-dialog>
@@ -236,6 +253,13 @@ let tlData = [
 export default {
   name: "Dinner",
   data() {
+    const item = {
+        sp: 'pamir',
+        fileSize: '1220MB',
+        upRecord: '跟新记录',
+        down:'下载',
+        data:'日期'
+      };
     return {
       zr: "",
       w: 0,
@@ -298,7 +322,8 @@ export default {
           name:'备注',
           val:'',
           type:'remark'
-        }] 
+        }],
+        spData: Array(20).fill(item)
       },
       // showProduct: false,
       // offsetProduct: [0, 0],
@@ -340,7 +365,6 @@ export default {
         curtPriorityEl:null,
         curtEl:null,
         index:-1,
-        spData:[]
       },
       // showSp:false,
       // offsetSp:[0,0],
