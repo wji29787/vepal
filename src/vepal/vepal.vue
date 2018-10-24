@@ -148,6 +148,7 @@
       width = "8rem"
       >
       <el-container direction="vertical">
+          <el-row></el-row>
           <el-row  class = "sp-item" :gutter = 20
             v-for = "(item, $index) in productDetil.data"
             :key ="$index"
@@ -183,15 +184,38 @@
               </el-table-column>
               <el-table-column prop="fileSize" label="文件大小fileSize" width="100">
               </el-table-column>
-              <el-table-column prop="upRecord" label="更新记录">
+              <el-table-column  label="更新记录">
+                <template slot-scope="scope">
+                    <el-button type="text" @click="productClick(scope.row)" size="small">查看记录</el-button>
+                </template>
               </el-table-column>
-              <el-table-column prop="down" label="下载">
+              <el-table-column label="下载">
+                <template slot-scope="scope">
+                    <el-button type="text" @click="productDown(scope.row)" size="small">下载</el-button>
+                </template>
               </el-table-column>
               <el-table-column prop="data" label="时间">
               </el-table-column>
             </el-table>
           </el-container>
-        </el-container>
+      </el-container>
+
+      <el-dialog
+          width="30%"
+          :title = "productDetil.inner.title"
+          :visible.sync = "productDetil.inner.visible"
+          @close = "projectDetil.inner.visible=false"
+          append-to-body>
+          <el-container class="dialog-item-val sp-item" direction="vertical">
+              <el-col 
+                v-for="(t,k) in productDetil.inner.data"
+                :key="k"
+              >
+              {{t.body}}
+              </el-col>
+          </el-container>
+          
+      </el-dialog>
     </el-dialog>
   </div>
 
@@ -256,10 +280,11 @@ export default {
     const item = {
         sp: 'pamir',
         fileSize: '1220MB',
-        upRecord: '跟新记录',
+        upRecord: '更新记录',
         down:'下载',
-        data:'日期'
+        data:'2018/12/15'
       };
+
     return {
       zr: "",
       w: 0,
@@ -323,7 +348,12 @@ export default {
           val:'',
           type:'remark'
         }],
-        spData: Array(20).fill(item)
+        spData: Array(20).fill(item),
+        inner:{
+           visible:false,
+           title:'更新记录',
+           data:Array(20).fill({body:'sdfsdfsdfsdfsdfsdfsdf'})
+        }
       },
       // showProduct: false,
       // offsetProduct: [0, 0],
@@ -669,6 +699,7 @@ export default {
       let group = new zrender.Group();
       if (data.length == 1) {
         let g = new zrender.Group();
+        
         let rectEl = rect({
           shape: {
             x: 0,
@@ -1577,6 +1608,16 @@ export default {
           }
         }
       })
+    },
+    productClick(row){
+      // console.log(row)
+      this.productDetil.inner.visible = true
+    },
+    productDown(row){
+        console.log(row)
+        let url ='http://58.30.9.142:48086/files/2018/10/24/20181024175638_github.zip'
+        // util.StandardPost(url,{})
+        window.open(url)
     }
   }
 };
@@ -1713,4 +1754,5 @@ export default {
 .edit-item .edit-select{
   width: 100%;
 }
+
 </style>

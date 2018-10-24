@@ -143,7 +143,21 @@ function getScrollTop () {
 function getScrollHeight () {
   return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight)
 }
-
+let StandardPost = (url, args) => {
+  let form =document.createElement("form") ,input = document.createElement('input');
+  console.log(form)
+  form.method = 'post';
+  form.action =url;
+  for(let key in args){
+    input.setAttribute('type','hidden')
+    input.setAttribute('name',key)
+    input.setAttribute('value',args[key])
+    form.appendChild(input)
+  }
+   form.appendChild()
+  document.body.appendChild(form)
+  form.submit();
+}
 export {
   rect,
   rem,
@@ -159,5 +173,6 @@ export {
   getClientHeight,
   getScrollTop,
   getScrollHeight,
-  image
+  image,
+  StandardPost
 }
