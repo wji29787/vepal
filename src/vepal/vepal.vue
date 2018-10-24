@@ -1614,10 +1614,11 @@ export default {
       this.productDetil.inner.visible = true
     },
     productDown(row){
-        console.log(row)
+        
         let url ='http://58.30.9.142:48086/files/2018/10/24/20181024175638_github.zip'
-        // util.StandardPost(url,{})
-        window.open(url)
+        let url1 ='http://192.168.112.168:8087/file/download?filePath=http://58.30.9.142:48086/files/2018/10/24/20181024175638_github.zip'
+        util.StandardPost(url1)
+        // window.open(url)
     }
   }
 };

@@ -145,7 +145,6 @@ function getScrollHeight () {
 }
 let StandardPost = (url, args) => {
   let form =document.createElement("form") ,input = document.createElement('input');
-  console.log(form)
   form.method = 'post';
   form.action =url;
   for(let key in args){
@@ -154,7 +153,6 @@ let StandardPost = (url, args) => {
     input.setAttribute('value',args[key])
     form.appendChild(input)
   }
-   form.appendChild()
   document.body.appendChild(form)
   form.submit();
 }
