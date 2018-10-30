@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import './assets/css/base.css'
 import './element'
+import Moment from 'moment' 
 import App from './App'
 import router from './router'
 import http from './assets/js/axioshttp'
@@ -18,11 +19,14 @@ Vue.config.productionTip = false
 // axios.defaults.headers['Content-Type'] = 'application/json;charset=UTF-8'
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
 Vue.prototype.$http = http
+Vue.prototype.$moment = Moment
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
-  components: { App },
+  components: {
+    App
+  },
   template: '<App/>'
 })

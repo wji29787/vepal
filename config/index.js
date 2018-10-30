@@ -20,11 +20,19 @@ module.exports = {
         },
       },   
       '/dev': { 
-        target: 'http://192.168.95.93:8084', 
+        target: 'http://192.168.95.93:8085', 
         changeOrigin: true,
         // ws: true,
         pathRewrite: {
           '^/dev' : '',     // rewrite path 
+        },
+      },
+      '/suit-jira': { 
+        target: 'http://192.168.95.45:8084', 
+        changeOrigin: true,
+        // ws: true,
+        pathRewrite: {
+          '^/suit-jira' : '',     // rewrite path 
         },
       }
     },

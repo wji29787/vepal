@@ -23,9 +23,9 @@ let image = opt => {
 }
 let rem = (size) => {
   let baseSize = parseInt(document.querySelector('html').style.fontSize)
-  // if(baseSize <= 50){
-  //   baseSize = 50
-  // }
+  if(baseSize <= 50){
+    baseSize = 50
+  }
   return Math.round(baseSize / 100 * size)
 }
 let getTextLen = str => {
@@ -143,6 +143,15 @@ function getScrollTop () {
 function getScrollHeight () {
   return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight)
 }
+// 文档滚动到指定高度 
+function setScrollTop (el,scrollTop) {
+  if(!scrollTop){
+    scrollTop = el 
+    el = document.documentElement || document.body
+    
+  }
+  el.scrollTop = scrollTop
+}
 let StandardPost = (url, args) => {
   let form =document.createElement("form") ,input = document.createElement('input');
   form.method = 'post';
@@ -172,5 +181,6 @@ export {
   getScrollTop,
   getScrollHeight,
   image,
-  StandardPost
+  StandardPost,
+  setScrollTop
 }

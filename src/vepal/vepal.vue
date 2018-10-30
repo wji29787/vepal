@@ -50,6 +50,7 @@
     <div class = "dinner">
       <div id="container">
       </div>
+      sdsd
     </div> 
     <!-- editproject -->
     <el-dialog
@@ -57,7 +58,7 @@
       @close="projectEdit.visible=false"
       :title = "projectEdit.title"
       center
-      width = "6rem"
+      width = "8rem"
       >
       <el-container direction="vertical">
          <el-row  class = "edit-item" :gutter = 20
@@ -85,8 +86,6 @@
         <el-button type="primary" @click="editProjectSave">确 定</el-button>
       </div>
     </el-dialog>
-    <!-- <el-input ref = "editText" v-model="input" class = "edit-text"  @blur = "saveText" @change="handleText" placeholder="请输入内容"></el-input> -->
-    <!-- <input type="text" class = "edit-text"/> -->
     <!-- <sl-dialog :value="showProject" :offset="offsetProject" :position="'absolute'" class="">
        dfsdfsdfsf
     </sl-dialog> -->
@@ -109,7 +108,7 @@
       @close="projectDetil.visible=false"
       :title = "projectDetil.title"
       center
-      width = "6rem"
+      width = "8rem"
       >
       <el-container direction="vertical">
           <el-row  class = "sp-item" :gutter = 20
@@ -127,7 +126,7 @@
       @close="spDetil.visible=false"
       :title = "spDetil.title"
       center
-      width = "6rem"
+      width = "8rem"
       >
         <el-container direction="vertical">
           <el-row  class = "sp-item" :gutter = 20
@@ -148,7 +147,24 @@
       width = "8rem"
       >
       <el-container direction="vertical">
-          <el-row></el-row>
+          <el-row type="flex" justify="end">
+            
+            <el-col class="sp-item-label" :span = "3">
+                <!-- 上传 -->
+              <duct-upload 
+               :uploaddata = "productDetil.data" 
+               :productid = "productDetil.productId" 
+               :downBtn = "productDetil.downBtn"
+               @uploadSuccess = "uploadComplete"
+               />
+            </el-col>
+            <el-col class="sp-item-label" :span = "3">
+                  <el-button type="text"  v-show = "productDetil.downBtn" @click="productDown(productDetil.productId)" size="small">下载</el-button>
+            </el-col>
+            
+            <!-- <el-button type="text" size="small">上传</el-button> -->
+            
+          </el-row>
           <el-row  class = "sp-item" :gutter = 20
             v-for = "(item, $index) in productDetil.data"
             :key ="$index"
@@ -169,32 +185,48 @@
             </el-col>
           </el-row>
           <br>
-          
+          <hr>
+          <el-row type = "flex" align = "middle" >
+            <el-col  class = "item-produt" :span = "4">当前版本:</el-col>
+            <el-col  :span = "20" v-show = "productDetil.downBtn">
+              <el-button 
+                class = "item-produt-btn"
+                type="text" 
+                @click="productDown(productDetil.productId)" 
+                size="small"
+                :title ="productDetil.cursp"
+                >
+                {{productDetil.cursp}}
+              </el-button>
+              <el-button type="text" @click = "deleteProduct" icon="el-icon-close"></el-button>
+            </el-col>
+            <!-- <el-col class="item-top" :span = "18">{{productDetil.data[0].val + productDetil.data[1].val}}</el-col> -->
+          </el-row>
           <hr>
           <br>
           <el-container direction="vertical">
             <el-col :span = "24">历史版本</el-col>
             <el-table 
-             :data="productDetil.spData"
+             :data="productDetil.historyData"
               max-height="250"
               width="100%"
               :show-header = "false"
              >
-              <el-table-column prop="sp" label="版本" width="100">
+              <el-table-column prop="verName" label="版本">
               </el-table-column>
-              <el-table-column prop="fileSize" label="文件大小fileSize" width="100">
+              <el-table-column prop="filesize" label="文件大小" :formatter = "formatFileSize" width="100">
               </el-table-column>
-              <el-table-column  label="更新记录">
+              <el-table-column  label="更新记录" width="80">
                 <template slot-scope="scope">
                     <el-button type="text" @click="productClick(scope.row)" size="small">查看记录</el-button>
                 </template>
               </el-table-column>
-              <el-table-column label="下载">
+              <el-table-column label="下载" width="70">
                 <template slot-scope="scope">
                     <el-button type="text" @click="productDown(scope.row)" size="small">下载</el-button>
                 </template>
               </el-table-column>
-              <el-table-column prop="data" label="时间">
+              <el-table-column prop="createTime" label="时间" :formatter = "formatTime" width="150">
               </el-table-column>
             </el-table>
           </el-container>
@@ -204,14 +236,10 @@
           width="30%"
           :title = "productDetil.inner.title"
           :visible.sync = "productDetil.inner.visible"
-          @close = "projectDetil.inner.visible=false"
           append-to-body>
           <el-container class="dialog-item-val sp-item" direction="vertical">
-              <el-col 
-                v-for="(t,k) in productDetil.inner.data"
-                :key="k"
-              >
-              {{t.body}}
+              <el-col >
+                {{productDetil.inner.description}}
               </el-col>
           </el-container>
           
@@ -222,13 +250,14 @@
 </template>
 
 <script>
-import 'ztree'
-import 'ztree/css/zTreeStyle/zTreeStyle.css'
-import 'ztree/js/jquery.ztree.core.js'
-import 'ztree/js/jquery.ztree.excheck.js'
+
+import "ztree";
+import "ztree/css/zTreeStyle/zTreeStyle.css";
+import "ztree/js/jquery.ztree.core.js";
+import "ztree/js/jquery.ztree.excheck.js";
 import zrender from "zrender";
-import * as util from '../assets/js/util.js'
-import  {
+import * as util from "../assets/js/util.js";
+import {
   rect,
   rem,
   line,
@@ -239,21 +268,26 @@ import  {
   text,
   image
 } from "../assets/js/util.js";
+// 上传文件
+import productUpload from './productUpload'
 let DEFAULT = {
   hInterval: rem(20), // 上下间隔
   width: rem(200),
+  // width: rem(150),
   height: rem(70),
+  rectR: rem(10), //矩形圆角
   verH: rem(80), //套装盒高度
   groupWidth: rem(200 * 3 + 260 * 2), //包装盒宽
   fontSize: rem(18),
   xInterval: rem(260),
+  // xInterval: rem(100),
   lineColor: "#cacaca",
   lineHoverColor: "red",
   mCirclefontSize: rem(15),
   mCirclefontColor: "",
   mCircleFillColor: "#F5F5F5",
-  imageW:rem(30),
-  imageH:rem(30)
+  imageW: rem(30),
+  imageH: rem(30)
 };
 let tlData = [
   {
@@ -273,17 +307,12 @@ let tlData = [
   }
 ];
 
-
 export default {
   name: "Dinner",
+  components:{
+    'duct-upload': productUpload
+  },
   data() {
-    const item = {
-        sp: 'pamir',
-        fileSize: '1220MB',
-        upRecord: '更新记录',
-        down:'下载',
-        data:'2018/12/15'
-      };
 
     return {
       zr: "",
@@ -294,141 +323,162 @@ export default {
       list: [],
       dragBox: null, // 显示框元素
       tipShow: false,
-      bscroll:true, // 是否加载
-      pageNo:1,
-      pageSize:10, // 初始每页数据数
-      lastPage:false, //最后一页
+      bscroll: true, // 是否加载
+      pageNo: 1,
+      pageSize: 10, // 初始每页数据数
+      lastPage: false, //最后一页
+      scrollTop:0,
       // 项目详情
-      projectDetil:{
-        title:'项目详细',
-        visible:false,
-        data:[{
-          name:'项目名称',
-          val:'',
-          type:'projectName'
-        },{
-          name:'创建时间',
-          val:'',
-          type:'createDate'
-        },{
-          name:'相关文档',
-          val:'',
-          type:'projectId'
-        },{
-          name:'需求描述',
-          val:'',
-          type:'description'
-        }]
+      projectDetil: {
+        title: "项目详细",
+        visible: false,
+        data: [
+          {
+            name: "项目名称",
+            val: "",
+            type: "projectName"
+          },
+          {
+            name: "创建时间",
+            val: "",
+            type: "createDate"
+          },
+          {
+            name: "相关文档",
+            val: "",
+            type: "projectId"
+          },
+          {
+            name: "需求描述",
+            val: "",
+            type: "description"
+          }
+        ]
       },
       // showProject: false,
       // offsetProject: [0, 0],
       // deilProject: {},
       //产品详情
-      productDetil:{
-        title:'产品详细',
-        visible:false,
-        data:[{
-          name:'产品名称',
-          val:'',
-          type:'productName'
-        },{
-          name:'版本',
-          val:'',
-          type:'productVersion'
-        },{
-          name:'版本研发负责人',
-          val:'',
-          type:'productRDPerson'
-        },{
-          name:'描述',
-          val:'',
-          type:'productDesc'
-        },{
-          name:'备注',
-          val:'',
-          type:'remark'
-        }],
-        spData: Array(20).fill(item),
-        inner:{
-           visible:false,
-           title:'更新记录',
-           data:Array(20).fill({body:'sdfsdfsdfsdfsdfsdfsdf'})
-        }
+      productDetil: {
+        title: "产品详细",
+        productId:'',
+        visible: false,
+        downBtn:false, //下载按钮的显示 隐藏
+        cursp:'',
+        data: [
+          {
+            name: "产品名称",
+            val: "",
+            type: "productName"
+          },
+          {
+            name: "版本",
+            val: "",
+            type: "productVersion"
+          },
+          {
+            name: "版本研发负责人",
+            val: "",
+            type: "productRDPerson"
+          },
+          {
+            name: "描述",
+            val: "",
+            type: "productDesc"
+          },
+          {
+            name: "备注",
+            val: "",
+            type: "remark"
+          }
+        ],
+        historyData: [],
+        inner: {
+          visible: false,
+          title: "更新记录",
+          data: {}
+        },
       },
       // showProduct: false,
       // offsetProduct: [0, 0],
       // deilProduct: [],
       //套装详情
-      spDetil:{
-         title:'套装详细',
-         visible:false,
-         data:[{
-           name:'套装名称',
-           val:'',
-           type:'suitName'
-         },{
-            name:'发布时间',
-            val:'',
-            type:'suitDate'
-         },{
-            name:'联调负责人',
-            val:'',
-            type:'suitAdjustingPerson'
-         },{
-            name:'测试负责人',
-            val:'',
-            type:'suitsuitTestPersonName'
-         },{
-            name:'功能详情',
-            val:'',
-            type:'suitDescription'
-         }]    
+      spDetil: {
+        title: "套装详细",
+        visible: false,
+        data: [
+          {
+            name: "套装名称",
+            val: "",
+            type: "suitName"
+          },
+          {
+            name: "发布时间",
+            val: "",
+            type: "suitDate"
+          },
+          {
+            name: "联调负责人",
+            val: "",
+            type: "suitAdjustingPerson"
+          },
+          {
+            name: "测试负责人",
+            val: "",
+            type: "suitsuitTestPersonName"
+          },
+          {
+            name: "功能详情",
+            val: "",
+            type: "suitDescription"
+          }
+        ]
       },
       // 项目编辑
-      projectEdit:{
-        title:'项目编辑',
-        visible:false,
-        data:[],
-        projectName:'',
-        priorityID:'',
-        projectId:'',
-        curtPriorityEl:null,
-        curtEl:null,
-        index:-1,
+      projectEdit: {
+        title: "项目编辑",
+        visible: false,
+        data: [],
+        projectName: "",
+        priorityID: "",
+        projectId: "",
+        curtPriorityEl: null,
+        curtEl: null,
+        index: -1
       },
       // showSp:false,
       // offsetSp:[0,0],
       dialogVisible: false,
-      nodeData:[
-          { id:1, pId:0, name:"Pamir", open:true},
-          { id:11, pId:1, name:"5.5.5", open:true},
-          { id:111, pId:11, name:"TOP录播支持"},
-          { id:12, pId:1, name:"5.6.x", open:true},
-          { id:121, pId:12, name:"TOP音频录制"},
-          { id:2, pId:0, name:"Gis天眼", open:true},
-          { id:22, pId:2, name:"1.15.0", open:true},
-          { id:221, pId:22, name:"TOP会议支持", open:true},
-          { id:3, pId:0, name:"启明2视联终端", checked:true, open:true},
-          { id:2, pId:0, name:"PamirMobile"},
+      nodeData: [
+        { id: 1, pId: 0, name: "Pamir", open: true },
+        { id: 11, pId: 1, name: "5.5.5", open: true },
+        { id: 111, pId: 11, name: "TOP录播支持" },
+        { id: 12, pId: 1, name: "5.6.x", open: true },
+        { id: 121, pId: 12, name: "TOP音频录制" },
+        { id: 2, pId: 0, name: "Gis天眼", open: true },
+        { id: 22, pId: 2, name: "1.15.0", open: true },
+        { id: 221, pId: 22, name: "TOP会议支持", open: true },
+        { id: 3, pId: 0, name: "启明2视联终端", checked: true, open: true },
+        { id: 2, pId: 0, name: "PamirMobile" }
       ],
-      setting:{
-          view:{
-              showIcon:false
-          },
-          check: {
-              enable: true,
-              chkboxType:{"Y":"ps","N":"ps"}
-          },
-          data: {
-              simpleData: {
-                  enable: true
-              }
+      setting: {
+        view: {
+          showIcon: false
+        },
+        check: {
+          enable: true,
+          chkboxType: { Y: "ps", N: "ps" }
+        },
+        data: {
+          simpleData: {
+            enable: true
           }
+        }
       },
-      suitName:'', //SP名称
-      suitDate:'', //时间
-      suitDescription:'', //详细信息
-      issueId:'',//产品
+      suitName: "", //SP名称
+      suitDate: "", //时间
+      suitDescription: "", //详细信息
+      issueId: "", //产品
       deilSp: { suitDescription: "sdsdsd" }
     };
   },
@@ -440,10 +490,14 @@ export default {
   },
   mounted() {
     this.render();
-    this.dragTextBox();
+
+    // this.dragTextBox();
     this.getData();
     let that = this;
     let timer = null;
+    let date = new Date()
+    let str = this.$moment(date).format('YYYY-MM-DD h:mm:ss')
+    console.log(str)
     window.addEventListener("resize", function() {
       if (timer) clearTimeout(timer);
       timer = setTimeout(function() {
@@ -451,105 +505,122 @@ export default {
         that.init(that.list);
       }, 300);
     });
-    this.fnScroll()
-    
+    this.fnScroll();
   },
   methods: {
-    handleText(val){
+    handleText(val) {
       // console.log(this.input);
-      console.log(val)
+      console.log(val);
       // this.curtEl.attr({
       //   style:{
       //     text :val
       //   }
       // })
     },
-    saveText(){
+    saveText() {
       this.curtEl.attr({
-        style:{
-          text : textFormat(this.input, 18, 38)
+        style: {
+          text: textFormat(this.input, 18, 38)
         }
-      })
+      });
     },
     /**获取ztree数据并且渲染**/
-    getzt(){
-      var _this=this;
-        _this.dialogVisible=true;
-        setTimeout(()=>{
-           this.$http.get('/api/product/findAllProduct',(res)=>{
-                    if(res.status===200){
-                          var nodeList=[];
-                          // { id:1, pId:0, name:"Pamir", open:true},
-                          // { id:11, pId:1, name:"5.5.5", open:true},
-                           var productslist=res.data.data.products;
-                            for(var i=0;i<productslist.length;i++){
-                                var obj={"id":productslist[i].productId,pId:0,"name":productslist[i].productName + productslist[i].productVersion||'',open:true};
-                                nodeList.push(obj);
-                                if(productslist[i].projectList.length>0){
-                                    var cplist=productslist[i].projectList;
-                                    for(var j=0;j<cplist.length;j++){
-                                        var obj={"id":cplist[j].projectId,pId:productslist[i].productId,"name":cplist[j].projectName,open:true};
-                                        nodeList.push(obj);
-                                    }
-                                }
-                            }
-                        _this.nodeData=nodeList;
-                        $.fn.zTree.init($("#ztreedemo"),_this.setting,_this.nodeData);
-                    }else{
-                        console.log(res) 
-                    }
-            })
-         
-        },100)
-    },
-    save(){
-      var _this=this;
-      //获取ztree被选中节点的值
-      var treeObj=$.fn.zTree.getZTreeObj("ztreedemo"),
-      nodes=treeObj.getCheckedNodes(true),
-      sueIdstr="";
-      for(var i=0;i<nodes.length;i++){
-          if(nodes[i].pId==0||nodes[i].pId==null){
-             sueIdstr+=nodes[i].id + ",";
+    getzt() {
+      var _this = this;
+      _this.dialogVisible = true;
+      setTimeout(() => {
+        this.$http.get("/api/product/findAllProduct", res => {
+          if (res.status === 200) {
+            var nodeList = [];
+            // { id:1, pId:0, name:"Pamir", open:true},
+            // { id:11, pId:1, name:"5.5.5", open:true},
+            var productslist = res.data.data.products;
+            for (var i = 0; i < productslist.length; i++) {
+              var obj = {
+                id: productslist[i].productId,
+                pId: 0,
+                name:
+                  productslist[i].productName +
+                    productslist[i].productVersion || "",
+                open: true
+              };
+              nodeList.push(obj);
+              if (productslist[i].projectList.length > 0) {
+                var cplist = productslist[i].projectList;
+                for (var j = 0; j < cplist.length; j++) {
+                  var obj = {
+                    id: cplist[j].projectId,
+                    pId: productslist[i].productId,
+                    name: cplist[j].projectName,
+                    open: true
+                  };
+                  nodeList.push(obj);
+                }
+              }
+            }
+            _this.nodeData = nodeList;
+            $.fn.zTree.init($("#ztreedemo"), _this.setting, _this.nodeData);
+          } else {
+            console.log(res);
           }
+        });
+      }, 100);
+    },
+    save() {
+      var _this = this;
+      //获取ztree被选中节点的值
+      var treeObj = $.fn.zTree.getZTreeObj("ztreedemo"),
+        nodes = treeObj.getCheckedNodes(true),
+        sueIdstr = "";
+      for (var i = 0; i < nodes.length; i++) {
+        if (nodes[i].pId == 0 || nodes[i].pId == null) {
+          sueIdstr += nodes[i].id + ",";
+        }
       }
-      if(sueIdstr.length>0){
-          _this.issueId=sueIdstr.substring(0,sueIdstr.length-1);
+      if (sueIdstr.length > 0) {
+        _this.issueId = sueIdstr.substring(0, sueIdstr.length - 1);
       }
-      if(_this.suitName.length==0){
-          alert("SP名称不能为空");
-          return;
+      if (_this.suitName.length == 0) {
+        alert("SP名称不能为空");
+        return;
       }
-      if(_this.suitDate.length==0){
-          alert("套装日期不能为空");
-          return;
+      if (_this.suitDate.length == 0) {
+        alert("套装日期不能为空");
+        return;
       }
-      if(_this.suitDescription.length==0){
-          alert("套装描述不能为空");
-          return;
+      if (_this.suitDescription.length == 0) {
+        alert("套装描述不能为空");
+        return;
       }
-      if(_this.issueId.length==0){
-          alert("请选择套装产品");
-          return;
+      if (_this.issueId.length == 0) {
+        alert("请选择套装产品");
+        return;
       }
       //请求保存接口
-      this.$http.get('/api/suit/addSuit',{
-              suitName:_this.suitName,
-              suitDate:_this.suitDate,
-              suitDescription:_this.suitDescription, 
-              issueId:_this.issueId
-          },(res)=>{
-              if(res.status===200){
-                      alert("保存成功");
-              }else{
-                  console.log(res) 
-              }
-      })
+      this.$http.get(
+        "/api/suit/addSuit",
+        {
+          suitName: _this.suitName,
+          suitDate: _this.suitDate,
+          suitDescription: _this.suitDescription,
+          issueId: _this.issueId
+        },
+        res => {
+          if (res.status === 200) {
+            alert("保存成功");
+          } else {
+            console.log(res);
+          }
+        }
+      );
       _this.dialogVisible = false;
-  },
+    },
     render() {
       let container = document.getElementById("container");
-      this.zr = zrender.init(container);
+      this.zr = zrender.init(container,{
+        devicePixelRatio:window.devicePixelRatio,
+        // width:1400
+      });
       this.w = this.zr.getWidth();
       this.h = this.zr.getHeight();
     },
@@ -557,84 +628,93 @@ export default {
       this.groupH = rem(50);
       this.groupArr = [];
       this.dragBox = null;
-      this.bscroll = true // 是否加载
-      this.pageNo = 1
+      this.bscroll = true; // 是否加载
+      this.pageNo = 1;
       //this.pageSize = 10 // 初始每页数据数
-      this.lastPage = false //最后一页
+      this.lastPage = false; //最后一页
       this.zr.clear();
       this.zr.resize();
       this.w = this.zr.getWidth();
       this.h = this.zr.getHeight();
       DEFAULT = {
         hInterval: rem(20), // 上下间隔
+        // width: rem(150),
         width: rem(200),
         height: rem(70),
+        rectR: rem(10), //矩形圆角
         verH: rem(80), //套装盒高度
-        groupWidth: rem(200 * 3 + 260 * 2), //包装盒宽
+        // groupWidth: rem(200 * 3 + 260 * 2), //包装盒宽
         fontSize: rem(18),
         xInterval: rem(260),
+        // xInterval: rem(100),
         lineColor: "#cacaca",
         lineHoverColor: "red",
         mCirclefontSize: rem(15),
         mCirclefontColor: "",
         mCircleFillColor: "#F5F5F5",
-        imageW:rem(30),
-        imageH:rem(30)
+        imageW: rem(30),
+        imageH: rem(30)
       };
     },
     getData(pageNo) {
-      if(!this.bscroll){
-        return 
-      } 
-      this.bscroll =false
+      if (!this.bscroll) {
+        return;
+      }
+      this.bscroll = false;
       const loading = this.$loading({
         lock: true,
-        text: 'Loading',
-        spinner: 'el-icon-loading',
-        background: 'rgba(0, 0, 0, 0.7)'
+        text: "Loading",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)"
       });
-      this.$http.post("/api/suit/findAllSuitInfo",{
-        pageNo:pageNo?pageNo:1,
-        pageSize:this.pageSize
-      },res => {
-        loading.close()
-        setTimeout(()=>{
-               this.bscroll =true 
-            },350)
-        if (res.status === 200) {
-          if (res.data.code === 200) {
-           
-            if(res.data.data.suits && res.data.data.suits.length <this.pageSize){
-              this.lastPage =true;
-            }
-            if(this.list.length===0){
+      this.$http.post(
+        "/api/suit/findAllSuitInfo",
+        {
+          pageNo: pageNo ? pageNo : 1,
+          pageSize: this.pageSize
+        },
+        res => {
+          loading.close();
+          setTimeout(() => {
+            this.bscroll = true;
+          }, 350);
+          if (res.status === 200) {
+            if (res.data.code === 200) {
+              if (
+                res.data.data.suits &&
+                res.data.data.suits.length < this.pageSize
+              ) {
+                this.lastPage = true;
+              }
+              if (this.list.length === 0) {
                 this.list = res.data.data.suits;
-            }else{
-             this.list= this.list.concat(res.data.data.suits)
+              } else {
+                this.list = this.list.concat(res.data.data.suits);
+              }
+              // let groupH = this.groupH 
+              // console.log(groupH)
+              this.groupPosition(res.data.data.suits);
+              util.setScrollTop(this.scrollTop)
+              
+            } else {
+              if (pageNo > 1) {
+                this.pageNo -= 1;
+              }
+              this.$message(res.data.msg);
             }
-            
-            this.groupPosition(res.data.data.suits);
-            
           } else {
-            if(pageNo >1){
-              this.pageNo -= 1
+            if (pageNo > 1) {
+              this.pageNo -= 1;
             }
-            this.$message(res.data.msg);
+            this.$message(res.status);
           }
-        } else {
-          if(pageNo >1){
-              this.pageNo -= 1
-          }
-          this.$message(res.status);
         }
-        
-      });
+      );
     },
     init(data) {
-      // console.log(data)
       // this.titleGroup();
       this.groupPosition(data);
-      this.dragTextBox();
+      // this.dragTextBox();
     },
     titleGroup: function() {
       // 盒子宽
@@ -682,6 +762,7 @@ export default {
       this.zr.add(group);
     },
     cteateRectL(data, positionObj) {
+      // console.log(data)
       if (!data.length) return;
       //  包围盒子得高度
       let groupH = positionObj.H;
@@ -689,36 +770,78 @@ export default {
       let xInterval = DEFAULT.xInterval;
       // line x轴
       let lineLX = DEFAULT.width;
-      //项目盒子基准尺寸
-      let rectLOpt = {
-        width: DEFAULT.width,
-        height: DEFAULT.height,
-        r: rem(10)
+      // 基础元素高度
+      let elH = DEFAULT.height;
+      //基础元素宽度
+      let elW = DEFAULT.width;
+      let rectR = DEFAULT.rectR;
+      // 获取y轴的定位
+      let elPosition = cutLen => {
+        if (data.length < 2) {
+          return {
+            elrp: positionObj.L,
+            elly1p: groupH / 2,
+            elmp: (groupH - DEFAULT.imageH) / 2
+          };
+        } else {
+          return {
+            elrp: (elH + positionObj.L) * cutLen,
+            elly1p: elH / 2 + (elH + positionObj.L) * cutLen,
+            elmp: (elH - DEFAULT.imageH) / 2 + (elH + positionObj.L) * cutLen
+          };
+        }
       };
       // 包围盒总高度
       let group = new zrender.Group();
-      if (data.length == 1) {
+
+      data.forEach((t, i) => {
         let g = new zrender.Group();
-        
+        // 矩形组元素  elPosition(i).elrp
+        let rectGroup = new zrender.Group();
         let rectEl = rect({
           shape: {
             x: 0,
-            y: (groupH - DEFAULT.height) / 2,
-            ...rectLOpt
+            y: 0,
+            width: elW,
+            height: elH,
+            r: rectR
           },
           style: {
             fill: tlData[0].bgColor,
-            text: textFormat(data[0].projectName, 18, 38),
+            text: textFormat(t.projectName, 18, 38),
             textFill: tlData[0].color,
-            fontSize: DEFAULT.fontSize
-            // textLineHeight:DEFAULT.fontSize
+            fontSize: DEFAULT.fontSize,
+            textPosition: 'left',
+            textAlign:'left',
+            textOffset:[10,0],
+            // textLineHeight:60,
+            // textRect:{
+            //   x: 0,
+            //   y: 0,
+            //   width: elW,
+            //   height: elH,
+            // }
+            // textLineHeight:30
           },
-          projectId: data[0].projectId
+          projectId: t.projectId
         });
+        let imageEl = image({
+          style: {
+            image: require("./edit.png"),
+            x: elW - DEFAULT.imageW,
+            y: (elH-DEFAULT.imageH)/2,
+            width: DEFAULT.imageW,
+            height: DEFAULT.imageH
+          }
+        });
+        imageEl.hide()
+        rectGroup.add(rectEl);
+        rectGroup.add(imageEl);
+        rectGroup.position = [0, elPosition(i).elrp];
         let lineEl = line({
           shape: {
             x1: lineLX,
-            y1: groupH / 2,
+            y1: elPosition(i).elly1p,
             x2: lineLX + xInterval,
             y2: groupH / 2
           },
@@ -727,81 +850,13 @@ export default {
             stroke: DEFAULT.lineColor
           }
         });
-        let imageEl = image({
-          style:{
-            image:require('./edit.png'),
-            x:DEFAULT.width - DEFAULT.imageW + 3,
-            y:(groupH - DEFAULT.imageH) / 2,
-            width:DEFAULT.imageW,
-            height:DEFAULT.imageH
-          }
-        })
-        imageEl.hide()
-        g.add(rectEl)
-        g.add(lineEl)
-        g.add(imageEl)
-        
-        let textGroup = this.createText(data[0]);
-        textGroup.position = [
-          -((DEFAULT.width * 2) / 3 + DEFAULT.height / 2),
-          (groupH - DEFAULT.height) / 2
-        ];
+        g.add(rectGroup);
+        g.add(lineEl);
+        let textGroup = this.createText(t);
+        textGroup.position = [-((elW * 2) / 3 + elH / 2), elPosition(i).elrp];
         g.add(textGroup);
         group.add(g);
-      } else {
-        data.forEach((t, i) => {
-          let g = new zrender.Group();
-          let rectEl = rect({
-            shape: {
-              x: 0,
-              y: (DEFAULT.height + positionObj.L) * i,
-              ...rectLOpt
-            },
-            style: {
-              fill: tlData[0].bgColor,
-              text: textFormat(t.projectName, 18, 38),
-              textFill: tlData[0].color,
-              fontSize: DEFAULT.fontSize
-              // textLineHeight:30
-            },
-            projectId: t.projectId
-          });
-          let lineEl = line({
-            shape: {
-              x1: lineLX,
-              y1: DEFAULT.height / 2 + (DEFAULT.height + positionObj.L) * i,
-              x2: lineLX + xInterval,
-              y2: groupH / 2
-            },
-            style: {
-              fill: DEFAULT.lineColor,
-              stroke: DEFAULT.lineColor
-            }
-          });
-          let imageEl = image({
-            style:{
-              image:require('./edit.png'),
-              x:DEFAULT.width - DEFAULT.imageW + 3,
-              y:(DEFAULT.height -DEFAULT.imageH) / 2 + (DEFAULT.height + positionObj.L) * i,
-              width:DEFAULT.imageW,
-              height:DEFAULT.imageH 
-            }
-          })
-          imageEl.hide()
-          g.add(rectEl);
-          g.add(lineEl);
-          g.add(imageEl);
-          let textGroup = this.createText(t);
-          textGroup.position = [
-            -((DEFAULT.width * 2) / 3 + DEFAULT.height / 2),
-            (DEFAULT.height + positionObj.L) * i
-          ];
-          g.add(textGroup);
-
-          group.add(g);
-        });
-      }
-
+      });
       return group;
     },
     cteateRectR(data, positionObj) {
@@ -810,120 +865,122 @@ export default {
       let groupH = positionObj.H;
       // 水平间隔
       let xInterval = DEFAULT.xInterval;
-      // line x轴
-      let lineRX = DEFAULT.width * 2 + DEFAULT.xInterval;
-      //项目盒子基准尺寸
-      let rectLOpt = {
-        width: DEFAULT.width,
-        height: DEFAULT.height,
-        r: rem(10)
+      // 基础元素高度
+      let elH = DEFAULT.height;
+      // //基础元素宽度
+      let elW = DEFAULT.width;
+      let rectR = DEFAULT.rectR;
+      // // line x轴
+      let lineRX = elW * 2 + xInterval;
+      //元素组的总宽度
+      let groupWidth = elW * 3 + xInterval * 2;
+      // 获取y轴的定位
+      let elPosition = cutLen => {
+        if (data.length < 2) {
+          return {
+            elrp: positionObj.R,
+            elly2p: groupH / 2,
+            elmp: (groupH - DEFAULT.imageH) / 2
+          };
+        } else {
+          return {
+            elrp: (elH + positionObj.R) * cutLen,
+            elly2p: elH / 2 + (elH + positionObj.R) * cutLen,
+            elmp: (elH - DEFAULT.imageH) / 2 + (elH + positionObj.R) * cutLen
+          };
+        }
       };
       // 包围盒总高度
       let group = new zrender.Group();
-      if (data.length == 1) {
+
+      data.forEach((t, i) => {
         let g = new zrender.Group();
+        // 矩形组元素  elPosition(i).elrp
+        let rectGroup = new zrender.Group();
         let rectEl = rect({
           shape: {
-            x: DEFAULT.groupWidth - DEFAULT.width,
-            y: (groupH - DEFAULT.height) / 2,
-            ...rectLOpt
+            x: 0,
+            y: 0,
+            width: elW,
+            height: elH,
+            r: rectR
           },
           style: {
             fill: tlData[2].bgColor,
-            text: textFormat(`${data[0].productName+' '+data[0].productVersion}`, 20, 40),
+            text: textFormat(
+              `${t.productName + " " + t.productVersion}`,
+              20,
+              40
+            ),
             textFill: tlData[2].color,
             fontSize: DEFAULT.fontSize
           },
-          productId: data[0].productId
+          productId: t.productId
         });
+        rectGroup.add(rectEl);
+        rectGroup.position = [groupWidth - elW, elPosition(i).elrp];
         let lineEl = line({
           shape: {
             x1: lineRX,
             y1: groupH / 2,
             x2: lineRX + xInterval,
-            y2: groupH / 2
+            y2: elPosition(i).elly2p
           },
           style: {
             fill: DEFAULT.lineColor,
             stroke: DEFAULT.lineColor
           }
         });
-        g.add(rectEl);
+        g.add(rectGroup);
         g.add(lineEl);
         group.add(g);
-      } else {
-        data.forEach((t, i) => {
-          let g = new zrender.Group();
-          let rectEl = rect({
-            shape: {
-              x: DEFAULT.groupWidth - DEFAULT.width,
-              y: (DEFAULT.height + positionObj.R) * i,
-              ...rectLOpt
-            },
-            style: {
-              fill: tlData[2].bgColor,
-              text: textFormat(`${t.productName+' '+t.productVersion}`, 20, 40),
-              textFill: tlData[2].color,
-              fontSize: DEFAULT.fontSize
-            },
-            productId: t.productId
-          });
-          let lineEl = line({
-            shape: {
-              x1: lineRX,
-              y1: groupH / 2,
-              x2: lineRX + xInterval,
-              y2: DEFAULT.height / 2 + (DEFAULT.height + positionObj.R) * i
-            },
-            style: {
-              fill: DEFAULT.lineColor,
-              stroke: DEFAULT.lineColor
-            }
-          });
-          g.add(rectEl);
-          g.add(lineEl);
-          group.add(g);
-        });
-      }
-
+      });
       return group;
     },
     cteateRectM(data, positionObj) {
+      let groupH = positionObj.H;
+      // 水平间隔
+      let xInterval = DEFAULT.xInterval;
+      // 基础元素高度
+      let elH = DEFAULT.verH;
+      //基础元素宽度
+      let elW = DEFAULT.width;
+      // line x轴
+      let lineRX = elW * 2 + xInterval;
+      //元素组的总宽度
+      let groupWidth = elW * 3 + xInterval * 2;
       let group = new zrender.Group();
       group.attr({
         shape: {
-          width: DEFAULT.width,
-          height: DEFAULT.verH
+          width: elW,
+          height: elH
         },
-        position: [
-          (DEFAULT.groupWidth - DEFAULT.width) / 2,
-          (positionObj.H - DEFAULT.verH) / 2
-        ]
+        position: [(groupWidth - elW) / 2, (groupH - elH) / 2]
       });
       let ellipseEl = ellipse({
         shape: {
-          cx: DEFAULT.width / 2,
-          cy: DEFAULT.verH / 2,
-          rx: DEFAULT.width / 2,
-          ry: DEFAULT.verH / 2
+          cx: elW / 2,
+          cy: elH / 2,
+          rx: elW / 2,
+          ry: elH / 2
         },
         style: {
           fill: tlData[1].bgColor,
-          text: `${textFormat(data.suitName, 12, 24)}${
+          text: `${textFormat(data.suitName || "", 12, 24)}${
             data.suitDate ? "\n" + data.suitDate : ""
           }`,
           // text:'{a1|haha}\n{a2|sdfdf}',
           textFill: tlData[1].color,
           fontSize: DEFAULT.fontSize,
-          rich:{
-            a1:{
-              textFill: 'rgb(199,86,83)',
-              textLineHeight:10,
-              textBorderColor:'#000'
+          rich: {
+            a1: {
+              textFill: "rgb(199,86,83)",
+              textLineHeight: 10,
+              textBorderColor: "#000"
             },
-            a2:{
-              textFill: 'yellow',
-              textPadding:3
+            a2: {
+              textFill: "yellow",
+              textPadding: 3
             }
           }
         },
@@ -931,9 +988,9 @@ export default {
       });
       let circleElL = circle({
         shape: {
-          cx: DEFAULT.width / 5 / 2,
-          cy: DEFAULT.verH / 2,
-          r: DEFAULT.width / 5 / 2
+          cx: elW / 5 / 2,
+          cy: elH / 2,
+          r: elW / 5 / 2
         },
         style: {
           fill: DEFAULT.mCircleFillColor,
@@ -944,9 +1001,9 @@ export default {
       });
       let circleElR = circle({
         shape: {
-          cx: DEFAULT.width - DEFAULT.width / 5 / 2,
-          cy: DEFAULT.verH / 2,
-          r: DEFAULT.width / 5 / 2
+          cx: elW - elW / 5 / 2,
+          cy: elH / 2,
+          r: elW / 5 / 2
         },
         style: {
           fill: DEFAULT.mCircleFillColor,
@@ -959,318 +1016,6 @@ export default {
       group.add(circleElL);
       group.add(circleElR);
       return group;
-    },
-    /**
-     * 每组元素的占用的高度
-     * 左右间隔
-     * return {
-     * h ：元素盒的高度
-     * L:左边间隔
-     * R:右边间隔
-     * }
-     */
-    getBaseposition(data) {
-      let project = data.projectList;
-      let product = data.productList;
-      let lenPjt = project ? project.length : 0; // 左边
-      let lenPdt = product ? product.length : 0; // 右边
-      let base = {};
-      //左右元素都小于2时 以中间的元素高度为盒子高度
-      if (lenPjt < 2 && lenPdt < 2) {
-        base.H = DEFAULT.verH; // 包围盒高度
-        base.L = 0; // 左元素 高间距
-        base.R = 0; // 右元素 高间距
-      } else {
-        //
-        if (lenPjt === lenPdt) {
-          base.H = DEFAULT.height * lenPjt + (lenPjt - 1) * DEFAULT.hInterval;
-          base.L = base.R = DEFAULT.hInterval;
-        } else if (lenPjt > lenPdt) {
-          base.H = DEFAULT.height * lenPjt + (lenPjt - 1) * DEFAULT.hInterval;
-          base.L = DEFAULT.hInterval;
-          if (lenPdt < 2) {
-            base.R = 0; //没有元素
-          } else {
-            base.R = (base.H - DEFAULT.height * lenPdt) / (lenPdt - 1);
-          }
-        } else if (lenPjt < lenPdt) {
-          base.H = DEFAULT.height * lenPdt + (lenPdt - 1) * DEFAULT.hInterval;
-          base.R = DEFAULT.hInterval;
-          if (lenPjt < 2) {
-            base.L = 0; //没有元素
-          } else {
-            base.L = (base.H - DEFAULT.height * lenPjt) / (lenPjt - 1);
-          }
-        }
-      }
-      return base;
-    },
-    //包围盒定位
-    groupPosition(data) {
-      let that = this;
-      // 组得初始高度
-      // let groupArr = [];
-      let groupH = this.groupH;
-      data.forEach((t, i) => {
-        let project = t.projectList;
-        let product = t.productList;
-        let base = this.getBaseposition(t);
-        let group = new zrender.Group();
-        group.attr({
-          shape: {
-            width: DEFAULT.groupWidth,
-            height: base.H
-          },
-          position: [(that.w - DEFAULT.groupWidth) / 2, groupH]
-        });
-        groupH += DEFAULT.hInterval + base.H;
-        let shapeL = {
-          data: project
-        };
-        let groupL = that.cteateRectL(project, base);
-        let groupR = that.cteateRectR(product, base);
-        let groupM = that.cteateRectM(t, base);
-        // 遍历 各子节点元素 做业务处理
-        groupM.eachChild((k, i) => {
-          let flag = true;
-          k.on("click", e =>{
-            if (k.name == "PL") {
-              if(groupL){
-                   flag ? groupL.hide() : groupL.show();
-                   flag = !flag;
-              }
-              // this.showProject=false
-            } else if (k.name == "PR") {
-              if(groupR){
-                flag ? groupR.hide() : groupR.show();
-                flag = !flag;
-                // this.showProduct=false
-              }
-
-            } else if (k.name == "PM") {
-              // let position=[e.target.shape.rx,e.target.shape.ry]
-              // // 鼠标相对文档偏移
-              // let offset = [e.target.transform[4], e.target.transform[5]];
-              // //元素相对文档偏移
-              // let p = [offset[0], offset[1]];
-              // let poffset = [
-              //   `${parseInt(p[0] + DEFAULT.width)}px`,
-              //   `${parseInt(p[1] + DEFAULT.verH / 2)}px`
-              // ];
-              // if (!t.suitDescription) {
-              //   return;
-              // }
-              // if (that.showSp) {
-              //   if (that.offsetSp[1] === poffset[1]) {
-              //     that.showSp = false;
-              //   } else {
-              //     that.deilSp.suitDescription = t.suitDescription;
-              //     that.offsetSp = poffset;
-              //   }
-              // } else {
-              //   that.deilSp.suitDescription = t.suitDescription;
-              //   that.showSp = true;
-              //   that.offsetSp = poffset;
-              // }
-
-
-              that.spDetil.visible =true
-           
-             // let spStrType = ['suitName','suitDate','suitAdjustingPerson','suitTestPerson','suitDescription']
-             let spData = that.spDetil.data 
-              spData.forEach((item)=>{
-                  if(t[item.type]){
-                     item.val = t[item.type] 
-                  }else{
-                    item.val=''
-                  }
-              })
-              that.spDetil.data = spData
-            }
-          });
-        });
-        // 鼠标 添加 hover 事件
-        let addHover = (el, styOpt, type, data) => {
-          let rectOpt = {
-            style: {
-              stroke: styOpt.style.stroke
-            }
-          };
-          let fn = null,
-            ID;
-          if (type === "L") {
-            fn = groupR;
-            ID = "productId";
-          } else {
-            fn = groupL;
-            ID = "projectId";
-          }
-          el.childAt(0).attr(rectOpt);
-          el.childAt(1).attr(styOpt);
-          groupM.childAt(0).attr(rectOpt);
-          if (data) {
-            data.forEach(t => {
-              fn.eachChild(k => {
-                if (t[ID] == k.childAt(0)[ID]) {
-                  k.childAt(0).attr(rectOpt);
-                  k.childAt(1).attr(styOpt);
-                }
-              });
-            });
-          } else {
-            fn.eachChild(k => {
-              k.childAt(0).attr(rectOpt);
-              k.childAt(1).attr(styOpt);
-            });
-          }
-        };
-        if (groupL) {
-          groupL.eachChild((k, i) => {
-            let hoverL = false;
-            k.childAt(0)
-              .on("mouseover", e => {
-                hoverL = true;
-                this.getproRelation("L", e.target.projectId, res => {
-                  if (res.code == 200) {
-                    if (hoverL) {
-                      addHover(
-                        k,
-                        { style: { stroke: DEFAULT.lineHoverColor } },
-                        "L",
-                        res.data
-                      );
-                    }
-                  }
-                });
-                k.childAt(2).show()
-              })
-              .on("mouseout", e => {
-                hoverL = false;
-                addHover(
-                  k,
-                  {
-                    style: {
-                      stroke: DEFAULT.lineColor,
-                      fill: DEFAULT.lineColor
-                    }
-                  },
-                  "L"
-                );
-                 k.childAt(2).hide()
-              })
-              .on("click", e => {
-                // let position = [e.target.shape.x, e.target.shape.y];
-                // // 鼠标相对文档偏移
-                // let offset = [e.target.transform[4], e.target.transform[5]];
-                // //元素相对文档偏移
-                // let p = [position[0] + offset[0], position[1] + offset[1]];
-                // let poffset = [
-                //   `${parseInt(p[0] + DEFAULT.width)}px`,
-                //   `${parseInt(p[1] + DEFAULT.height / 2)}px`
-                // ];
-                // if (this.showProject) {
-                //   if (this.offsetProject[1] === poffset[1]) {
-                //     this.showProject = false;
-                //   } else {
-                //     this.deilProject = project[i];
-                //     this.offsetProject = poffset;
-                //   }
-                // } else {
-                //   this.deilProject = project[i];
-                //   this.showProject = true;
-                //   this.offsetProject = poffset;
-                // }
-                that.projectDetil.visible =true
-                let projectData = that.projectDetil.data 
-                  projectData.forEach((item)=>{
-                      if(project[i][item.type]){
-                        item.val = project[i][item.type] 
-                      }else{
-                        item.val=''
-                      }
-                  })   
-                  that.projectDetil.data = projectData
-              });
-              k.childAt(2).on('click',e =>{
-                //当前项目实例
-                that.projectEdit.curtEl = k.childAt(0)  || null
-                // 当前项目优先级元素实例
-                that.projectEdit.curtPriorityEl = k.childAt(3).childAt(0).childAt(1) ||null 
-                that.projectEdit.visible = true 
-                that.projectEdit.projectName=project[i].projectName
-                that.projectEdit.projectId=project[i].projectId
-                that.editProject(project[i].priorityName)  
-              })
-
-          });
-           group.add(groupL);
-        }
-        if (groupR) {
-          groupR.eachChild((k, i) => {
-            let hoverR = false;
-            k.childAt(0)
-              .on("mouseover", e => {
-                hoverR = true;
-                // that.$slloading.show()
-                this.getproRelation("R", e.target.productId, res => {
-                  if (res.code == 200) {
-                    if (hoverR) {
-                      hoverR = false;
-                      // that.$slloading.hide()
-                      addHover(
-                        k,
-                        { style: { stroke: DEFAULT.lineHoverColor } },
-                        "R",
-                        res.data
-                      );
-                    }
-                  }
-                });
-              })
-              .on("mouseout", () => {
-                hoverR = false;
-                // that.$slloading.hide()
-                addHover(
-                  k,
-                  {
-                    style: {
-                      stroke: DEFAULT.lineColor,
-                      fill: DEFAULT.lineColor
-                    }
-                  },
-                  "R"
-                );
-              })
-              .on("click", e => {
-                that.productDetil.visible =true
-                let productData = that.productDetil.data 
-                  productData.forEach((item,index)=>{
-                      if(product[i][item.type]){
-                        item.val = product[i][item.type] 
-                      }else{
-                        item.val=''
-                        if(index ===4){
-                          item.val=[]
-                        }
-                      }
-                  })
-                  that.productDetil.data = productData
-              });
-          });
-          group.add(groupR);
-        }
-        group.add(groupM);
-        // 保存下次渲染的初始高度
-        this.groupH = groupH;
-        // groupArr.push(group);
-        this.zr.add(group);
-        this.zr.resize({
-          height: groupH
-        });
-        // this.zr.refreshImmediately()
-      });
-
-      // this.groupArr = groupArr;
     },
     //文字 +圆弧
     createText(opt) {
@@ -1441,46 +1186,403 @@ export default {
       });
       return group;
     },
-    //项目优先级盒子
-    createDragBox(opt) {
-      opt = [
-        {
-          type: "高"
-        },
-        {
-          type: "中"
-        },
-        {
-          type: "低"
+    /**
+     * 每组元素的占用的高度
+     * 左右间隔
+     * return {
+     * h ：元素盒的高度
+     * L:左边间隔
+     * R:右边间隔
+     * }
+     */
+    getBaseposition(data) {
+      let project = data.projectList;
+      let product = data.productList;
+      let lenPjt = project ? project.length : 0; // 左边
+      let lenPdt = product ? product.length : 0; // 右边
+      let Dh = DEFAULT.height; //基础高度
+      let Dhl = DEFAULT.hInterval; // 基础间隔
+      let base = {};
+      /**
+       * 计算元素间隔
+       * 元素组总高度 Bh
+       * 元素基础高度 Dh,
+       *
+       * 元素数组长度 len,
+       * return 间隔
+       */
+      let computedL = (Bh, Dh, len) => {
+        if (len < 2) {
+          return (Bh - Dh * len) / (len + 1);
+        } else {
+          return (Bh - Dh * len) / (len - 1);
         }
-      ];
+      };
+      /**
+       * 计算总高度
+       * 元素基础高度 Dh,
+       * 元素基础间隔高度 Dhl, DEFAULT.hInterval
+       * 元素数组长度 len,
+       * return 总高度
+       */
+      let computedH = (Dhl, Dh, len) => {
+        return Dh * len + (len - 1) * Dhl;
+      };
 
-      let group = new zrender.Group();
-      let boxRect = rect({
-        shape: {
-          width: (DEFAULT.width * 2) / 3,
-          height: DEFAULT.height,
-          x: 0,
-          y: 0
-        },
-        style: {
-          fill: "#fff",
-          stroke: "red"
+      //左右元素都小于2时 以中间的元素高度为盒子高度
+      if (lenPjt < 2 && lenPdt < 2) {
+        base.H = DEFAULT.verH > Dh ? DEFAULT.verH : Dh; // 包围盒高度
+        // 左元素 高间距
+        base.L = computedL(base.H, Dh, lenPjt);
+        // 右元素 高间距
+        base.R = computedL(base.H, Dh, lenPdt);
+      } else {
+        //
+        if (lenPjt === lenPdt) {
+          base.H = computedH(Dhl, Dh, lenPjt);
+          base.L = base.R = Dhl;
+        } else if (lenPjt > lenPdt) {
+          base.H = computedH(Dhl, Dh, lenPjt);
+          base.L = Dhl;
+          base.R = computedL(base.H, Dh, lenPdt);
+        } else if (lenPjt < lenPdt) {
+          base.H = computedH(Dhl, Dh, lenPdt);
+          base.R = Dhl;
+          base.L = computedL(base.H, Dh, lenPjt);
         }
+      }
+      return base;
+    },
+    //包围盒定位
+    groupPosition(data) {
+      let that = this;
+      // 组得初始高度
+      // let groupArr = [];
+      //元素组的总宽度
+      let groupWidth = DEFAULT.width * 3 + DEFAULT.xInterval * 2;
+      let groupH = this.groupH;
+     
+      data.forEach((t, i) => {
+        let project = t.projectList;
+        let product = t.productList;
+        let base = this.getBaseposition(t);
+        let group = new zrender.Group();
+        group.attr({
+          shape: {
+            width: groupWidth,
+            height: base.H
+          },
+          position: [(that.w - groupWidth) / 2, groupH]
+        });
+        // 保存下次渲染的初始高度
+        groupH += DEFAULT.hInterval + base.H;
+        // let shapeL = {
+        //   data: project
+        // };
+        let groupL = that.cteateRectL(project, base);
+        let groupR = that.cteateRectR(product, base);
+        let groupM = that.cteateRectM(t, base);
+        group.add(groupL);
+        group.add(groupR);
+        group.add(groupM);
+        // 遍历 各子节点元素 做业务处理
+        this.handleM(groupM, groupL, groupR, t);
+        // 鼠标 添加 hover 事件
+        if (groupL) {
+          this.handleL(groupM, groupL, groupR, project);
+        }
+        if (groupR) {
+          this.handleR(groupM, groupL, groupR, product);
+        }
+
+        // groupArr.push(group);
+        this.zr.add(group);
+        this.zr.resize({
+          height: groupH
+        });
+        // this.zr.refreshImmediately()
       });
-      group.add(boxRect);
-      // opt.forEach((t,i)=>{
-      //   let box=rect({
-      //     shape:{
+      // 保存下次渲染的初始高度
+      this.groupH = groupH;
+      
+      // this.groupArr = groupArr;
+    },
+    handleM(groupM, groupL, groupR, data) {
+      groupM.eachChild((k, i) => {
+        let flag = true;
+        k.on("click", e => {
+          if (k.name == "PL") {
+            if (groupL) {
+              flag ? groupL.hide() : groupL.show();
+              flag = !flag;
+            }
+            // this.showProject=false
+          } else if (k.name == "PR") {
+            if (groupR) {
+              flag ? groupR.hide() : groupR.show();
+              flag = !flag;
+              // this.showProduct=false
+            }
+          } else if (k.name == "PM") {
+            // let position=[e.target.shape.rx,e.target.shape.ry]
+            // // 鼠标相对文档偏移
+            // let offset = [e.target.transform[4], e.target.transform[5]];
+            // //元素相对文档偏移
+            // let p = [offset[0], offset[1]];
+            // let poffset = [
+            //   `${parseInt(p[0] + DEFAULT.width)}px`,
+            //   `${parseInt(p[1] + DEFAULT.verH / 2)}px`
+            // ];
+            // if (!t.suitDescription) {
+            //   return;
+            // }
+            // if (that.showSp) {
+            //   if (that.offsetSp[1] === poffset[1]) {
+            //     that.showSp = false;
+            //   } else {
+            //     that.deilSp.suitDescription = t.suitDescription;
+            //     that.offsetSp = poffset;
+            //   }
+            // } else {
+            //   that.deilSp.suitDescription = t.suitDescription;
+            //   that.showSp = true;
+            //   that.offsetSp = poffset;
+            // }
 
-      //     },
-      //     style:{
+            this.spDetil.visible = true;
 
-      //     }
-      //   })
-      // })
+            // let spStrType = ['suitName','suitDate','suitAdjustingPerson','suitTestPerson','suitDescription']
+            let spData = this.spDetil.data;
+            spData.forEach(item => {
+              if (data[item.type]) {
+                item.val = data[item.type];
+              } else {
+                item.val = "";
+              }
+            });
+            this.spDetil.data = spData;
+          }
+        });
+      });
+    },
+    //添加鼠标悬停效果
+    handleHover(groupM, groupL, groupR) {
+      return (elGroup, styOpt, type, data) => {
+        let rectOpt = {
+          style: {
+            stroke: styOpt.style.stroke
+          }
+        };
+        let fn = null,
+          ID;
+        if (type === "L") {
+          fn = groupR;
+          ID = "productId";
+        } else {
+          fn = groupL;
+          ID = "projectId";
+        }
+        let rectEl = elGroup.childAt(0).childAt(0);
+        let lineEl = elGroup.childAt(1);
+        rectEl.attr(rectOpt);
+        lineEl.attr(styOpt);
+        groupM.childAt(0).attr(rectOpt);
+        if (data) {
+          data.forEach(t => {
+            fn.eachChild(k => {
+              let krect = k.childAt(0).childAt(0);
+              if (t[ID] == krect[ID]) {
+                krect.attr(rectOpt);
+                k.childAt(1).attr(styOpt);
+              }
+            });
+          });
+        } else {
+          fn.eachChild(k => {
+            let krect = k.childAt(0).childAt(0);
+            krect.attr(rectOpt);
+            k.childAt(1).attr(styOpt);
+          });
+        }
+      };
+    },
+    //左边盒子点击业务
+    handleL(groupM, groupL, groupR, data) {
+      let addHover = this.handleHover(groupM, groupL, groupR);
+      groupL.eachChild((k, i) => {
+        let hoverL = false;
+        let rectEl = k.childAt(0).childAt(0);
+        let editEl = k.childAt(0).childAt(1);
+        k.childAt(0)
+          .on("mouseover", e => {
+            hoverL = true;
 
-      return group;
+            let lineEl = k.childAt(1);
+            this.getproRelation("L", rectEl.projectId, res => {
+              if (res.code == 200) {
+                if (hoverL) {
+                  addHover(
+                    k,
+                    { style: { stroke: DEFAULT.lineHoverColor } },
+                    "L",
+                    res.data
+                  );
+                }
+              }
+            });
+            //编辑按钮
+            editEl.show();
+          })
+          .on("mouseout", e => {
+            hoverL = false;
+            addHover(
+              k,
+              {
+                style: {
+                  stroke: DEFAULT.lineColor,
+                  fill: DEFAULT.lineColor
+                }
+              },
+              "L"
+            );
+            //编辑按钮
+            editEl.hide();
+          });
+        rectEl.on("click", e => {
+          // let position = [e.target.shape.x, e.target.shape.y];
+          // // 鼠标相对文档偏移
+          // let offset = [e.target.transform[4], e.target.transform[5]];
+          // //元素相对文档偏移
+          // let p = [position[0] + offset[0], position[1] + offset[1]];
+          // let poffset = [
+          //   `${parseInt(p[0] + DEFAULT.width)}px`,
+          //   `${parseInt(p[1] + DEFAULT.height / 2)}px`
+          // ];
+          // if (this.showProject) {
+          //   if (this.offsetProject[1] === poffset[1]) {
+          //     this.showProject = false;
+          //   } else {
+          //     this.deilProject = project[i];
+          //     this.offsetProject = poffset;
+          //   }
+          // } else {
+          //   this.deilProject = project[i];
+          //   this.showProject = true;
+          //   this.offsetProject = poffset;
+          // }
+          this.projectDetil.visible = true;
+          let projectData = this.projectDetil.data;
+          projectData.forEach(item => {
+            if (data[i][item.type]) {
+              item.val = data[i][item.type];
+            } else {
+              item.val = "";
+            }
+          });
+          this.projectDetil.data = projectData;
+        });
+        editEl.on("click", e => {
+          //当前项目实例
+          this.projectEdit.curtEl = rectEl || null;
+          // 当前项目优先级元素实例
+          this.projectEdit.curtPriorityEl =
+            k
+              .childAt(2)
+              .childAt(0)
+              .childAt(1) || null;
+          this.projectEdit.visible = true;
+          this.projectEdit.projectName = data[i].projectName;
+          this.projectEdit.projectId = data[i].projectId;
+          this.editProject(data[i].priorityName);
+        });
+      });
+    },
+    //右边盒子点击事件
+    handleR(groupM, groupL, groupR, data) {
+      let addHover = this.handleHover(groupM, groupL, groupR);
+      groupR.eachChild((k, i) => {
+        let hoverR = false;
+        let rectEl = k.childAt(0).childAt(0);
+        let editEl = k.childAt(0).childAt(1);
+        k.childAt(0)
+          .on("mouseover", e => {
+            hoverR = true;
+            // that.$slloading.show()
+            this.getproRelation("R", rectEl.productId, res => {
+              if (res.code == 200) {
+                if (hoverR) {
+                  hoverR = false;
+                  // that.$slloading.hide()
+                  addHover(
+                    k,
+                    { style: { stroke: DEFAULT.lineHoverColor } },
+                    "R",
+                    res.data
+                  );
+                }
+              }
+            });
+          })
+          .on("mouseout", () => {
+            hoverR = false;
+            // that.$slloading.hide()
+            addHover(
+              k,
+              {
+                style: {
+                  stroke: DEFAULT.lineColor,
+                  fill: DEFAULT.lineColor
+                }
+              },
+              "R"
+            );
+          });
+        rectEl.on("click", e => {
+          //打开弹层
+          this.productDetil.visible = true;
+          //下载数据的初始化
+          this.$http.post('api/product/findVersionById',{
+            productVersionId:data[i]['productId']||''
+          },res =>{
+            if(res.status === 200){
+              if(res.data.code === 200){
+                  if(!res.data.data ||res.data.data === "" ){
+                          this.productDetil.downBtn = false
+                  }else{
+                      this.productDetil.downBtn = true
+                      this.productDetil.cursp = res.data.data
+                  }  
+              }else{
+                 this.$message({
+                  message: res.data.msg,
+                  type: 'warning'
+                 });
+              }
+            }else{
+              this.productDetil.downBtn = false
+              this.$message.error(res);
+            }
+           
+          })
+
+          // 数据的传递
+          let productData = this.productDetil.data;
+          productData.forEach((item, index) => {
+            if (data[i][item.type]) {
+              item.val = data[i][item.type]
+            } else {
+              item.val = "";
+              if (index === 4) {
+                item.val = []
+              }
+            }
+          })
+          this.productDetil.productId = data[i]['productId']
+          this.productDetil.data = productData
+          // 查询历史数据
+          this.getProductHistory(data[i]['productName'],data[i]['productVersion'])
+        });
+      });
     },
     // 详情弹框
     dragTextBox(opt) {
@@ -1531,60 +1633,66 @@ export default {
         }
       );
     },
-    fnScroll(){
-      let that =this
-      let scrollTop = 0
-      let fn =function(e){
-         
-        if(that.lastPage){
-          return
+    fnScroll() {
+      let that = this;
+      let beforeScrollTop = util.getScrollTop();
+      let fn = function(e) {
+        if (that.lastPage) {
+          return;
         }
-        if(!that.bscroll) return 
-            // 窗口可视范围的高度
-        var height=util.getClientHeight(),
-            // 窗口滚动条高度
-            theight=util.getScrollTop(),
-            // 窗口可视范围的高度
-            rheight=util.getScrollHeight(),
-            // 滚动条距离底部的高度
-            bheight=rheight-theight-height;
-            if(theight > scrollTop)
-            
-            if(bheight<=100){
-              if(theight > scrollTop){             
-                that.pageNo+=1
-                that.getData(that.pageNo)
-              }             
-            }
-             scrollTop = theight
-      }
-      window.addEventListener('scroll',fn)
-      
+        if (!that.bscroll) return;
+        // 窗口可视范围的高度
+        var height = util.getClientHeight(),
+          // 窗口滚动条高度
+          theight = util.getScrollTop(),
+          // 文档内容的高度
+          rheight = util.getScrollHeight(),
+          // 滚动的距离
+          detal = theight - beforeScrollTop,
+          // 滚动条距离底部的高度
+          bheight = rheight - theight - height;
+          beforeScrollTop = theight 
+        if(detal > 0){   
+             if(bheight <= 100){
+               that.pageNo += 1;
+              that.scrollTop = theight 
+              that.getData(that.pageNo);  
+             } 
+
+        }  
+      };
+      window.addEventListener("scroll", fn,false);
     },
-    editProject(priorityName){
-      this.$http.post('/api/project/findAllProjectPriority',res=>{
-        if(res.status === 200){
+    editProject(priorityName) {
+      this.$http.post("/suit-jira/project/findAllProjectPriority", res => {
+        if (res.status === 200) {
           // this.productEdit.data = res.data
-          if(res.data.code === 200){
-            this.projectEdit.data = res.data.data
-            let data =res.data.data;
-            this.projectEdit.priorityID = data.find(t =>{
-              return t.priorityName === priorityName.trim()
-            }).priorityID
+          if (res.data.code === 200) {
+            this.projectEdit.data = res.data.data;
+            let data = res.data.data;
+            this.projectEdit.priorityID = data.find(t => {
+              return t.priorityName === priorityName.trim();
+            }).priorityID;
           }
           // console.log(res.data)
         }
-      })
+      });
     },
-    editProjectSave(){
-      this.$http.post('/api/project/updateProject',{
-        projectName:this.projectEdit.projectName,
-        priorityId:this.projectEdit.priorityID,
-        projectId:this.projectEdit.projectId
-      },res=>{
-        if(res.status === 200){
-          if(res.data.code === 200){
-              this.projectEdit.visible =false
+    /**
+     * 保存编辑项目
+     */
+    editProjectSave() {
+      this.$http.post(
+        "/api/project/updateProject",
+        {
+          projectName: this.projectEdit.projectName,
+          priorityId: this.projectEdit.priorityID,
+          projectId: this.projectEdit.projectId
+        },
+        res => {
+          if (res.status === 200) {
+            if (res.data.code === 200) {
+              this.projectEdit.visible = false;
               //修改当前项
               // console.log(this.projectEdit.curtEl)
               // this.projectEdit.curtEl.attr({
@@ -1593,7 +1701,7 @@ export default {
               //   }
               // })
               // let priorityName = this.projectEdit.data.find(t =>{
-              //     return t.priorityID == this.projectEdit.priorityID 
+              //     return t.priorityID == this.projectEdit.priorityID
               // }).priorityName
               // this.projectEdit.curtPriorityEl.attr({
               //   style:{
@@ -1601,26 +1709,113 @@ export default {
               //   }
               // })
               // window.location ='#/vepal'
-              this.resetData()
-              this.getData()
-          }else{
-
+              this.resetData();
+              this.getData();
+            } else {
+            }
           }
+        }
+      );
+    },
+    // 
+    productClick(row) {
+      // console.log(row)
+      this.productDetil.inner.visible = true;
+      this.productDetil.inner.data = row
+
+    },
+    // 下载文件 
+    productDown(row) {
+      // let url =
+      //   "http://58.30.9.142:48086/files/2018/10/24/20181024175638_github.zip";
+      // let url1 =
+      //   "http://192.168.112.168:8087/file/download?filePath=http://58.30.9.142:48086/files/2018/10/24/20181024175638_github.zip";
+      // util.StandardPost(url1);
+      // window.open(url)
+      // console.log(row,url)
+      // console.log(util.toType(row))
+      let url 
+      // 下载文件
+      if(util.toType(row) === 'string' || util.toType(row) === 'number'){
+        url = 'api/file/download'
+        util.StandardPost(url,{
+          productVersionId:row
+        });
+      }else if(util.toType(row) === 'object'){
+        url = 'api/file/download'
+         util.StandardPost(url,{
+          productVersionId:row.verId
+        });
+
+      }
+
+    },
+    /** 
+     * 文件上传功能
+     * 文件上传成功
+     */
+    uploadComplete(res){
+      if(res.code === 200){
+         this.productDetil.cursp = res.data
+         this.productDetil.downBtn = true 
+      } 
+    },
+    /**
+     * 删除当前版本
+     */
+    deleteProduct(){
+      this.$http.post('api/product/deleteVersionById',{
+        productVersionId:this.productDetil.productId
+      },res => {
+        if(res.status === 200){
+          if(res.data.code === 200){
+            this.productDetil.cursp = '';
+            this.productDetil.downBtn = false
+          } else {
+            this.$message.error(res.data.msg);
+          }
+        }else{
+          this.$message.error(res);
         }
       })
     },
-    productClick(row){
-      // console.log(row)
-      this.productDetil.inner.visible = true
+    /**
+     * 历史记录查询
+     */
+    getProductHistory (productName,prodV) {
+      // http://192.168.95.93:8085/product/findAllHistoryVersionByProduct?
+      //   productName=pamir&
+      //   productVersion=pamir5.6.4 --查询历史版本接口
+    
+      this.$http.post('api/product/findAllHistoryVersionByProduct',{
+        productName:productName, // 版本号
+        productVersion:prodV     // 名称
+      },res => {
+        if(res.status === 200){
+          if(res.data.code ===200){
+             this.productDetil.historyData = res.data.data 
+          }
+          // console.log(res.data)
+        }      
+      })
     },
-    productDown(row){
-        
-        let url ='http://58.30.9.142:48086/files/2018/10/24/20181024175638_github.zip'
-        let url1 ='http://192.168.112.168:8087/file/download?filePath=http://58.30.9.142:48086/files/2018/10/24/20181024175638_github.zip'
-        util.StandardPost(url1)
-        // window.open(url)
+    /**
+     * 格式化文件大小
+     */
+    formatFileSize (row,column,cellValue,index) {
+        return cellValue+'MB'
+    },
+    /**
+     * 格式化事件
+     */
+    formatTime (row,column,cellValue,index) {
+        if(cellValue){
+            
+        }
+        return this.$moment(cellValue).format('YYYY-MM-DD h:mm:ss')
     }
   }
+
 };
 </script>
 
@@ -1640,96 +1835,96 @@ export default {
 }
 
 /***addvepal csy add***/
-.addvepal-layer{
-    font-family:微软雅黑;
-    font-size: 0.16rem;
+.addvepal-layer {
+  font-family: 微软雅黑;
+  font-size: 0.16rem;
 }
 
-.addvepal-layer ul li{
-    line-height: 0.5rem;
-    margin-top:0.1rem;
-    height: auto;
-    width: 9rem;
+.addvepal-layer ul li {
+  line-height: 0.5rem;
+  margin-top: 0.1rem;
+  height: auto;
+  width: 9rem;
 }
-.addvepal-layer ul li label{
-    float: left;
-    width:1.2rem;
-    text-align: right;
+.addvepal-layer ul li label {
+  float: left;
+  width: 1.2rem;
+  text-align: right;
 }
-.elinput{
-    width:7rem;
+.elinput {
+  width: 7rem;
 }
- .addvepal-layer ul li textarea{
-    height: 0.8rem;
-    width:6.8rem;
-    resize: none;
-    padding:0.1rem;
-    border:1px solid #dcdfe6;
- }
- .producttree{
-     width:7.2rem;
-     height: 4rem;
-     border:1px solid #dcdfe6;
-     float: left;
-     overflow-y:auto;
-     overflow-x: hidden;
- }
- .addbtn{
-     background: rgba(74, 163, 222, 1);
-     width:1rem;
-     text-align: center;
-     height: 0.3rem;
-     line-height: 0.3rem;
-     display: block;
-     color:#fff;
-     margin-left:2.5rem;
- }
- .suitDate{
-     width:7rem;
- }
- .elbutton{
-   position: fixed;
-   right:0rem;
-   top:0;
-   background: #409EFF;
-   color:#fff;
-   padding:0.1rem;
-   margin:0.1rem;
-   z-index: 30;
- }
- .version{
-   position: absolute;
-   left:0.1rem;
-   top:0.1rem;
-   font-size: 0.2rem;
-   font-family: Arial, Helvetica, sans-serif;
- }
- .version strong{
-    font-size: 12px;
-    padding-left: 0.1rem;
- }
- /***addvepal end***/
- /* sp-dialog  start*/
- .sp-item {
-   /* height: 0.4rem; */
-   /* padding: 0.1rem 0 */
-   line-height: 0.3rem;
- } 
- .sp-item .sp-item-label {
-   text-align: right ;
-   /* font-weight: bold */
- }
- .sp-item .sp-item-val {
-   /* line-height: 0.3rem; */
- }
- .sp-footer{
-   /* margin-top:0.4rem; */
- }
-  /* sp-dialog  end*/
+.addvepal-layer ul li textarea {
+  height: 0.8rem;
+  width: 6.8rem;
+  resize: none;
+  padding: 0.1rem;
+  border: 1px solid #dcdfe6;
+}
+.producttree {
+  width: 7.2rem;
+  height: 4rem;
+  border: 1px solid #dcdfe6;
+  float: left;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.addbtn {
+  background: rgba(74, 163, 222, 1);
+  width: 1rem;
+  text-align: center;
+  height: 0.3rem;
+  line-height: 0.3rem;
+  display: block;
+  color: #fff;
+  margin-left: 2.5rem;
+}
+.suitDate {
+  width: 7rem;
+}
+.elbutton {
+  position: fixed;
+  right: 0rem;
+  top: 0;
+  background: #409eff;
+  color: #fff;
+  padding: 0.1rem;
+  margin: 0.1rem;
+  z-index: 30;
+}
+.version {
+  position: absolute;
+  left: 0.1rem;
+  top: 0.1rem;
+  font-size: 0.2rem;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.version strong {
+  font-size: 12px;
+  padding-left: 0.1rem;
+}
+/***addvepal end***/
+/* sp-dialog  start*/
+.sp-item {
+  /* height: 0.4rem; */
+  /* padding: 0.1rem 0 */
+  line-height: 0.3rem;
+}
+.sp-item .sp-item-label {
+  text-align: right;
+  /* font-weight: bold */
+}
+.sp-item .sp-item-val {
+  /* line-height: 0.3rem; */
+}
+.sp-footer {
+  /* margin-top:0.4rem; */
+}
+/* sp-dialog  end*/
 
-.dialog-item-val{
+.dialog-item-val {
   max-height: 3rem;
-  overflow: auto
+  overflow: auto;
 }
 .edit-text {
   position: fixed;
@@ -1744,16 +1939,28 @@ export default {
   /* visibility: hidden; */
   opacity: 0;
 }
-.edit-item{
+.edit-item {
   /* height: 0.4rem; */
- line-height: 0.4rem;
- margin-bottom: 0.1rem;
+  line-height: 0.4rem;
+  margin-bottom: 0.1rem;
 }
-.edit-item .edit-item-label{
-  text-align: right ;
+.edit-item .edit-item-label {
+  text-align: right;
 }
-.edit-item .edit-select{
+.edit-item .edit-select {
   width: 100%;
 }
-
+.item-right {
+  text-align: right;
+}
+.item-top {
+  margin-top: 0.1rem
+}
+.item-produt{
+  padding: 10px 0;
+}
+.item-produt-btn {
+  overflow: hidden;
+  max-width: 90%;
+}
 </style>
