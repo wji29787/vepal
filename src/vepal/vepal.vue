@@ -193,7 +193,7 @@
           append-to-body>
           <el-container class="dialog-item-val sp-item" direction="vertical">
               <el-col >
-                {{productDetil.inner.description}}
+                {{productDetil.inner.data.description}}
               </el-col>
           </el-container>
           
