@@ -113,8 +113,8 @@ export default {
         code :false,
         msg : '失败'
       });
-       this.isSuccess = false
-      this.$message.error('错了哦，这是一条错误消息');
+      this.isSuccess = false
+      this.$message.error('上传失败')
     },
     /**
      * 上传终止 取消上传
