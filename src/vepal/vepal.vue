@@ -1,56 +1,10 @@
 <template>
   <div>
-    <el-button type="text" class="elbutton"  @click="getzt">新增套装</el-button>
+    <add-vepal @saveComplete = "reRender" />
     <span class="version">套装展示<strong>v1.0.1</strong></span>
-    <el-dialog 
-      title="添加套装"
-      :visible="dialogVisible" width="50%"
-      @close="dialogVisible = false"
-      >
-          <div class="addvepal-layer">
-            <ul>
-                <li>
-                    <label>SP名称：</label>
-                    <el-input v-model="suitName" class="elinput" placeholder="请输入内容"></el-input>
-                </li>
-                <li>
-                    <label>时间：</label>
-                    <div class="block">
-                        <el-date-picker
-                        v-model="suitDate"
-                        type="date"
-                        placeholder="选择日期"
-                        class="suitDate"
-                        >
-                        </el-date-picker>
-                    </div>
-                </li>
-                <li>
-                    <label>详细信息：</label>
-                    <textarea v-model="suitDescription"></textarea>
-                </li>
-                <li class="clearfix">
-                    <label>产品：</label>
-                    <div  class="producttree">
-                        <ul class="ztree" id="ztreedemo"></ul>
-                    </div>
-                </li>
-            </ul>
-        </div>
-    
-      <span slot="footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="save()">确 定</el-button>
-      </span>
-    </el-dialog>
-    
-   <!-- <el-scrollbar>
-      
-    </el-scrollbar> -->
     <div class = "dinner">
       <div id="container">
       </div>
-      sdsd
     </div> 
     <!-- editproject -->
     <el-dialog
@@ -250,11 +204,6 @@
 </template>
 
 <script>
-
-import "ztree";
-import "ztree/css/zTreeStyle/zTreeStyle.css";
-import "ztree/js/jquery.ztree.core.js";
-import "ztree/js/jquery.ztree.excheck.js";
 import zrender from "zrender";
 import * as util from "../assets/js/util.js";
 import {
@@ -270,6 +219,8 @@ import {
 } from "../assets/js/util.js";
 // 上传文件
 import productUpload from './productUpload'
+// 新增套装
+import addvepal from './addvepal'
 let DEFAULT = {
   hInterval: rem(20), // 上下间隔
   width: rem(200),
@@ -310,7 +261,8 @@ let tlData = [
 export default {
   name: "Dinner",
   components:{
-    'duct-upload': productUpload
+    'duct-upload': productUpload,
+    'add-vepal' : addvepal
   },
   data() {
 
@@ -444,42 +396,12 @@ export default {
         projectId: "",
         curtPriorityEl: null,
         curtEl: null,
-        index: -1
+        index: -1,
+        editIndex:-1,
+        editProjectIndex: -1
       },
       // showSp:false,
       // offsetSp:[0,0],
-      dialogVisible: false,
-      nodeData: [
-        { id: 1, pId: 0, name: "Pamir", open: true },
-        { id: 11, pId: 1, name: "5.5.5", open: true },
-        { id: 111, pId: 11, name: "TOP录播支持" },
-        { id: 12, pId: 1, name: "5.6.x", open: true },
-        { id: 121, pId: 12, name: "TOP音频录制" },
-        { id: 2, pId: 0, name: "Gis天眼", open: true },
-        { id: 22, pId: 2, name: "1.15.0", open: true },
-        { id: 221, pId: 22, name: "TOP会议支持", open: true },
-        { id: 3, pId: 0, name: "启明2视联终端", checked: true, open: true },
-        { id: 2, pId: 0, name: "PamirMobile" }
-      ],
-      setting: {
-        view: {
-          showIcon: false
-        },
-        check: {
-          enable: true,
-          chkboxType: { Y: "ps", N: "ps" }
-        },
-        data: {
-          simpleData: {
-            enable: true
-          }
-        }
-      },
-      suitName: "", //SP名称
-      suitDate: "", //时间
-      suitDescription: "", //详细信息
-      issueId: "", //产品
-      deilSp: { suitDescription: "sdsdsd" }
     };
   },
   created() {
@@ -495,21 +417,18 @@ export default {
     this.getData();
     let that = this;
     let timer = null;
-    let date = new Date()
-    let str = this.$moment(date).format('YYYY-MM-DD h:mm:ss')
-    console.log(str)
     window.addEventListener("resize", function() {
       if (timer) clearTimeout(timer);
       timer = setTimeout(function() {
         that.resetData();
-        that.init(that.list);
+        that.init();
       }, 300);
     });
     this.fnScroll();
   },
   methods: {
     handleText(val) {
-      // console.log(this.input);
+     
       console.log(val);
       // this.curtEl.attr({
       //   style:{
@@ -524,96 +443,10 @@ export default {
         }
       });
     },
-    /**获取ztree数据并且渲染**/
-    getzt() {
-      var _this = this;
-      _this.dialogVisible = true;
-      setTimeout(() => {
-        this.$http.get("/api/product/findAllProduct", res => {
-          if (res.status === 200) {
-            var nodeList = [];
-            // { id:1, pId:0, name:"Pamir", open:true},
-            // { id:11, pId:1, name:"5.5.5", open:true},
-            var productslist = res.data.data.products;
-            for (var i = 0; i < productslist.length; i++) {
-              var obj = {
-                id: productslist[i].productId,
-                pId: 0,
-                name:
-                  productslist[i].productName +
-                    productslist[i].productVersion || "",
-                open: true
-              };
-              nodeList.push(obj);
-              if (productslist[i].projectList.length > 0) {
-                var cplist = productslist[i].projectList;
-                for (var j = 0; j < cplist.length; j++) {
-                  var obj = {
-                    id: cplist[j].projectId,
-                    pId: productslist[i].productId,
-                    name: cplist[j].projectName,
-                    open: true
-                  };
-                  nodeList.push(obj);
-                }
-              }
-            }
-            _this.nodeData = nodeList;
-            $.fn.zTree.init($("#ztreedemo"), _this.setting, _this.nodeData);
-          } else {
-            console.log(res);
-          }
-        });
-      }, 100);
-    },
-    save() {
-      var _this = this;
-      //获取ztree被选中节点的值
-      var treeObj = $.fn.zTree.getZTreeObj("ztreedemo"),
-        nodes = treeObj.getCheckedNodes(true),
-        sueIdstr = "";
-      for (var i = 0; i < nodes.length; i++) {
-        if (nodes[i].pId == 0 || nodes[i].pId == null) {
-          sueIdstr += nodes[i].id + ",";
-        }
-      }
-      if (sueIdstr.length > 0) {
-        _this.issueId = sueIdstr.substring(0, sueIdstr.length - 1);
-      }
-      if (_this.suitName.length == 0) {
-        alert("SP名称不能为空");
-        return;
-      }
-      if (_this.suitDate.length == 0) {
-        alert("套装日期不能为空");
-        return;
-      }
-      if (_this.suitDescription.length == 0) {
-        alert("套装描述不能为空");
-        return;
-      }
-      if (_this.issueId.length == 0) {
-        alert("请选择套装产品");
-        return;
-      }
-      //请求保存接口
-      this.$http.get(
-        "/api/suit/addSuit",
-        {
-          suitName: _this.suitName,
-          suitDate: _this.suitDate,
-          suitDescription: _this.suitDescription,
-          issueId: _this.issueId
-        },
-        res => {
-          if (res.status === 200) {
-            alert("保存成功");
-          } else {
-            console.log(res);
-          }
-        }
-      );
-      _this.dialogVisible = false;
+    // 刷新
+    reRender() {
+      this.resetData();
+      this.getData();
     },
     render() {
       let container = document.getElementById("container");
@@ -686,14 +519,18 @@ export default {
               ) {
                 this.lastPage = true;
               }
+              let listLen 
               if (this.list.length === 0) {
+                listLen = 0
                 this.list = res.data.data.suits;
               } else {
+                listLen = this.list.length
                 this.list = this.list.concat(res.data.data.suits);
               }
               // let groupH = this.groupH 
               // console.log(groupH)
-              this.groupPosition(res.data.data.suits);
+
+              this.groupPosition(res.data.data.suits,listLen);
               util.setScrollTop(this.scrollTop)
               
             } else {
@@ -711,9 +548,9 @@ export default {
         }
       );
     },
-    init(data) {
+    init() {
       // this.titleGroup();
-      this.groupPosition(data);
+      this.groupPosition(this.list,0);
       // this.dragTextBox();
     },
     titleGroup: function() {
@@ -1254,7 +1091,7 @@ export default {
       return base;
     },
     //包围盒定位
-    groupPosition(data) {
+    groupPosition(data,listLen) {
       let that = this;
       // 组得初始高度
       // let groupArr = [];
@@ -1289,7 +1126,7 @@ export default {
         this.handleM(groupM, groupL, groupR, t);
         // 鼠标 添加 hover 事件
         if (groupL) {
-          this.handleL(groupM, groupL, groupR, project);
+          this.handleL(groupM, groupL, groupR, project,listLen+i);
         }
         if (groupR) {
           this.handleR(groupM, groupL, groupR, product);
@@ -1333,22 +1170,6 @@ export default {
             //   `${parseInt(p[0] + DEFAULT.width)}px`,
             //   `${parseInt(p[1] + DEFAULT.verH / 2)}px`
             // ];
-            // if (!t.suitDescription) {
-            //   return;
-            // }
-            // if (that.showSp) {
-            //   if (that.offsetSp[1] === poffset[1]) {
-            //     that.showSp = false;
-            //   } else {
-            //     that.deilSp.suitDescription = t.suitDescription;
-            //     that.offsetSp = poffset;
-            //   }
-            // } else {
-            //   that.deilSp.suitDescription = t.suitDescription;
-            //   that.showSp = true;
-            //   that.offsetSp = poffset;
-            // }
-
             this.spDetil.visible = true;
 
             // let spStrType = ['suitName','suitDate','suitAdjustingPerson','suitTestPerson','suitDescription']
@@ -1407,7 +1228,7 @@ export default {
       };
     },
     //左边盒子点击业务
-    handleL(groupM, groupL, groupR, data) {
+    handleL(groupM, groupL, groupR, data,index) {
       let addHover = this.handleHover(groupM, groupL, groupR);
       groupL.eachChild((k, i) => {
         let hoverL = false;
@@ -1458,18 +1279,6 @@ export default {
           //   `${parseInt(p[0] + DEFAULT.width)}px`,
           //   `${parseInt(p[1] + DEFAULT.height / 2)}px`
           // ];
-          // if (this.showProject) {
-          //   if (this.offsetProject[1] === poffset[1]) {
-          //     this.showProject = false;
-          //   } else {
-          //     this.deilProject = project[i];
-          //     this.offsetProject = poffset;
-          //   }
-          // } else {
-          //   this.deilProject = project[i];
-          //   this.showProject = true;
-          //   this.offsetProject = poffset;
-          // }
           this.projectDetil.visible = true;
           let projectData = this.projectDetil.data;
           projectData.forEach(item => {
@@ -1491,9 +1300,16 @@ export default {
               .childAt(0)
               .childAt(1) || null;
           this.projectEdit.visible = true;
-          this.projectEdit.projectName = data[i].projectName;
-          this.projectEdit.projectId = data[i].projectId;
-          this.editProject(data[i].priorityName);
+          this.projectEdit.projectName = data[i].projectName
+          this.projectEdit.projectId = data[i].projectId
+          this.editProject(data[i].priorityName)
+          /**
+           * 当前编辑项的套装索引
+           * 当前编辑项索引
+           * 
+           */
+          this.projectEdit.editIndex = index
+          this.projectEdit.editProjectIndex = i
         });
       });
     },
@@ -1683,7 +1499,7 @@ export default {
      */
     editProjectSave() {
       this.$http.post(
-        "/api/project/updateProject",
+        "/suit-jira/project/updateProject",
         {
           projectName: this.projectEdit.projectName,
           priorityId: this.projectEdit.priorityID,
@@ -1700,17 +1516,20 @@ export default {
               //     text:textFormat(this.projectEdit.projectName, 18, 38)
               //   }
               // })
-              // let priorityName = this.projectEdit.data.find(t =>{
-              //     return t.priorityID == this.projectEdit.priorityID
-              // }).priorityName
+              let priorityName = this.projectEdit.data.find(t =>{
+                  return t.priorityID == this.projectEdit.priorityID
+              }).priorityName
               // this.projectEdit.curtPriorityEl.attr({
               //   style:{
               //     text:`优先级: ${priorityName}`
               //   }
               // })
-              // window.location ='#/vepal'
-              this.resetData();
-              this.getData();
+              // 修改响应项
+              this.list[this.projectEdit.editIndex]['projectList'][this.projectEdit.editProjectIndex]['projectName'] = this.projectEdit.projectName
+              this.list[this.projectEdit.editIndex]['projectList'][this.projectEdit.editProjectIndex]['priorityName'] = priorityName
+              this.resetData()
+              // this.getData();
+              this.init()
             } else {
             }
           }
@@ -1726,14 +1545,9 @@ export default {
     },
     // 下载文件 
     productDown(row) {
-      // let url =
-      //   "http://58.30.9.142:48086/files/2018/10/24/20181024175638_github.zip";
-      // let url1 =
-      //   "http://192.168.112.168:8087/file/download?filePath=http://58.30.9.142:48086/files/2018/10/24/20181024175638_github.zip";
       // util.StandardPost(url1);
       // window.open(url)
-      // console.log(row,url)
-      // console.log(util.toType(row))
+      
       let url 
       // 下载文件
       if(util.toType(row) === 'string' || util.toType(row) === 'number'){
@@ -1782,11 +1596,7 @@ export default {
     /**
      * 历史记录查询
      */
-    getProductHistory (productName,prodV) {
-      // http://192.168.95.93:8085/product/findAllHistoryVersionByProduct?
-      //   productName=pamir&
-      //   productVersion=pamir5.6.4 --查询历史版本接口
-    
+    getProductHistory (productName,prodV) {   
       this.$http.post('api/product/findAllHistoryVersionByProduct',{
         productName:productName, // 版本号
         productVersion:prodV     // 名称
@@ -1835,63 +1645,6 @@ export default {
 }
 
 /***addvepal csy add***/
-.addvepal-layer {
-  font-family: 微软雅黑;
-  font-size: 0.16rem;
-}
-
-.addvepal-layer ul li {
-  line-height: 0.5rem;
-  margin-top: 0.1rem;
-  height: auto;
-  width: 9rem;
-}
-.addvepal-layer ul li label {
-  float: left;
-  width: 1.2rem;
-  text-align: right;
-}
-.elinput {
-  width: 7rem;
-}
-.addvepal-layer ul li textarea {
-  height: 0.8rem;
-  width: 6.8rem;
-  resize: none;
-  padding: 0.1rem;
-  border: 1px solid #dcdfe6;
-}
-.producttree {
-  width: 7.2rem;
-  height: 4rem;
-  border: 1px solid #dcdfe6;
-  float: left;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-.addbtn {
-  background: rgba(74, 163, 222, 1);
-  width: 1rem;
-  text-align: center;
-  height: 0.3rem;
-  line-height: 0.3rem;
-  display: block;
-  color: #fff;
-  margin-left: 2.5rem;
-}
-.suitDate {
-  width: 7rem;
-}
-.elbutton {
-  position: fixed;
-  right: 0rem;
-  top: 0;
-  background: #409eff;
-  color: #fff;
-  padding: 0.1rem;
-  margin: 0.1rem;
-  z-index: 30;
-}
 .version {
   position: absolute;
   left: 0.1rem;
