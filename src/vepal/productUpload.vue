@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-upload 
+        <el-upload
                  :action = "uploadUrl"
                  :on-success = "uploadSuccess"
                  :on-error = 'uploadError'
@@ -24,7 +24,7 @@ export default {
       /**
        *
        * http://192.168.95.93:8085/file/upload?
-       * file=111.txt& 
+       * file=111.txt&
        * productVersionId=18095&
        * productName=启明2&
        * productVersion=11.1&
@@ -52,7 +52,7 @@ export default {
      * 上传文件
      */
     productUpload(res) {
-        this.uploadUrl = this.downBtn ? 'api/file/reUpload' : 'api/file/upload'
+        this.uploadUrl = this.downBtn ? 'api/suit/file/reUpload' : 'api/suit/file/upload'
         let params =['productName','productVersion','productRDPerson','productDesc','productRemark','productVersionId']
         let uploadData = this.uploadData
         let uploaddata = this.uploaddata
@@ -72,15 +72,15 @@ export default {
                   }
                   uploadData[t] = remark.length > 0 ? remark.join(',') : ''
                 }else{
-                  uploadData[t] = uploaddata[i].val||'' 
+                  uploadData[t] = uploaddata[i].val||''
                 }
-                
+
             }
-            
+
         })
-        this.uploadData = uploadData 
+        this.uploadData = uploadData
         this.$refs.upload.submit()
-        
+
     },
     /**
      * 上传之前
@@ -103,7 +103,7 @@ export default {
      * 上传进度
      */
     uploadProg(press){
-      
+
     },
     /**
      * 上传失败

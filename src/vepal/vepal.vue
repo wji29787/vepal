@@ -5,7 +5,7 @@
     <div class = "dinner">
       <div id="container">
       </div>
-    </div> 
+    </div>
     <!-- editproject -->
     <el-dialog
       :visible="projectEdit.visible"
@@ -18,7 +18,7 @@
          <el-row  class = "edit-item" :gutter = 20
           >
             <el-col class="edit-item-label" :span = "6">项目名称:</el-col>
-            <el-col  :span = "18"><el-input size="small" v-model="projectEdit.projectName"></el-input></el-col>      
+            <el-col  :span = "18"><el-input size="small" v-model="projectEdit.projectName"></el-input></el-col>
         </el-row>
           <el-row  class = "edit-item" :gutter = 20
           >
@@ -32,7 +32,7 @@
                   :value="item.priorityID">
                 </el-option>
               </el-select>
-            </el-col>      
+            </el-col>
           </el-row>
       </el-container>
       <div slot="footer" class ="sp-footer">
@@ -57,7 +57,7 @@
        </div>
     </sl-dialog> -->
     <!-- project-dialog -->
-    <el-dialog  
+    <el-dialog
       :visible="projectDetil.visible"
       @close="projectDetil.visible=false"
       :title = "projectDetil.title"
@@ -75,7 +75,7 @@
         </el-container>
     </el-dialog>
     <!-- sp-dialog -->
-    <el-dialog 
+    <el-dialog
       :visible="spDetil.visible"
       @close="spDetil.visible=false"
       :title = "spDetil.title"
@@ -102,12 +102,12 @@
       >
       <el-container direction="vertical">
           <el-row type="flex" justify="end">
-            
+
             <el-col class="sp-item-label" :span = "3">
                 <!-- 上传 -->
-              <duct-upload 
-               :uploaddata = "productDetil.data" 
-               :productid = "productDetil.productId" 
+              <duct-upload
+               :uploaddata = "productDetil.data"
+               :productid = "productDetil.productId"
                :downBtn = "productDetil.downBtn"
                @uploadSuccess = "uploadComplete"
                />
@@ -115,9 +115,9 @@
             <el-col class="sp-item-label" :span = "3">
                   <el-button type="text"  v-show = "productDetil.downBtn" @click="productDown(productDetil.productId)" size="small">下载</el-button>
             </el-col>
-            
+
             <!-- <el-button type="text" size="small">上传</el-button> -->
-            
+
           </el-row>
           <el-row  class = "sp-item" :gutter = 20
             v-for = "(item, $index) in productDetil.data"
@@ -126,16 +126,16 @@
             <el-col class="sp-item-label" :span = "6">{{item.name}}:</el-col>
             <el-col class="sp-item-val" :class = "{'dialog-item-val' : $index ===3 || $index ===4}" :span = "18">
               <template v-if="$index === 4">
-                  <div 
+                  <div
                     v-for = "(kval, $l) in item.val"
                      :key="kval.id">
                      {{($l+1)+': '+kval.actionbody}}
-                  </div> 
+                  </div>
               </template>
-              <template v-else> 
+              <template v-else>
                   {{item.val}}
              </template>
-              
+
             </el-col>
           </el-row>
           <br>
@@ -143,10 +143,10 @@
           <el-row type = "flex" align = "middle" >
             <el-col  class = "item-produt" :span = "4">当前版本:</el-col>
             <el-col  :span = "20" v-show = "productDetil.downBtn">
-              <el-button 
+              <el-button
                 class = "item-produt-btn"
-                type="text" 
-                @click="productDown(productDetil.productId)" 
+                type="text"
+                @click="productDown(productDetil.productId)"
                 size="small"
                 :title ="productDetil.cursp"
                 >
@@ -160,7 +160,7 @@
           <br>
           <el-container direction="vertical">
             <el-col :span = "24">历史版本</el-col>
-            <el-table 
+            <el-table
              :data="productDetil.historyData"
               max-height="250"
               width="100%"
@@ -196,7 +196,7 @@
                 {{productDetil.inner.description}}
               </el-col>
           </el-container>
-          
+
       </el-dialog>
     </el-dialog>
   </div>
@@ -428,7 +428,7 @@ export default {
   },
   methods: {
     handleText(val) {
-     
+
       console.log(val);
       // this.curtEl.attr({
       //   style:{
@@ -501,7 +501,7 @@ export default {
         background: "rgba(0, 0, 0, 0.7)"
       });
       this.$http.post(
-        "/api/suit/findAllSuitInfo",
+        "/api/suit/suit/findAllSuitInfo",
         {
           pageNo: pageNo ? pageNo : 1,
           pageSize: this.pageSize
@@ -519,7 +519,7 @@ export default {
               ) {
                 this.lastPage = true;
               }
-              let listLen 
+              let listLen
               if (this.list.length === 0) {
                 listLen = 0
                 this.list = res.data.data.suits;
@@ -527,12 +527,12 @@ export default {
                 listLen = this.list.length
                 this.list = this.list.concat(res.data.data.suits);
               }
-              // let groupH = this.groupH 
+              // let groupH = this.groupH
               // console.log(groupH)
 
               this.groupPosition(res.data.data.suits,listLen);
               util.setScrollTop(this.scrollTop)
-              
+
             } else {
               if (pageNo > 1) {
                 this.pageNo -= 1;
@@ -1098,7 +1098,7 @@ export default {
       //元素组的总宽度
       let groupWidth = DEFAULT.width * 3 + DEFAULT.xInterval * 2;
       let groupH = this.groupH;
-     
+
       data.forEach((t, i) => {
         let project = t.projectList;
         let product = t.productList;
@@ -1141,7 +1141,7 @@ export default {
       });
       // 保存下次渲染的初始高度
       this.groupH = groupH;
-      
+
       // this.groupArr = groupArr;
     },
     handleM(groupM, groupL, groupR, data) {
@@ -1306,7 +1306,7 @@ export default {
           /**
            * 当前编辑项的套装索引
            * 当前编辑项索引
-           * 
+           *
            */
           this.projectEdit.editIndex = index
           this.projectEdit.editProjectIndex = i
@@ -1357,7 +1357,7 @@ export default {
           //打开弹层
           this.productDetil.visible = true;
           //下载数据的初始化
-          this.$http.post('api/product/findVersionById',{
+          this.$http.post('api/suit/product/findVersionById',{
             productVersionId:data[i]['productId']||''
           },res =>{
             if(res.status === 200){
@@ -1367,7 +1367,7 @@ export default {
                   }else{
                       this.productDetil.downBtn = true
                       this.productDetil.cursp = res.data.data
-                  }  
+                  }
               }else{
                  this.$message({
                   message: res.data.msg,
@@ -1378,7 +1378,7 @@ export default {
               this.productDetil.downBtn = false
               this.$message.error(res);
             }
-           
+
           })
 
           // 数据的传递
@@ -1430,8 +1430,8 @@ export default {
     getproRelation(type, id, callback) {
       let url =
         type === "L"
-          ? "/api/suit/findProductListByProjectId"
-          : "/api/suit/findProjectListByProductId";
+          ? "/api/suit/suit/findProductListByProjectId"
+          : "/api/suit/suit/findProjectListByProductId";
 
       this.$http.get(
         url,
@@ -1467,20 +1467,21 @@ export default {
           detal = theight - beforeScrollTop,
           // 滚动条距离底部的高度
           bheight = rheight - theight - height;
-          beforeScrollTop = theight 
-        if(detal > 0){   
+          beforeScrollTop = theight
+        if(detal > 0){
              if(bheight <= 100){
                that.pageNo += 1;
-              that.scrollTop = theight 
-              that.getData(that.pageNo);  
-             } 
+              that.scrollTop = theight
+              that.getData(that.pageNo);
+             }
 
-        }  
+        }
       };
       window.addEventListener("scroll", fn,false);
     },
     editProject(priorityName) {
-      this.$http.post("/suit-jira/project/findAllProjectPriority", res => {
+      this.$http.post("/api/suit-jira/project/findAllProjectPriority", res => {
+        console.log("项目级别接口返回结果:"+res);
         if (res.status === 200) {
           // this.productEdit.data = res.data
           if (res.data.code === 200) {
@@ -1499,7 +1500,7 @@ export default {
      */
     editProjectSave() {
       this.$http.post(
-        "/suit-jira/project/updateProject",
+        "/api/suit-jira/project/updateProject",
         {
           projectName: this.projectEdit.projectName,
           priorityId: this.projectEdit.priorityID,
@@ -1536,27 +1537,27 @@ export default {
         }
       );
     },
-    // 
+    //
     productClick(row) {
       // console.log(row)
       this.productDetil.inner.visible = true;
       this.productDetil.inner.data = row
 
     },
-    // 下载文件 
+    // 下载文件
     productDown(row) {
       // util.StandardPost(url1);
       // window.open(url)
-      
-      let url 
+
+      let url
       // 下载文件
       if(util.toType(row) === 'string' || util.toType(row) === 'number'){
-        url = 'api/file/download'
+        url = 'api/suit/file/download'
         util.StandardPost(url,{
           productVersionId:row
         });
       }else if(util.toType(row) === 'object'){
-        url = 'api/file/download'
+        url = 'api/suit/file/download'
          util.StandardPost(url,{
           productVersionId:row.verId
         });
@@ -1564,21 +1565,21 @@ export default {
       }
 
     },
-    /** 
+    /**
      * 文件上传功能
      * 文件上传成功
      */
     uploadComplete(res){
       if(res.code === 200){
          this.productDetil.cursp = res.data
-         this.productDetil.downBtn = true 
-      } 
+         this.productDetil.downBtn = true
+      }
     },
     /**
      * 删除当前版本
      */
     deleteProduct(){
-      this.$http.post('api/product/deleteVersionById',{
+      this.$http.post('/api/suit/product/deleteVersionById',{
         productVersionId:this.productDetil.productId
       },res => {
         if(res.status === 200){
@@ -1596,17 +1597,17 @@ export default {
     /**
      * 历史记录查询
      */
-    getProductHistory (productName,prodV) {   
-      this.$http.post('api/product/findAllHistoryVersionByProduct',{
+    getProductHistory (productName,prodV) {
+      this.$http.post('/api/suit/product/findAllHistoryVersionByProduct',{
         productName:productName, // 版本号
         productVersion:prodV     // 名称
       },res => {
         if(res.status === 200){
           if(res.data.code ===200){
-             this.productDetil.historyData = res.data.data 
+             this.productDetil.historyData = res.data.data
           }
           // console.log(res.data)
-        }      
+        }
       })
     },
     /**
@@ -1620,7 +1621,7 @@ export default {
      */
     formatTime (row,column,cellValue,index) {
         if(cellValue){
-            
+
         }
         return this.$moment(cellValue).format('YYYY-MM-DD h:mm:ss')
     }

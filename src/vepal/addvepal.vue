@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-button type="text" class="elbutton"  @click="getzt">新增套装</el-button>
-        <el-dialog 
+        <el-dialog
             title="添加套装"
             :visible="dialogVisible" width="50%"
             @close="dialogVisible = false"
@@ -36,7 +36,7 @@
                     </li>
                 </ul>
             </div>
-    
+
             <span slot="footer">
                 <el-button @click="dialogVisible = false">取 消</el-button>
                 <el-button type="primary" @click="save()">确 定</el-button>
@@ -97,7 +97,7 @@ export default {
       var _this = this;
       _this.dialogVisible = true;
       setTimeout(() => {
-        this.$http.get("/api/product/findAllProduct", res => {
+        this.$http.get("/api/suit/product/findAllProduct", res => {
           if (res.status === 200) {
             var nodeList = [];
             // { id:1, pId:0, name:"Pamir", open:true},
@@ -166,7 +166,7 @@ export default {
       }
       //请求保存接口
       this.$http.get(
-        "/api/suit/addSuit",
+        "/api/suit/suit/addSuit",
         {
           suitName: _this.suitName,
           suitDate: _this.suitDate,
@@ -175,9 +175,9 @@ export default {
         },
         res => {
           if (res.status === 200) {
-            this.$emit('saveComplete')   
+            this.$emit('saveComplete')
             alert("保存成功");
-            
+
           } else {
             console.log(res);
           }
