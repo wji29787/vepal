@@ -208,7 +208,7 @@ import zrender from "zrender";
 import * as util from "../assets/js/util.js";
 import {
   rect,
-  rem,
+  // rem,
   line,
   ellipse,
   circle,
@@ -217,69 +217,32 @@ import {
   text,
   image
 } from "../assets/js/util.js";
+import { rem, styleConf } from "./vepalconf.js";
 // 上传文件
-import productUpload from './productUpload'
+import productUpload from "./productUpload";
 // 新增套装
-import addvepal from './addvepal'
-let DEFAULT = {
-  hInterval: rem(20), // 上下间隔
-  width: rem(200),
-  // width: rem(150),
-  height: rem(70),
-  rectR: rem(10), //矩形圆角
-  verH: rem(80), //套装盒高度
-  groupWidth: rem(200 * 3 + 260 * 2), //包装盒宽
-  fontSize: rem(18),
-  xInterval: rem(260),
-  // xInterval: rem(100),
-  lineColor: "#cacaca",
-  lineHoverColor: "red",
-  mCirclefontSize: rem(15),
-  mCirclefontColor: "",
-  mCircleFillColor: "#F5F5F5",
-  imageW: rem(30),
-  imageH: rem(30)
-};
-let tlData = [
-  {
-    name: "项目名称",
-    bgColor: "rgba(74, 163, 222, 1)",
-    color: "#fff"
-  },
-  {
-    name: "套装",
-    bgColor: "rgba(119, 141, 252, 1)",
-    color: "#fff"
-  },
-  {
-    name: "相关版本",
-    bgColor: "rgba(131, 220, 220, 1)",
-    color: "#fff"
-  }
-];
-
+import addvepal from "./addvepal";
+let customStyle = styleConf(rem());
 export default {
   name: "Dinner",
-  components:{
-    'duct-upload': productUpload,
-    'add-vepal' : addvepal
+  components: {
+    "duct-upload": productUpload,
+    "add-vepal": addvepal
   },
   data() {
-
     return {
       zr: "",
       w: 0,
       h: 0,
-      groupH: rem(50), //元素组起始位置
+      groupH: customStyle.groupH, //元素组起始位置
       groupArr: [],
       list: [],
-      dragBox: null, // 显示框元素
       tipShow: false,
       bscroll: true, // 是否加载
       pageNo: 1,
       pageSize: 10, // 初始每页数据数
       lastPage: false, //最后一页
-      scrollTop:0,
+      scrollTop: 0,
       // 项目详情
       projectDetil: {
         title: "项目详细",
@@ -313,10 +276,10 @@ export default {
       //产品详情
       productDetil: {
         title: "产品详细",
-        productId:'',
+        productId: "",
         visible: false,
-        downBtn:false, //下载按钮的显示 隐藏
-        cursp:'',
+        downBtn: false, //下载按钮的显示 隐藏
+        cursp: "",
         data: [
           {
             name: "产品名称",
@@ -349,7 +312,7 @@ export default {
           visible: false,
           title: "更新记录",
           data: {}
-        },
+        }
       },
       // showProduct: false,
       // offsetProduct: [0, 0],
@@ -397,9 +360,9 @@ export default {
         curtPriorityEl: null,
         curtEl: null,
         index: -1,
-        editIndex:-1,
+        editIndex: -1,
         editProjectIndex: -1
-      },
+      }
       // showSp:false,
       // offsetSp:[0,0],
     };
@@ -412,8 +375,6 @@ export default {
   },
   mounted() {
     this.render();
-
-    // this.dragTextBox();
     this.getData();
     let that = this;
     let timer = null;
@@ -428,7 +389,6 @@ export default {
   },
   methods: {
     handleText(val) {
-     
       console.log(val);
       // this.curtEl.attr({
       //   style:{
@@ -450,17 +410,17 @@ export default {
     },
     render() {
       let container = document.getElementById("container");
-      this.zr = zrender.init(container,{
-        devicePixelRatio:window.devicePixelRatio,
+      this.zr = zrender.init(container, {
+        devicePixelRatio: window.devicePixelRatio
         // width:1400
       });
       this.w = this.zr.getWidth();
       this.h = this.zr.getHeight();
     },
     resetData() {
-      this.groupH = rem(50);
+      customStyle = styleConf(rem());
+      this.groupH = customStyle.groupH;
       this.groupArr = [];
-      this.dragBox = null;
       this.bscroll = true; // 是否加载
       this.pageNo = 1;
       //this.pageSize = 10 // 初始每页数据数
@@ -469,25 +429,6 @@ export default {
       this.zr.resize();
       this.w = this.zr.getWidth();
       this.h = this.zr.getHeight();
-      DEFAULT = {
-        hInterval: rem(20), // 上下间隔
-        // width: rem(150),
-        width: rem(200),
-        height: rem(70),
-        rectR: rem(10), //矩形圆角
-        verH: rem(80), //套装盒高度
-        // groupWidth: rem(200 * 3 + 260 * 2), //包装盒宽
-        fontSize: rem(18),
-        xInterval: rem(260),
-        // xInterval: rem(100),
-        lineColor: "#cacaca",
-        lineHoverColor: "red",
-        mCirclefontSize: rem(15),
-        mCirclefontColor: "",
-        mCircleFillColor: "#F5F5F5",
-        imageW: rem(30),
-        imageH: rem(30)
-      };
     },
     getData(pageNo) {
       if (!this.bscroll) {
@@ -519,20 +460,19 @@ export default {
               ) {
                 this.lastPage = true;
               }
-              let listLen 
+              let listLen;
               if (this.list.length === 0) {
-                listLen = 0
+                listLen = 0;
                 this.list = res.data.data.suits;
               } else {
-                listLen = this.list.length
+                listLen = this.list.length;
                 this.list = this.list.concat(res.data.data.suits);
               }
-              // let groupH = this.groupH 
+              // let groupH = this.groupH
               // console.log(groupH)
 
-              this.groupPosition(res.data.data.suits,listLen);
-              util.setScrollTop(this.scrollTop)
-              
+              this.groupPosition(res.data.data.suits, listLen);
+              util.setScrollTop(this.scrollTop);
             } else {
               if (pageNo > 1) {
                 this.pageNo -= 1;
@@ -549,82 +489,36 @@ export default {
       );
     },
     init() {
-      // this.titleGroup();
-      this.groupPosition(this.list,0);
-      // this.dragTextBox();
+      this.groupPosition(this.list, 0);
     },
-    titleGroup: function() {
-      // 盒子宽
-      let widthBase = rem(150);
-      // 盒子高
-      let heightBase = rem(50);
-      // 水平间隔
-      let winterval = rem(260);
-      // 垂直间隔
-      let hInterval = rem(50);
-      // 盒子 圆角 r
-      let r = rem(10);
-      // 文字size
-      let fontSize = rem(20);
-      // 配置项
-      let rectTleOpt = {
-        width: widthBase,
-        height: heightBase,
-        r: r
-      };
-      // 标题包围盒
-      let group = new zrender.Group();
-      tlData.forEach((t, i) => {
-        let rectEl = rect({
-          shape: {
-            x: i == 0 ? 0 : (widthBase + winterval) * i,
-            y: 0,
-            ...rectTleOpt
-          },
-          style: {
-            fill: t.bgColor,
-            text: t.name,
-            textFill: "#fff",
-            fontSize: fontSize
-          }
-        });
-        group.add(rectEl);
-      });
-      //获取包围盒
-      var rectGroup = group.getBoundingRect();
-      let position = [(this.w - rectGroup.width) / 2, this.groupH];
-      // 包围盒距离顶部得高度
-      this.groupH += rectGroup.height + hInterval;
-      group.position = position;
-      this.zr.add(group);
-    },
-    cteateRectL(data, positionObj) {
-      // console.log(data)
+    cteateRectL(data, positionObj, conf) {
       if (!data.length) return;
       //  包围盒子得高度
       let groupH = positionObj.H;
       // 水平间隔
-      let xInterval = DEFAULT.xInterval;
+      let xInterval = conf.line.width;
       // line x轴
-      let lineLX = DEFAULT.width;
+      let lineLX = conf.project.width;
       // 基础元素高度
-      let elH = DEFAULT.height;
+      let elH = conf.project.height;
       //基础元素宽度
-      let elW = DEFAULT.width;
-      let rectR = DEFAULT.rectR;
+      let elW = conf.project.width;
+      // 圆角
+      let rectR = conf.project.rr;
       // 获取y轴的定位
       let elPosition = cutLen => {
         if (data.length < 2) {
           return {
             elrp: positionObj.L,
             elly1p: groupH / 2,
-            elmp: (groupH - DEFAULT.imageH) / 2
+            elmp: (groupH - conf.project.imageH) / 2
           };
         } else {
           return {
             elrp: (elH + positionObj.L) * cutLen,
             elly1p: elH / 2 + (elH + positionObj.L) * cutLen,
-            elmp: (elH - DEFAULT.imageH) / 2 + (elH + positionObj.L) * cutLen
+            elmp:
+              (elH - conf.project.imageH) / 2 + (elH + positionObj.L) * cutLen
           };
         }
       };
@@ -644,13 +538,13 @@ export default {
             r: rectR
           },
           style: {
-            fill: tlData[0].bgColor,
+            fill: conf.project.bgColor,
             text: textFormat(t.projectName, 18, 38),
-            textFill: tlData[0].color,
-            fontSize: DEFAULT.fontSize,
-            textPosition: 'left',
-            textAlign:'left',
-            textOffset:[10,0],
+            textFill: conf.project.color,
+            fontSize: conf.project.fontSize,
+            textPosition: "left",
+            textAlign: "left",
+            textOffset: [10, 0]
             // textLineHeight:60,
             // textRect:{
             //   x: 0,
@@ -665,13 +559,13 @@ export default {
         let imageEl = image({
           style: {
             image: require("./edit.png"),
-            x: elW - DEFAULT.imageW,
-            y: (elH-DEFAULT.imageH)/2,
-            width: DEFAULT.imageW,
-            height: DEFAULT.imageH
+            x: elW - conf.project.imageW,
+            y: (elH - conf.project.imageH) / 2,
+            width: conf.project.imageW,
+            height: conf.project.imageH
           }
         });
-        imageEl.hide()
+        imageEl.hide();
         rectGroup.add(rectEl);
         rectGroup.add(imageEl);
         rectGroup.position = [0, elPosition(i).elrp];
@@ -683,47 +577,49 @@ export default {
             y2: groupH / 2
           },
           style: {
-            fill: DEFAULT.lineColor,
-            stroke: DEFAULT.lineColor
+            fill: conf.line.color,
+            stroke: conf.line.color
           }
         });
         g.add(rectGroup);
         g.add(lineEl);
-        let textGroup = this.createText(t);
+        let textGroup = this.createText(t, conf);
         textGroup.position = [-((elW * 2) / 3 + elH / 2), elPosition(i).elrp];
         g.add(textGroup);
         group.add(g);
       });
       return group;
     },
-    cteateRectR(data, positionObj) {
+    cteateRectR(data, positionObj, conf) {
       if (!data.length) return;
       //  包围盒子得高度
       let groupH = positionObj.H;
       // 水平间隔
-      let xInterval = DEFAULT.xInterval;
+      let xInterval = conf.line.width;
       // 基础元素高度
-      let elH = DEFAULT.height;
+      let elH = conf.product.height;
       // //基础元素宽度
-      let elW = DEFAULT.width;
-      let rectR = DEFAULT.rectR;
+      let elW = conf.product.width;
+      // 圆角
+      let rectR = conf.product.rr;
       // // line x轴
-      let lineRX = elW * 2 + xInterval;
+      let lineRX = conf.project.width + conf.suit.width + xInterval;
       //元素组的总宽度
-      let groupWidth = elW * 3 + xInterval * 2;
+      let groupWidth = lineRX + xInterval + elW;
       // 获取y轴的定位
       let elPosition = cutLen => {
         if (data.length < 2) {
           return {
             elrp: positionObj.R,
             elly2p: groupH / 2,
-            elmp: (groupH - DEFAULT.imageH) / 2
+            elmp: (groupH - conf.product.imageH) / 2
           };
         } else {
           return {
             elrp: (elH + positionObj.R) * cutLen,
             elly2p: elH / 2 + (elH + positionObj.R) * cutLen,
-            elmp: (elH - DEFAULT.imageH) / 2 + (elH + positionObj.R) * cutLen
+            elmp:
+              (elH - conf.product.imageH) / 2 + (elH + positionObj.R) * cutLen
           };
         }
       };
@@ -743,14 +639,14 @@ export default {
             r: rectR
           },
           style: {
-            fill: tlData[2].bgColor,
+            fill: conf.product.bgColor,
             text: textFormat(
               `${t.productName + " " + t.productVersion}`,
               20,
               40
             ),
-            textFill: tlData[2].color,
-            fontSize: DEFAULT.fontSize
+            textFill: conf.product.color,
+            fontSize: conf.product.fontSize
           },
           productId: t.productId
         });
@@ -764,8 +660,8 @@ export default {
             y2: elPosition(i).elly2p
           },
           style: {
-            fill: DEFAULT.lineColor,
-            stroke: DEFAULT.lineColor
+            fill: conf.line.color,
+            stroke: conf.line.color
           }
         });
         g.add(rectGroup);
@@ -774,18 +670,18 @@ export default {
       });
       return group;
     },
-    cteateRectM(data, positionObj) {
+    cteateRectM(data, positionObj, conf) {
       let groupH = positionObj.H;
       // 水平间隔
-      let xInterval = DEFAULT.xInterval;
+      let xInterval = conf.line.width;
       // 基础元素高度
-      let elH = DEFAULT.verH;
+      let elH = conf.suit.height;
       //基础元素宽度
-      let elW = DEFAULT.width;
+      let elW = conf.suit.width;
       // line x轴
-      let lineRX = elW * 2 + xInterval;
+      let lineRX = conf.project.width + conf.suit.width + xInterval;
       //元素组的总宽度
-      let groupWidth = elW * 3 + xInterval * 2;
+      let groupWidth = lineRX + xInterval + conf.product.width;
       let group = new zrender.Group();
       group.attr({
         shape: {
@@ -802,24 +698,24 @@ export default {
           ry: elH / 2
         },
         style: {
-          fill: tlData[1].bgColor,
+          fill: conf.suit.bgColor,
           text: `${textFormat(data.suitName || "", 12, 24)}${
             data.suitDate ? "\n" + data.suitDate : ""
           }`,
           // text:'{a1|haha}\n{a2|sdfdf}',
-          textFill: tlData[1].color,
-          fontSize: DEFAULT.fontSize,
-          rich: {
-            a1: {
-              textFill: "rgb(199,86,83)",
-              textLineHeight: 10,
-              textBorderColor: "#000"
-            },
-            a2: {
-              textFill: "yellow",
-              textPadding: 3
-            }
-          }
+          textFill: conf.suit.color,
+          fontSize: conf.suit.fontSize
+          // rich: {
+          //   a1: {
+          //     textFill: "rgb(199,86,83)",
+          //     textLineHeight: 10,
+          //     textBorderColor: "#000"
+          //   },
+          //   a2: {
+          //     textFill: "yellow",
+          //     textPadding: 3
+          //   }
+          // }
         },
         name: "PM"
       });
@@ -830,9 +726,9 @@ export default {
           r: elW / 5 / 2
         },
         style: {
-          fill: DEFAULT.mCircleFillColor,
+          fill: conf.suit.mCircleFillColor,
           text: "项目",
-          fontSize: DEFAULT.mCirclefontSize
+          fontSize: (conf.suit.fontSize * 4) / 5
         },
         name: "PL"
       });
@@ -843,9 +739,9 @@ export default {
           r: elW / 5 / 2
         },
         style: {
-          fill: DEFAULT.mCircleFillColor,
+          fill: conf.suit.mCircleFillColor,
           text: "版本",
-          fontSize: DEFAULT.mCirclefontSize
+          fontSize: (conf.suit.fontSize * 4) / 5
         },
         name: "PR"
       });
@@ -855,17 +751,17 @@ export default {
       return group;
     },
     //文字 +圆弧
-    createText(opt) {
+    createText(opt, conf) {
       opt = {
         a: opt.typeName,
         b: opt.priorityName,
         c: opt.statusName
       };
       // 创建 文字
-      let h = DEFAULT.height;
+      let h = conf.project.height;
       let textStyle = {
         shape: {
-          width: (DEFAULT.width * 2) / 3,
+          width: (conf.project.width * 2) / 3,
           height: h / 3,
           r: rem(3)
         },
@@ -873,7 +769,7 @@ export default {
           textAlign: "left",
           text: "aaaa",
           textVerticalAlign: "middle",
-          fontSize: rem(15),
+          fontSize: (conf.project.fontSize * 4) / 5,
           fill: "#fff",
           // stroke:'gold',
           textPosition: "left",
@@ -945,7 +841,7 @@ export default {
       // textGroup.add(prodjBox)
       // 创建圆弧
       let deg = c => (c * Math.PI) / 180;
-      let r = DEFAULT.height / 4;
+      let r = conf.project / 4;
       let arcOpt = [
         {
           shape: {
@@ -995,23 +891,23 @@ export default {
       });
       let group = new zrender.Group();
       let groupOpt = {
-        width: (DEFAULT.width * 2) / 3 + DEFAULT.height / 2,
-        height: DEFAULT.height
+        width: (conf.project.width * 2) / 3 + conf.project.height / 2,
+        height: conf.project.height
       };
       textGroup.attr({
         style: {
-          width: parseInt((DEFAULT.width * 2) / 3),
-          height: DEFAULT.height
+          width: parseInt((conf.project.width * 2) / 3),
+          height: conf.project.height
         },
         position: [0, 0]
       });
 
       arcGroup.attr({
         shape: {
-          width: DEFAULT.height / 2,
-          height: DEFAULT.height
+          width: conf.project.height / 2,
+          height: conf.project.height
         },
-        position: [(DEFAULT.width * 2) / 3, 0]
+        position: [(conf.project.width * 2) / 3, 0]
       });
       group.add(textGroup);
       group.add(arcGroup);
@@ -1032,14 +928,51 @@ export default {
      * R:右边间隔
      * }
      */
-    getBaseposition(data) {
+    getBaseposition(data, conf) {
       let project = data.projectList;
       let product = data.productList;
       let lenPjt = project ? project.length : 0; // 左边
       let lenPdt = product ? product.length : 0; // 右边
-      let Dh = DEFAULT.height; //基础高度
-      let Dhl = DEFAULT.hInterval; // 基础间隔
+      let projectH = conf.project.height; //左元素高
+      let productH = conf.product.height; // 右元素高
+      let suitH = conf.suit.height; // 中
+      let bashHl = conf.hInterval; // 基础间隔
       let base = {};
+      function getMax() {
+        let computedSum = (len, h) => {
+          if (len === 0) {
+            return 0;
+          } else {
+            return h * len + (len - 1) * bashHl;
+          }
+        };
+        function arrSort(property) {
+          return function(a, b) {
+            var value1 = a[property];
+            var value2 = b[property];
+            return value1 - value2;
+          };
+        }
+        let arr = [{
+          elH:computedSum(lenPjt, projectH),
+          type:'L'
+        },{
+          elH:computedSum(lenPdt, productH),
+          type:'R'
+        },{
+          elH:suitH,
+          type:'M'
+        }];
+        arr.sort(arrSort('elH')) 
+        return {
+          sumH: arr[arr.length-1].elH,
+          sumEl: arr[arr.length-1].type
+        };
+      }
+
+      let sumObj = getMax();
+
+      base.H = sumObj.sumH; //包围盒高度
       /**
        * 计算元素间隔
        * 元素组总高度 Bh
@@ -1065,44 +998,37 @@ export default {
       let computedH = (Dhl, Dh, len) => {
         return Dh * len + (len - 1) * Dhl;
       };
-
-      //左右元素都小于2时 以中间的元素高度为盒子高度
-      if (lenPjt < 2 && lenPdt < 2) {
-        base.H = DEFAULT.verH > Dh ? DEFAULT.verH : Dh; // 包围盒高度
+      if (sumObj.sumEl === "M") {
         // 左元素 高间距
-        base.L = computedL(base.H, Dh, lenPjt);
+        base.L = computedL(base.H, projectH, lenPjt);
         // 右元素 高间距
-        base.R = computedL(base.H, Dh, lenPdt);
+        base.R = computedL(base.H, productH, lenPdt);
+      } else if (sumObj.sumEl === "L") {
+        base.L = bashHl;
+        base.R = computedL(base.H, productH, lenPdt);
       } else {
-        //
-        if (lenPjt === lenPdt) {
-          base.H = computedH(Dhl, Dh, lenPjt);
-          base.L = base.R = Dhl;
-        } else if (lenPjt > lenPdt) {
-          base.H = computedH(Dhl, Dh, lenPjt);
-          base.L = Dhl;
-          base.R = computedL(base.H, Dh, lenPdt);
-        } else if (lenPjt < lenPdt) {
-          base.H = computedH(Dhl, Dh, lenPdt);
-          base.R = Dhl;
-          base.L = computedL(base.H, Dh, lenPjt);
-        }
+        base.L = computedL(base.H, projectH, lenPjt);
+        base.R = bashHl;
       }
       return base;
     },
     //包围盒定位
-    groupPosition(data,listLen) {
+    groupPosition(data, listLen) {
       let that = this;
-      // 组得初始高度
-      // let groupArr = [];
       //元素组的总宽度
-      let groupWidth = DEFAULT.width * 3 + DEFAULT.xInterval * 2;
+      let projectW = customStyle.project.width;
+      let productW = customStyle.product.width;
+      let suitW = customStyle.suit.width;
+      let lineW = customStyle.line.width;
+      let hInterval = customStyle.hInterval; // 间隔基础
+      let groupWidth = projectW + productW + suitW + lineW * 2;
+      //y 坐标起点
       let groupH = this.groupH;
-     
+
       data.forEach((t, i) => {
         let project = t.projectList;
         let product = t.productList;
-        let base = this.getBaseposition(t);
+        let base = this.getBaseposition(t, customStyle);
         let group = new zrender.Group();
         group.attr({
           shape: {
@@ -1112,13 +1038,11 @@ export default {
           position: [(that.w - groupWidth) / 2, groupH]
         });
         // 保存下次渲染的初始高度
-        groupH += DEFAULT.hInterval + base.H;
-        // let shapeL = {
-        //   data: project
-        // };
-        let groupL = that.cteateRectL(project, base);
-        let groupR = that.cteateRectR(product, base);
-        let groupM = that.cteateRectM(t, base);
+        groupH += hInterval + base.H;
+
+        let groupL = that.cteateRectL(project, base, customStyle);
+        let groupR = that.cteateRectR(product, base, customStyle);
+        let groupM = that.cteateRectM(t, base, customStyle);
         group.add(groupL);
         group.add(groupR);
         group.add(groupM);
@@ -1126,7 +1050,7 @@ export default {
         this.handleM(groupM, groupL, groupR, t);
         // 鼠标 添加 hover 事件
         if (groupL) {
-          this.handleL(groupM, groupL, groupR, project,listLen+i);
+          this.handleL(groupM, groupL, groupR, project, listLen + i);
         }
         if (groupR) {
           this.handleR(groupM, groupL, groupR, product);
@@ -1141,7 +1065,7 @@ export default {
       });
       // 保存下次渲染的初始高度
       this.groupH = groupH;
-      
+
       // this.groupArr = groupArr;
     },
     handleM(groupM, groupL, groupR, data) {
@@ -1228,7 +1152,7 @@ export default {
       };
     },
     //左边盒子点击业务
-    handleL(groupM, groupL, groupR, data,index) {
+    handleL(groupM, groupL, groupR, data, index) {
       let addHover = this.handleHover(groupM, groupL, groupR);
       groupL.eachChild((k, i) => {
         let hoverL = false;
@@ -1244,7 +1168,7 @@ export default {
                 if (hoverL) {
                   addHover(
                     k,
-                    { style: { stroke: DEFAULT.lineHoverColor } },
+                    { style: { stroke: customStyle.line.lightcolor } },
                     "L",
                     res.data
                   );
@@ -1260,8 +1184,8 @@ export default {
               k,
               {
                 style: {
-                  stroke: DEFAULT.lineColor,
-                  fill: DEFAULT.lineColor
+                  stroke: customStyle.line.color,
+                  fill: customStyle.line.color
                 }
               },
               "L"
@@ -1300,16 +1224,16 @@ export default {
               .childAt(0)
               .childAt(1) || null;
           this.projectEdit.visible = true;
-          this.projectEdit.projectName = data[i].projectName
-          this.projectEdit.projectId = data[i].projectId
-          this.editProject(data[i].priorityName)
+          this.projectEdit.projectName = data[i].projectName;
+          this.projectEdit.projectId = data[i].projectId;
+          this.editProject(data[i].priorityName);
           /**
            * 当前编辑项的套装索引
            * 当前编辑项索引
-           * 
+           *
            */
-          this.projectEdit.editIndex = index
-          this.projectEdit.editProjectIndex = i
+          this.projectEdit.editIndex = index;
+          this.projectEdit.editProjectIndex = i;
         });
       });
     },
@@ -1331,7 +1255,7 @@ export default {
                   // that.$slloading.hide()
                   addHover(
                     k,
-                    { style: { stroke: DEFAULT.lineHoverColor } },
+                    { style: { stroke: customStyle.line.lightcolor } },
                     "R",
                     res.data
                   );
@@ -1346,8 +1270,8 @@ export default {
               k,
               {
                 style: {
-                  stroke: DEFAULT.lineColor,
-                  fill: DEFAULT.lineColor
+                  stroke: customStyle.line.color,
+                  fill: customStyle.line.color
                 }
               },
               "R"
@@ -1357,76 +1281,55 @@ export default {
           //打开弹层
           this.productDetil.visible = true;
           //下载数据的初始化
-          this.$http.post('api/product/findVersionById',{
-            productVersionId:data[i]['productId']||''
-          },res =>{
-            if(res.status === 200){
-              if(res.data.code === 200){
-                  if(!res.data.data ||res.data.data === "" ){
-                          this.productDetil.downBtn = false
-                  }else{
-                      this.productDetil.downBtn = true
-                      this.productDetil.cursp = res.data.data
-                  }  
-              }else{
-                 this.$message({
-                  message: res.data.msg,
-                  type: 'warning'
-                 });
+          this.$http.post(
+            "api/product/findVersionById",
+            {
+              productVersionId: data[i]["productId"] || ""
+            },
+            res => {
+              if (res.status === 200) {
+                if (res.data.code === 200) {
+                  if (!res.data.data || res.data.data === "") {
+                    this.productDetil.downBtn = false;
+                  } else {
+                    this.productDetil.downBtn = true;
+                    this.productDetil.cursp = res.data.data;
+                  }
+                } else {
+                  this.$message({
+                    message: res.data.msg,
+                    type: "warning"
+                  });
+                }
+              } else {
+                this.productDetil.downBtn = false;
+                this.$message.error(res);
               }
-            }else{
-              this.productDetil.downBtn = false
-              this.$message.error(res);
             }
-           
-          })
+          );
 
           // 数据的传递
           let productData = this.productDetil.data;
           productData.forEach((item, index) => {
             if (data[i][item.type]) {
-              item.val = data[i][item.type]
+              item.val = data[i][item.type];
             } else {
               item.val = "";
               if (index === 4) {
-                item.val = []
+                item.val = [];
               }
             }
-          })
-          this.productDetil.productId = data[i]['productId']
-          this.productDetil.data = productData
+          });
+          this.productDetil.productId = data[i]["productId"];
+          this.productDetil.data = productData;
           // 查询历史数据
-          this.getProductHistory(data[i]['productName'],data[i]['productVersion'])
+          this.getProductHistory(
+            data[i]["productName"],
+            data[i]["productVersion"]
+          );
         });
       });
     },
-    // 详情弹框
-    dragTextBox(opt) {
-      let deOpt = {
-        style: {
-          stroke: "red",
-          text: "loading...",
-          opacity: 0.7
-        },
-        shape: {
-          width: rem(100),
-          height: rem(50),
-          r: 10
-        },
-        z: 0,
-        position: [0, 0]
-      };
-      deOpt = Object.assign({}, deOpt, opt);
-      if (this.dragBox) {
-        return this.dragBox;
-      } else {
-        this.dragBox = rect(deOpt);
-        this.dragBox.hide();
-        this.zr.add(this.dragBox);
-        return this.dragBox;
-      }
-    },
-    loadingBox(value) {},
     getproRelation(type, id, callback) {
       let url =
         type === "L"
@@ -1467,17 +1370,16 @@ export default {
           detal = theight - beforeScrollTop,
           // 滚动条距离底部的高度
           bheight = rheight - theight - height;
-          beforeScrollTop = theight 
-        if(detal > 0){   
-             if(bheight <= 100){
-               that.pageNo += 1;
-              that.scrollTop = theight 
-              that.getData(that.pageNo);  
-             } 
-
-        }  
+        beforeScrollTop = theight;
+        if (detal > 0) {
+          if (bheight <= 100) {
+            that.pageNo += 1;
+            that.scrollTop = theight;
+            that.getData(that.pageNo);
+          }
+        }
       };
-      window.addEventListener("scroll", fn,false);
+      window.addEventListener("scroll", fn, false);
     },
     editProject(priorityName) {
       this.$http.post("/suit-jira/project/findAllProjectPriority", res => {
@@ -1516,116 +1418,123 @@ export default {
               //     text:textFormat(this.projectEdit.projectName, 18, 38)
               //   }
               // })
-              let priorityName = this.projectEdit.data.find(t =>{
-                  return t.priorityID == this.projectEdit.priorityID
-              }).priorityName
+              let priorityName = this.projectEdit.data.find(t => {
+                return t.priorityID == this.projectEdit.priorityID;
+              }).priorityName;
               // this.projectEdit.curtPriorityEl.attr({
               //   style:{
               //     text:`优先级: ${priorityName}`
               //   }
               // })
               // 修改响应项
-              this.list[this.projectEdit.editIndex]['projectList'][this.projectEdit.editProjectIndex]['projectName'] = this.projectEdit.projectName
-              this.list[this.projectEdit.editIndex]['projectList'][this.projectEdit.editProjectIndex]['priorityName'] = priorityName
-              this.resetData()
+              this.list[this.projectEdit.editIndex]["projectList"][
+                this.projectEdit.editProjectIndex
+              ]["projectName"] = this.projectEdit.projectName;
+              this.list[this.projectEdit.editIndex]["projectList"][
+                this.projectEdit.editProjectIndex
+              ]["priorityName"] = priorityName;
+              this.resetData();
               // this.getData();
-              this.init()
+              this.init();
             } else {
             }
           }
         }
       );
     },
-    // 
+    //
     productClick(row) {
       // console.log(row)
       this.productDetil.inner.visible = true;
-      this.productDetil.inner.data = row
-
+      this.productDetil.inner.data = row;
     },
-    // 下载文件 
+    // 下载文件
     productDown(row) {
       // util.StandardPost(url1);
       // window.open(url)
-      
-      let url 
+
+      let url;
       // 下载文件
-      if(util.toType(row) === 'string' || util.toType(row) === 'number'){
-        url = 'api/file/download'
-        util.StandardPost(url,{
-          productVersionId:row
+      if (util.toType(row) === "string" || util.toType(row) === "number") {
+        url = "api/file/download";
+        util.StandardPost(url, {
+          productVersionId: row
         });
-      }else if(util.toType(row) === 'object'){
-        url = 'api/file/download'
-         util.StandardPost(url,{
-          productVersionId:row.verId
+      } else if (util.toType(row) === "object") {
+        url = "api/file/download";
+        util.StandardPost(url, {
+          productVersionId: row.verId
         });
-
       }
-
     },
-    /** 
+    /**
      * 文件上传功能
      * 文件上传成功
      */
-    uploadComplete(res){
-      if(res.code === 200){
-         this.productDetil.cursp = res.data
-         this.productDetil.downBtn = true 
-      } 
+    uploadComplete(res) {
+      if (res.code === 200) {
+        this.productDetil.cursp = res.data;
+        this.productDetil.downBtn = true;
+      }
     },
     /**
      * 删除当前版本
      */
-    deleteProduct(){
-      this.$http.post('api/product/deleteVersionById',{
-        productVersionId:this.productDetil.productId
-      },res => {
-        if(res.status === 200){
-          if(res.data.code === 200){
-            this.productDetil.cursp = '';
-            this.productDetil.downBtn = false
+    deleteProduct() {
+      this.$http.post(
+        "api/product/deleteVersionById",
+        {
+          productVersionId: this.productDetil.productId
+        },
+        res => {
+          if (res.status === 200) {
+            if (res.data.code === 200) {
+              this.productDetil.cursp = "";
+              this.productDetil.downBtn = false;
+            } else {
+              this.$message.error(res.data.msg);
+            }
           } else {
-            this.$message.error(res.data.msg);
+            this.$message.error(res);
           }
-        }else{
-          this.$message.error(res);
         }
-      })
+      );
     },
     /**
      * 历史记录查询
      */
-    getProductHistory (productName,prodV) {   
-      this.$http.post('api/product/findAllHistoryVersionByProduct',{
-        productName:productName, // 版本号
-        productVersion:prodV     // 名称
-      },res => {
-        if(res.status === 200){
-          if(res.data.code ===200){
-             this.productDetil.historyData = res.data.data 
+    getProductHistory(productName, prodV) {
+      this.$http.post(
+        "api/product/findAllHistoryVersionByProduct",
+        {
+          productName: productName, // 版本号
+          productVersion: prodV // 名称
+        },
+        res => {
+          if (res.status === 200) {
+            if (res.data.code === 200) {
+              this.productDetil.historyData = res.data.data;
+            }
+            // console.log(res.data)
           }
-          // console.log(res.data)
-        }      
-      })
+        }
+      );
     },
     /**
      * 格式化文件大小
      */
-    formatFileSize (row,column,cellValue,index) {
-        return cellValue+'MB'
+    formatFileSize(row, column, cellValue, index) {
+      return cellValue + "MB";
     },
     /**
      * 格式化事件
      */
-    formatTime (row,column,cellValue,index) {
-        if(cellValue){
-            
-        }
-        return this.$moment(cellValue).format('YYYY-MM-DD h:mm:ss')
+    formatTime(row, column, cellValue, index) {
+      if (cellValue) {
+      }
+      return this.$moment(cellValue).format("YYYY-MM-DD h:mm:ss");
     }
   }
-
 };
 </script>
 
@@ -1707,9 +1616,9 @@ export default {
   text-align: right;
 }
 .item-top {
-  margin-top: 0.1rem
+  margin-top: 0.1rem;
 }
-.item-produt{
+.item-produt {
   padding: 10px 0;
 }
 .item-produt-btn {

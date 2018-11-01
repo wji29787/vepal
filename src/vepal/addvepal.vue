@@ -1,6 +1,11 @@
 <template>
     <div>
-        <el-button type="text" class="elbutton"  @click="getzt">新增套装</el-button>
+        
+        <el-row tag = "div" class = "el-nav">
+          <el-button type="primary"  class = "elbutton" icon = "el-icon-setting" @click="customSet" size = "small">设置</el-button>
+          <el-button type="primary" class = "elbutton"  @click="getzt" size = "small">新增套装</el-button>
+        </el-row>
+        <!-- 新增套装 -->
         <el-dialog 
             title="添加套装"
             :visible="dialogVisible" width="50%"
@@ -41,6 +46,98 @@
                 <el-button @click="dialogVisible = false">取 消</el-button>
                 <el-button type="primary" @click="save()">确 定</el-button>
             </span>
+        </el-dialog>
+        <!-- 系统设置 -->
+        <el-dialog  
+          :visible="custom.visible"
+          @close="custom.visible=false"
+          :title = "custom.title"
+          center
+          width = "8rem"
+          @open = "customGet"
+          >
+            <el-row type = "flex" justify = "end" ><el-button type="primary" size = "small">恢复默认</el-button></el-row>
+            <el-container direction="vertical" class = "custom-container">
+              
+              <el-row
+              > 
+                <el-col class="item-tl" >项目</el-col>
+                <el-col >
+                   <el-row class="item-tl">
+                       <el-col :span = "5" :offset = "2" class = "item-custom">
+                        <span>宽</span><el-input class = "input-w" size = "mini" v-model = "custom.data.project.width"></el-input>
+                    </el-col>  
+                    <el-col :span = "5" class = "item-custom">
+                       <span>高</span><el-input class = "input-w" size = "mini" v-model = "custom.data.project.height"></el-input>
+                    </el-col>
+                    <el-col :span = "5" class = "item-custom">
+                       <span class = "item-custom-span">颜色</span>
+                       <el-color-picker show-alpha  size = "mini" v-model = "custom.data.project.bgColor"></el-color-picker>
+                    </el-col>
+                   </el-row>
+                       
+                </el-col>
+              </el-row>
+              <el-row
+              >
+                <el-col class="item-tl" >套装</el-col>
+                <el-col >
+                   <el-row class="item-tl">
+                    <el-col :span = "5" :offset = "2" class = "item-custom">
+                        <span>宽</span><el-input class = "input-w" size = "mini" v-model = "custom.data.suit.width"></el-input>
+                    </el-col>  
+                    <el-col :span = "5" class = "item-custom">
+                       <span>高</span><el-input class = "input-w" size = "mini" v-model = "custom.data.suit.height"></el-input>
+                    </el-col>
+                    <el-col :span = "5" class = "item-custom">
+                       <span class = "item-custom-span">颜色</span>
+                        <el-color-picker    show-alpha  size = "mini" v-model = "custom.data.suit.bgColor"></el-color-picker>
+                    </el-col>    
+                </el-row>
+                </el-col>
+                
+              </el-row>
+              <el-row
+              >
+                <el-col class="item-tl" >产品</el-col>
+                <el-col >
+                  <el-row class="item-tl">
+                    <el-col :span = "5" :offset = "2" class = "item-custom">
+                        <span>宽</span><el-input class = "input-w" size = "mini" v-model = "custom.data.product.width"></el-input>
+                    </el-col>  
+                    <el-col :span = "5" class = "item-custom">
+                       <span>高</span><el-input class = "input-w" size = "mini" v-model = "custom.data.product.height"></el-input>
+                    </el-col>
+                    <el-col :span = "5" class = "item-custom">
+                       <span class = "item-custom-span">颜色</span>
+                        <el-color-picker    show-alpha  size = "mini" v-model = "custom.data.product.bgColor"></el-color-picker>
+                    </el-col>    
+                  </el-row>
+                </el-col>
+                
+              </el-row>
+              <el-row
+              >
+                <el-col class="item-tl" >线段</el-col>
+                <el-col >
+                     <el-row class="item-tl">
+                      <el-col :span = "5" :offset = "2" class = "item-custom">
+                          <span>长</span><el-input class = "input-w" size = "mini" v-model = "custom.data.line.width"></el-input>
+                      </el-col>  
+                      <el-col :span = "5" class = "item-custom">
+                        <span class = "item-custom-span">高亮颜色</span>
+                          <el-color-picker    show-alpha  size = "mini" v-model = "custom.data.line.lightcolor"></el-color-picker>
+                      </el-col>    
+                     </el-row>
+                </el-col>
+                
+               
+              </el-row>
+            </el-container>
+           <span slot="footer">
+            <!-- <el-button @click="centerDialogVisible = false">取 消</el-button> -->
+            <el-button type="primary" size = "small">保 存</el-button>
+          </span>
         </el-dialog>
     </div>
 </template>
@@ -85,12 +182,37 @@ export default {
       suitName: "", //SP名称
       suitDate: "", //时间
       suitDescription: "", //详细信息
-      issueId: "" //产品
+      issueId: "", //产品
+      custom: {
+        data: {
+          project:{
+            width:0,
+            height:0,
+            bgColor:"rgba(74, 163, 222, 1)"
+          },
+          product:{
+              width:0,
+              height:0,
+              bgColor:"rgba(131, 220, 220, 1)"
+          },
+          suit:{
+              width:0,
+              height:0,
+              bgColor:"rgba(119, 141, 252, 1)"
+          },
+          line:{
+              width:0,
+              height:0,
+              color:'',
+              lightcolor:'rgba(131, 220, 220, 1)'
+          }
+        },
+        visible: false,
+        title: "系统设置"
+      }
     };
   },
-  mounted: function() {
-
-  },
+  mounted: function() {},
   methods: {
     /**获取ztree数据并且渲染**/
     getzt() {
@@ -175,22 +297,45 @@ export default {
         },
         res => {
           if (res.status === 200) {
-            this.$emit('saveComplete')   
+            this.$emit("saveComplete");
             alert("保存成功");
-            
           } else {
             console.log(res);
           }
         }
       );
       _this.dialogVisible = false;
+    },
+    customSet() {
+      this.custom.visible = true;
+    },
+    customGet(){
+      this.$http.post('api/suit/style/findAllStyle',res =>{
+          if(res.status===200){
+              console.log(res.data)
+          }
+      })
+    },
+    customSave(){
+      let opt = this.custom.data 
+      this.$http.post('api/suit/style/updateAllStyle',opt,res =>{
+          if(res.status===200){
+
+          }
+      })
+    },
+    customReset(){
+      this.$http.post('api/suit/style/resetStyle',opt,res =>{
+          if(res.status===200){
+
+          }
+      })
     }
   }
 };
 </script>
 
 <style scoped>
-
 /***addvepal csy add***/
 .addvepal-layer {
   font-family: 微软雅黑;
@@ -239,15 +384,41 @@ export default {
 .suitDate {
   width: 7rem;
 }
-.elbutton {
+.el-nav {
   position: fixed;
   right: 0rem;
   top: 0;
-  background: #409eff;
-  color: #fff;
-  padding: 0.1rem;
   margin: 0.1rem;
   z-index: 30;
 }
+.el-nav .elbutton {
+}
 /***addvepal end***/
+
+/** 系统设置***/
+.custom-container {
+  max-height: 3rem;
+  overflow: auto;
+}
+.item-tl {
+  /* margin: 0.1rem 0; */
+  height: 0.5rem;
+  /* line-height: 0.5rem */
+}
+.input-w {
+  width: 50%;
+}
+.item-custom {
+  /* line-height: 100%;
+  height: 100%; */
+}
+.item-custom > span {
+   padding-right: 0.1rem
+     /* line-height: 0.3rem; */
+}
+.item-custom-span{
+position: relative;
+   left: 0;
+   top: -0.1rem;
+}
 </style>
