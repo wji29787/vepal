@@ -121,25 +121,25 @@ let filterNull = function filterNull(o) {
 }
 // clone
 
-function clone (obj){
+function clone(obj) {
   if (null == obj || "object" != typeof obj) return obj;
 
-      // Handle Date
-    if (obj instanceof Date) {
-        var copy = new Date();
-        copy.setTime(obj.getTime());
-       return copy;
+  // Handle Date
+  if (obj instanceof Date) {
+    var copy = new Date();
+    copy.setTime(obj.getTime());
+    return copy;
+  }
+  // Handle Array or Object
+  if (obj instanceof Array | obj instanceof Object) {
+    var copy = (obj instanceof Array) ? [] : {};
+    for (var attr in obj) {
+      if (obj.hasOwnProperty(attr))
+        copy[attr] = clone(obj[attr]);
     }
-     // Handle Array or Object
-    if (obj instanceof Array | obj instanceof Object) {
-        var copy = (obj instanceof Array)?[]:{};
-        for (var attr in obj) {
-            if (obj.hasOwnProperty(attr))
-              copy[attr] = clone(obj[attr]);
-        }
-         return copy;
+    return copy;
 
-     }
+  }
 }
 // merge
 function merge(def, obj) {
@@ -149,13 +149,12 @@ function merge(def, obj) {
     return obj;
   }
 
-  
   for (var i in obj) {
     // if its an object
     if (obj[i] != null && obj[i].constructor == Object) {
       def[i] = merge(def[i], obj[i]);
     }
-    // if its an array, simple values need to be joined. Object values need to be re-merged.
+    // if its an array, simple values need to be joined. Object values need to be remerged.
     else if (obj[i] != null && (obj[i] instanceof Array) && obj[i].length > 0) {
       // test to see if the first element is an object or not so we know the type of array we're dealing with.
       if (obj[i][0].constructor == Object) {
@@ -190,19 +189,14 @@ function merge(def, obj) {
         }
       }
     } else {
-      if (isNaN(obj[i]) || i.indexOf('_key') > -1) {
-        def[i] = obj[i];
-      } else {
-        def[i] += obj[i];
-      }
+      def[i] = obj[i];
     }
   }
   return def;
 }
-
 //sort
 function arrSort(property) {
-  return function(a, b) {
+  return function (a, b) {
     var value1 = a[property];
     var value2 = b[property];
     return value1 - value2;

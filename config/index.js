@@ -11,28 +11,28 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/api': { 
-        target: 'http://192.168.112.168:8085', 
+      '/api': {
+        target: 'http://192.168.112.168:8092',
         changeOrigin: true,
         // ws: true,
         pathRewrite: {
-          '^/api' : '',     // rewrite path 
-        },
-      },   
-      '/dev': { 
-        target: 'http://192.168.95.93:8085', 
-        changeOrigin: true,
-        // ws: true,
-        pathRewrite: {
-          '^/dev' : '',     // rewrite path 
+          '^/api' : '',     // rewrite path
         },
       },
-      '/suit-jira': { 
-        target: 'http://192.168.112.168:8084', 
+      '/dev/suit': {
+        target: 'http://192.168.95.93:8085',
         changeOrigin: true,
         // ws: true,
         pathRewrite: {
-          '^/suit-jira' : '',     // rewrite path 
+          '^/dev/suit' : '',     // rewrite path
+        },
+      },
+      '/suit-jira': {
+        target: 'http://192.168.112.168:8092/suit-jira',
+        changeOrigin: true,
+        // ws: true,
+        pathRewrite: {
+          '^/suit-jira' : '',     // rewrite path
         },
       }
     },

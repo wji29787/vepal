@@ -1,11 +1,11 @@
 <template>
   <div>
-    <add-vepal @saveComplete = "reRender" />
+    <add-vepal @saveComplete = "reRender"  @customstyleChange = "customSetstyle" @customResetStyle = "customResetStyle"/>
     <span class="version">套装展示<strong>v1.0.1</strong></span>
     <div class = "dinner">
       <div id="container">
       </div>
-    </div> 
+    </div>
     <!-- editproject -->
     <el-dialog
       :visible="projectEdit.visible"
@@ -18,7 +18,7 @@
          <el-row  class = "edit-item" :gutter = 20
           >
             <el-col class="edit-item-label" :span = "6">项目名称:</el-col>
-            <el-col  :span = "18"><el-input size="small" v-model="projectEdit.projectName"></el-input></el-col>      
+            <el-col  :span = "18"><el-input size="small" v-model="projectEdit.projectName"></el-input></el-col>
         </el-row>
           <el-row  class = "edit-item" :gutter = 20
           >
@@ -32,7 +32,7 @@
                   :value="item.priorityID">
                 </el-option>
               </el-select>
-            </el-col>      
+            </el-col>
           </el-row>
       </el-container>
       <div slot="footer" class ="sp-footer">
@@ -57,7 +57,7 @@
        </div>
     </sl-dialog> -->
     <!-- project-dialog -->
-    <el-dialog  
+    <el-dialog
       :visible="projectDetil.visible"
       @close="projectDetil.visible=false"
       :title = "projectDetil.title"
@@ -75,7 +75,7 @@
         </el-container>
     </el-dialog>
     <!-- sp-dialog -->
-    <el-dialog 
+    <el-dialog
       :visible="spDetil.visible"
       @close="spDetil.visible=false"
       :title = "spDetil.title"
@@ -102,12 +102,12 @@
       >
       <el-container direction="vertical">
           <el-row type="flex" justify="end">
-            
+
             <el-col class="sp-item-label" :span = "3">
                 <!-- 上传 -->
-              <duct-upload 
-               :uploaddata = "productDetil.data" 
-               :productid = "productDetil.productId" 
+              <duct-upload
+               :uploaddata = "productDetil.data"
+               :productid = "productDetil.productId"
                :downBtn = "productDetil.downBtn"
                @uploadSuccess = "uploadComplete"
                />
@@ -115,9 +115,9 @@
             <el-col class="sp-item-label" :span = "3">
                   <el-button type="text"  v-show = "productDetil.downBtn" @click="productDown(productDetil.productId)" size="small">下载</el-button>
             </el-col>
-            
+
             <!-- <el-button type="text" size="small">上传</el-button> -->
-            
+
           </el-row>
           <el-row  class = "sp-item" :gutter = 20
             v-for = "(item, $index) in productDetil.data"
@@ -126,16 +126,16 @@
             <el-col class="sp-item-label" :span = "6">{{item.name}}:</el-col>
             <el-col class="sp-item-val" :class = "{'dialog-item-val' : $index ===3 || $index ===4}" :span = "18">
               <template v-if="$index === 4">
-                  <div 
+                  <div
                     v-for = "(kval, $l) in item.val"
                      :key="kval.id">
                      {{($l+1)+': '+kval.actionbody}}
-                  </div> 
+                  </div>
               </template>
-              <template v-else> 
+              <template v-else>
                   {{item.val}}
              </template>
-              
+
             </el-col>
           </el-row>
           <br>
@@ -143,10 +143,10 @@
           <el-row type = "flex" align = "middle" >
             <el-col  class = "item-produt" :span = "4">当前版本:</el-col>
             <el-col  :span = "20" v-show = "productDetil.downBtn">
-              <el-button 
+              <el-button
                 class = "item-produt-btn"
-                type="text" 
-                @click="productDown(productDetil.productId)" 
+                type="text"
+                @click="productDown(productDetil.productId)"
                 size="small"
                 :title ="productDetil.cursp"
                 >
@@ -160,7 +160,7 @@
           <br>
           <el-container direction="vertical">
             <el-col :span = "24">历史版本</el-col>
-            <el-table 
+            <el-table
              :data="productDetil.historyData"
               max-height="250"
               width="100%"
@@ -196,7 +196,7 @@
                 {{productDetil.inner.data.description}}
               </el-col>
           </el-container>
-          
+
       </el-dialog>
     </el-dialog>
   </div>
@@ -217,12 +217,15 @@ import {
   text,
   image
 } from "../assets/js/util.js";
-import { rem, styleConf } from "./vepalconf.js";
+import { rem, setScaleStyle, styleConf, transitionStyle } from "./vepalconf.js";
 // 上传文件
 import productUpload from "./productUpload";
 // 新增套装
 import addvepal from "./addvepal";
-let customStyle = styleConf(rem());
+// let styleObj = util.clone(styleConf())
+let resetObj = util.clone(styleConf())
+let customStyle = setScaleStyle(util.clone(resetObj), rem());
+
 export default {
   name: "Dinner",
   components: {
@@ -235,7 +238,6 @@ export default {
       w: 0,
       h: 0,
       groupH: customStyle.groupH, //元素组起始位置
-      groupArr: [],
       list: [],
       tipShow: false,
       bscroll: true, // 是否加载
@@ -243,6 +245,7 @@ export default {
       pageSize: 10, // 初始每页数据数
       lastPage: false, //最后一页
       scrollTop: 0,
+      // customStyle:{},
       // 项目详情
       projectDetil: {
         title: "项目详细",
@@ -363,8 +366,6 @@ export default {
         editIndex: -1,
         editProjectIndex: -1
       }
-      // showSp:false,
-      // offsetSp:[0,0],
     };
   },
   created() {
@@ -374,8 +375,10 @@ export default {
     // offset
   },
   mounted() {
-    this.render();
-    this.getData();
+    //拉取 设置数据
+    this.customGetStyle();
+    // this.render();
+    // this.getData();
     let that = this;
     let timer = null;
     window.addEventListener("resize", function() {
@@ -388,24 +391,11 @@ export default {
     this.fnScroll();
   },
   methods: {
-    handleText(val) {
-      console.log(val);
-      // this.curtEl.attr({
-      //   style:{
-      //     text :val
-      //   }
-      // })
-    },
-    saveText() {
-      this.curtEl.attr({
-        style: {
-          text: textFormat(this.input, 18, 38)
-        }
-      });
-    },
     // 刷新
     reRender() {
       this.resetData();
+      this.pageNo = 1;
+      this.lastPage = false; //最后一页
       this.getData();
     },
     render() {
@@ -418,13 +408,14 @@ export default {
       this.h = this.zr.getHeight();
     },
     resetData() {
-      customStyle = styleConf(rem());
+      //重新生成
+      let obj = util.clone(resetObj);
+      customStyle = setScaleStyle(obj, rem());
       this.groupH = customStyle.groupH;
-      this.groupArr = [];
       this.bscroll = true; // 是否加载
-      this.pageNo = 1;
+      // this.pageNo = 1;
       //this.pageSize = 10 // 初始每页数据数
-      this.lastPage = false; //最后一页
+      // this.lastPage = false; //最后一页
       this.zr.clear();
       this.zr.resize();
       this.w = this.zr.getWidth();
@@ -442,7 +433,7 @@ export default {
         background: "rgba(0, 0, 0, 0.7)"
       });
       this.$http.post(
-        "/api/suit/findAllSuitInfo",
+        "/api/suit/suit/findAllSuitInfo",
         {
           pageNo: pageNo ? pageNo : 1,
           pageSize: this.pageSize
@@ -505,6 +496,8 @@ export default {
       let elW = conf.project.width;
       // 圆角
       let rectR = conf.project.rr;
+      //元素组的总宽度
+      let groupWidth = conf.groupWidth
       // 获取y轴的定位
       let elPosition = cutLen => {
         if (data.length < 2) {
@@ -605,7 +598,7 @@ export default {
       // // line x轴
       let lineRX = conf.project.width + conf.suit.width + xInterval;
       //元素组的总宽度
-      let groupWidth = lineRX + xInterval + elW;
+      let groupWidth = conf.groupWidth
       // 获取y轴的定位
       let elPosition = cutLen => {
         if (data.length < 2) {
@@ -681,14 +674,14 @@ export default {
       // line x轴
       let lineRX = conf.project.width + conf.suit.width + xInterval;
       //元素组的总宽度
-      let groupWidth = lineRX + xInterval + conf.product.width;
+      let groupWidth = conf.groupWidth
       let group = new zrender.Group();
       group.attr({
         shape: {
           width: elW,
           height: elH
         },
-        position: [(groupWidth - elW) / 2, (groupH - elH) / 2]
+        position: [(conf.project.width + xInterval), (groupH - elH) / 2]
       });
       let ellipseEl = ellipse({
         shape: {
@@ -953,20 +946,24 @@ export default {
             return value1 - value2;
           };
         }
-        let arr = [{
-          elH:computedSum(lenPjt, projectH),
-          type:'L'
-        },{
-          elH:computedSum(lenPdt, productH),
-          type:'R'
-        },{
-          elH:suitH,
-          type:'M'
-        }];
-        arr.sort(arrSort('elH')) 
+        let arr = [
+          {
+            elH: computedSum(lenPjt, projectH),
+            type: "L"
+          },
+          {
+            elH: computedSum(lenPdt, productH),
+            type: "R"
+          },
+          {
+            elH: suitH,
+            type: "M"
+          }
+        ];
+        arr.sort(arrSort("elH"));
         return {
-          sumH: arr[arr.length-1].elH,
-          sumEl: arr[arr.length-1].type
+          sumH: arr[arr.length - 1].elH,
+          sumEl: arr[arr.length - 1].type
         };
       }
 
@@ -1022,6 +1019,7 @@ export default {
       let lineW = customStyle.line.width;
       let hInterval = customStyle.hInterval; // 间隔基础
       let groupWidth = projectW + productW + suitW + lineW * 2;
+      customStyle.groupWidth = groupWidth
       //y 坐标起点
       let groupH = this.groupH;
 
@@ -1035,7 +1033,8 @@ export default {
             width: groupWidth,
             height: base.H
           },
-          position: [(that.w - groupWidth) / 2, groupH]
+          // position: [(that.w - groupWidth) / 2, groupH]
+          position: [that.w / 2 - ( projectW +lineW +suitW/2), groupH]
         });
         // 保存下次渲染的初始高度
         groupH += hInterval + base.H;
@@ -1055,8 +1054,6 @@ export default {
         if (groupR) {
           this.handleR(groupM, groupL, groupR, product);
         }
-
-        // groupArr.push(group);
         this.zr.add(group);
         this.zr.resize({
           height: groupH
@@ -1065,8 +1062,6 @@ export default {
       });
       // 保存下次渲染的初始高度
       this.groupH = groupH;
-
-      // this.groupArr = groupArr;
     },
     handleM(groupM, groupL, groupR, data) {
       groupM.eachChild((k, i) => {
@@ -1282,7 +1277,7 @@ export default {
           this.productDetil.visible = true;
           //下载数据的初始化
           this.$http.post(
-            "api/product/findVersionById",
+            "api/suit/product/findVersionById",
             {
               productVersionId: data[i]["productId"] || ""
             },
@@ -1301,9 +1296,6 @@ export default {
                     type: "warning"
                   });
                 }
-              } else {
-                this.productDetil.downBtn = false;
-                this.$message.error(res);
               }
             }
           );
@@ -1333,8 +1325,8 @@ export default {
     getproRelation(type, id, callback) {
       let url =
         type === "L"
-          ? "/api/suit/findProductListByProjectId"
-          : "/api/suit/findProjectListByProductId";
+          ? "/api/suit/suit/findProductListByProjectId"
+          : "/api/suit/suit/findProjectListByProductId";
 
       this.$http.get(
         url,
@@ -1382,7 +1374,8 @@ export default {
       window.addEventListener("scroll", fn, false);
     },
     editProject(priorityName) {
-      this.$http.post("/suit-jira/project/findAllProjectPriority", res => {
+      this.$http.post("/api/suit-jira/project/findAllProjectPriority", res => {
+        console.log("项目级别接口返回结果:" + res);
         if (res.status === 200) {
           // this.productEdit.data = res.data
           if (res.data.code === 200) {
@@ -1401,7 +1394,7 @@ export default {
      */
     editProjectSave() {
       this.$http.post(
-        "/suit-jira/project/updateProject",
+        "/api/suit-jira/project/updateProject",
         {
           projectName: this.projectEdit.projectName,
           priorityId: this.projectEdit.priorityID,
@@ -1437,6 +1430,7 @@ export default {
               // this.getData();
               this.init();
             } else {
+
             }
           }
         }
@@ -1456,12 +1450,12 @@ export default {
       let url;
       // 下载文件
       if (util.toType(row) === "string" || util.toType(row) === "number") {
-        url = "api/file/download";
+        url = "api/suit/file/download";
         util.StandardPost(url, {
           productVersionId: row
         });
       } else if (util.toType(row) === "object") {
-        url = "api/file/download";
+        url = "api/suit/file/download";
         util.StandardPost(url, {
           productVersionId: row.verId
         });
@@ -1482,7 +1476,7 @@ export default {
      */
     deleteProduct() {
       this.$http.post(
-        "api/product/deleteVersionById",
+        "/api/suit/product/deleteVersionById",
         {
           productVersionId: this.productDetil.productId
         },
@@ -1492,10 +1486,8 @@ export default {
               this.productDetil.cursp = "";
               this.productDetil.downBtn = false;
             } else {
-              this.$message.error(res.data.msg);
+              this.$message.error(res);
             }
-          } else {
-            this.$message.error(res);
           }
         }
       );
@@ -1505,7 +1497,7 @@ export default {
      */
     getProductHistory(productName, prodV) {
       this.$http.post(
-        "api/product/findAllHistoryVersionByProduct",
+        "/api/suit/product/findAllHistoryVersionByProduct",
         {
           productName: productName, // 版本号
           productVersion: prodV // 名称
@@ -1533,6 +1525,48 @@ export default {
       if (cellValue) {
       }
       return this.$moment(cellValue).format("YYYY-MM-DD h:mm:ss");
+    },
+    //获取设置数据
+    customGetStyle() {
+      this.$http.post("api/suit/style/findAllStyle", res => {
+        if (res.status === 200) {
+          if (res.data.code === 200) {
+            let customObj = transitionStyle(res.data.data);
+            resetObj = util.merge(resetObj, customObj);
+            let obj = util.clone(resetObj)
+            customStyle = setScaleStyle(obj, rem());    
+            this.render();
+            this.getData();
+          }
+        }
+      });
+    },
+    //重新渲染
+    customSetstyle(data) {
+      //重新计算
+      // let objtonumber = obj =>{
+      //   for(let k in obj){
+      //     if(Object.prototype.hasOwnProperty.call(obj,k)){
+      //       if(typeof obj[k] != "object"){
+      //          if(/^\d/.test(obj[k])){
+      //            obj[k] = Number(obj[k])
+      //          }
+      //       }else{
+      //         objtonumber(obj[k])
+      //       }
+      //     }
+      //   }
+      //   return obj
+      // }
+      // resetObj = util.merge(resetObj, objtonumber(data));
+      resetObj = util.merge(resetObj, data);
+      this.resetData(); 
+      this.init();
+    },
+    customResetStyle() {
+      resetObj = util.clone(styleConf());
+      this.resetData();
+      this.init();
     }
   }
 };

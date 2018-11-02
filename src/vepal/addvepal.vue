@@ -41,7 +41,7 @@
                     </li>
                 </ul>
             </div>
-    
+
             <span slot="footer">
                 <el-button @click="dialogVisible = false">取 消</el-button>
                 <el-button type="primary" @click="save()">确 定</el-button>
@@ -56,7 +56,9 @@
           width = "8rem"
           @open = "customGet"
           >
-            <el-row type = "flex" justify = "end" ><el-button type="primary" size = "small">恢复默认</el-button></el-row>
+            <el-row>
+              <el-col :span = "4" :offset = "20"><el-button type="text" size = "small" @click = "customReset" >恢复默认</el-button></el-col> 
+            </el-row>
             <el-container direction="vertical" class = "custom-container">
               
               <el-row
@@ -121,10 +123,10 @@
                 <el-col class="item-tl" >线段</el-col>
                 <el-col >
                      <el-row class="item-tl">
-                      <el-col :span = "5" :offset = "2" class = "item-custom">
+                      <!-- <el-col :span = "5" :offset = "2" class = "item-custom">
                           <span>长</span><el-input class = "input-w" size = "mini" v-model = "custom.data.line.width"></el-input>
-                      </el-col>  
-                      <el-col :span = "5" class = "item-custom">
+                      </el-col>   -->
+                      <el-col :span = "5" :offset = "2" class = "item-custom">
                         <span class = "item-custom-span">高亮颜色</span>
                           <el-color-picker    show-alpha  size = "mini" v-model = "custom.data.line.lightcolor"></el-color-picker>
                       </el-col>    
@@ -136,7 +138,7 @@
             </el-container>
            <span slot="footer">
             <!-- <el-button @click="centerDialogVisible = false">取 消</el-button> -->
-            <el-button type="primary" size = "small">保 存</el-button>
+            <el-button type="primary" size = "small" @click = "customSave">保 存</el-button>
           </span>
         </el-dialog>
     </div>
@@ -147,7 +149,7 @@ import "ztree";
 import "ztree/css/zTreeStyle/zTreeStyle.css";
 import "ztree/js/jquery.ztree.core.js";
 import "ztree/js/jquery.ztree.excheck.js";
-
+import {transitionStyle} from './vepalconf.js'
 export default {
   name: "addvepal",
   data() {
@@ -185,26 +187,30 @@ export default {
       issueId: "", //产品
       custom: {
         data: {
-          project:{
-            width:0,
-            height:0,
-            bgColor:"rgba(74, 163, 222, 1)"
+          project: {
+            width: 0,
+            height: 0,
+            bgColor: "rgba(74, 163, 222, 1)",
+            id:''
           },
-          product:{
-              width:0,
-              height:0,
-              bgColor:"rgba(131, 220, 220, 1)"
+          product: {
+            width: 0,
+            height: 0,
+            bgColor: "rgba(131, 220, 220, 1)",
+            id:''
           },
-          suit:{
-              width:0,
-              height:0,
-              bgColor:"rgba(119, 141, 252, 1)"
+          suit: {
+            width: 0,
+            height: 0,
+            bgColor: "rgba(119, 141, 252, 1)",
+             id:''
           },
-          line:{
-              width:0,
-              height:0,
-              color:'',
-              lightcolor:'rgba(131, 220, 220, 1)'
+          line: {
+            width: 0,
+            height: 0,
+            color: "",
+            lightcolor: "rgba(131, 220, 220, 1)",
+            id:''
           }
         },
         visible: false,
@@ -219,7 +225,7 @@ export default {
       var _this = this;
       _this.dialogVisible = true;
       setTimeout(() => {
-        this.$http.get("/api/product/findAllProduct", res => {
+        this.$http.get("/api/suit/product/findAllProduct", res => {
           if (res.status === 200) {
             var nodeList = [];
             // { id:1, pId:0, name:"Pamir", open:true},
@@ -288,7 +294,7 @@ export default {
       }
       //请求保存接口
       this.$http.get(
-        "/api/suit/addSuit",
+        "/api/suit/suit/addSuit",
         {
           suitName: _this.suitName,
           suitDate: _this.suitDate,
@@ -309,27 +315,46 @@ export default {
     customSet() {
       this.custom.visible = true;
     },
-    customGet(){
-      this.$http.post('api/suit/style/findAllStyle',res =>{
-          if(res.status===200){
-              console.log(res.data)
+    customGet() {
+      this.$http.post("/api/suit/style/findAllStyle", res => {
+        if (res.status === 200) {
+          if (res.data.code === 200) {
+            this.custom.data =transitionStyle(res.data.data);
           }
-      })
+        }
+      });
     },
-    customSave(){
-      let opt = this.custom.data 
-      this.$http.post('api/suit/style/updateAllStyle',opt,res =>{
-          if(res.status===200){
+    customSave() {
+      let opt = JSON.stringify(transitionStyle(this.custom.data,'save'))
+      // let opt = transitionStyle(this.custom.data,'save')
+     
+      this.$http.post("/api/suit/style/updateAllStyle", {
+        styleJson:opt
+      }, res => {
+        if (res.status === 200) {
+            // console.log(res.data.data)
+            if(res.data.code ===200){
+              this.$emit('customstyleChange',this.custom.data)
+              this.custom.visible = false;
+            }else{
+
+            }
+        }
+      });
+      // this.$emit('customstyleChange',this.custom.data)
+      // this.custom.visible = false;
+    },
+    customReset() {
+      this.$http.post("/api/suit/style/resetStyle", res => {
+        if (res.status === 200) {
+          if(res.data.code === 200){
+            this.custom.visible = false;
+            this.$emit('customResetStyle')
+          }else{
 
           }
-      })
-    },
-    customReset(){
-      this.$http.post('api/suit/style/resetStyle',opt,res =>{
-          if(res.status===200){
-
-          }
-      })
+        }
+      });
     }
   }
 };
@@ -413,12 +438,12 @@ export default {
   height: 100%; */
 }
 .item-custom > span {
-   padding-right: 0.1rem
-     /* line-height: 0.3rem; */
+  padding-right: 0.1rem;
+  /* line-height: 0.3rem; */
 }
-.item-custom-span{
-position: relative;
-   left: 0;
-   top: -0.1rem;
+.item-custom-span {
+  position: relative;
+  left: 0;
+  top: -0.1rem;
 }
 </style>
