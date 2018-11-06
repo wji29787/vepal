@@ -76,6 +76,13 @@
                        <span class = "item-custom-span">颜色</span>
                        <el-color-picker show-alpha  size = "mini" v-model = "custom.data.project.bgColor"></el-color-picker>
                     </el-col>
+                    <!-- <el-col :span = "5" class = "item-custom">
+                       <span>文字大小</span><el-input class = "input-w" size = "mini" v-model = "custom.data.project.height"></el-input>
+                    </el-col> -->
+                    <!-- <el-col :span = "5" class = "item-custom">
+                       <span class = "item-custom-span">文字颜色</span>
+                       <el-color-picker show-alpha  size = "mini" v-model = "custom.data.project.bgColor"></el-color-picker>
+                    </el-col> -->
                    </el-row>
                        
                 </el-col>
@@ -426,8 +433,8 @@ export default {
   overflow: auto;
 }
 .item-tl {
-  /* margin: 0.1rem 0; */
-  height: 0.5rem;
+  margin: 0.1rem 0;
+  /* height: 0.5rem; */
   /* line-height: 0.5rem */
 }
 .input-w {

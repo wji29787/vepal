@@ -9,51 +9,52 @@ let rem = () => {
 // 默认配置样式
 let DEFAUlT = {
 
-  hInterval:  20, // 上下间隔
-  groupH:  50, // 初始高度
+  hInterval: 20, // 上下间隔
+  groupH: 50, // 初始高度
   bgColor: '#fff', //滑版背景色
   project: {
     name: "项目名称",
     bgColor: "rgba(74, 163, 222, 1)", // 背景色
     color: "#fff", // 文字颜色
-    width:  200, // 元素宽
-    height:  70, // 元素高
-    rr:  10, // 圆角半径
-    fontSize:  18, // 文字大小
-    imageW:  30,
-    imageH:  30,
+    width: 200, // 元素宽
+    height: 70, // 元素高
+    rr: 10, // 圆角半径
+    fontSize: 18, // 文字大小
+    imageW: 30,
+    imageH: 30,
+    textOffset: [10, 0]
 
   },
   product: {
     name: "相关版本",
     bgColor: "rgba(131, 220, 220, 1)",
     color: "#fff",
-    width:  200,
-    height:  70,
-    rr:  10,
-    fontSize:  18,
-    imageW:  30,
-    imageH:  30
+    width: 200,
+    height: 70,
+    rr: 10,
+    fontSize: 18,
+    imageW: 30,
+    imageH: 30
   },
   suit: {
     name: "套装",
     bgColor: "rgba(119, 141, 252, 1)",
     color: "#fff",
-    height:  80,
-    width:  200,
-    fontSize:  18,
-    mCirclefontSize:  15,
+    height: 80,
+    width: 200,
+    fontSize: 18,
+    mCirclefontSize: 15,
     mCirclefontColor: "",
     mCircleFillColor: "#F5F5F5",
   },
   line: {
-    width:  260,
+    width: 260,
     color: "#cacaca",
     lightcolor: 'red',
   },
 }
 let styleConf = scale => {
-    return DEFAUlT
+  return DEFAUlT
 }
 // 样式属性map
 let attrList = ["project", "product", "suit", "line"];
@@ -110,21 +111,30 @@ let transitionStyle = function transitionStyle(data, type) {
   });
   return obj
 }
-
+// 计算 缩放比
 function setScaleStyle(obj, scale) {
-  let opt ={} ;
-  for (let k in obj) {
-    let value = obj[k];
-    if (/^\d/.test(value)|| typeof value ==='number') {
-      if (k != "id") {
-        obj[k] = Number(value) * scale;
-      }
-    } else if (typeof value === "object") {
-      setScaleStyle(value, scale);
-    }
+
+  if (null == obj || "object" != typeof obj) return obj;
+
+  if (obj instanceof Date) {
+    var copy = new Date();
+    copy.setTime(obj.getTime());
+    return copy;
   }
-  return obj;
+  if (obj instanceof Array | obj instanceof Object) {
+    var copy = (obj instanceof Array) ? [] : {}
+    for (let k in obj) {
+
+      if (Object.prototype.hasOwnProperty.call(obj, k)) {
+        copy[k] = setScaleStyle(obj[k], scale)
+        if (/^\d/.test(copy[k]) && !Array.isArray(copy[k]))
+          copy[k] = Number(copy[k]) * scale
+      }
+    }
+    return copy
+  }
 }
+
 export {
   styleConf,
   rem,

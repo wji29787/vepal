@@ -19,12 +19,12 @@ module.exports = {
           '^/api' : '',     // rewrite path
         },
       },
-      '/dev/suit': {
+      '/dev': {
         target: 'http://192.168.95.93:8085',
         changeOrigin: true,
         // ws: true,
         pathRewrite: {
-          '^/dev/suit' : '',     // rewrite path
+          '^/dev' : '',     // rewrite path
         },
       },
       '/suit-jira': {

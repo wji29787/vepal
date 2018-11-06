@@ -1,11 +1,21 @@
 <template>
-  <div>
+  <div style="height:100%;width:100%;">
     <add-vepal @saveComplete = "reRender"  @customstyleChange = "customSetstyle" @customResetStyle = "customResetStyle"/>
     <span class="version">套装展示<strong>v1.0.1</strong></span>
-    <div class = "dinner">
-      <div id="container">
-      </div>
-    </div>
+      <el-scrollbar ref = "scroll-elem" style="height:100%;" v-scroll:moveY = "scrollfn">
+             <div class = "dinner">
+     <div id="container">
+            </div>
+             </div>
+      
+             
+         
+      </el-scrollbar>
+    <!-- <sl-scrollbar style="height:100%;">
+    <div id="container">
+            </div>
+
+    </sl-scrollbar> -->
     <!-- editproject -->
     <el-dialog
       :visible="projectEdit.visible"
@@ -70,7 +80,30 @@
             :key ="$index"
           >
             <el-col class="sp-item-label" :span = "6">{{item.name}}:</el-col>
-            <el-col :class = "{'dialog-item-val' : $index ===3}" :span = "18">{{item.val}}</el-col>
+            <template v-if = "$index ===2">
+               <el-col class = "dialog-item-val" :span = "18">
+                  <el-tree
+                    :props = "projectDetil.docProps"
+                    :load="loadNode"
+                    lazy
+                    node-key="name"
+                    ref = "projectTree"
+                    @node-click = "checkNode"
+                    v-if = "projectDetil.visible"
+                    accordion
+                   >
+                  </el-tree>
+                 </el-col>    
+            </template>
+            <template v-else-if = "$index ===3">
+               <el-col class = "dialog-item-val" :span = "18">
+                 {{item.val}}
+                 </el-col>    
+            </template>
+             
+           <template v-else>      
+                <el-col  :span = "18">{{item.val}}</el-col>
+            </template>
           </el-row>
         </el-container>
     </el-dialog>
@@ -88,7 +121,16 @@
             :key ="$index"
           >
             <el-col class="sp-item-label" :span = "6">{{item.name}}:</el-col>
-            <el-col class="sp-item-val" :class = "{'dialog-item-val' : $index ===4}" :span = "18">{{item.val}}</el-col>
+            
+            <template v-if = "$index ===4" >
+              <el-col class="sp-item-val dialog-item-val"  :span = "18">
+                {{item.val}}
+                </el-col>
+             
+            </template>
+            <template v-else>
+              <el-col class="sp-item-val" :span = "18">{{item.val}}</el-col>
+            </template>
           </el-row>
         </el-container>
     </el-dialog>
@@ -222,9 +264,10 @@ import { rem, setScaleStyle, styleConf, transitionStyle } from "./vepalconf.js";
 import productUpload from "./productUpload";
 // 新增套装
 import addvepal from "./addvepal";
-// let styleObj = util.clone(styleConf())
-let resetObj = util.clone(styleConf())
-let customStyle = setScaleStyle(util.clone(resetObj), rem());
+// 默认数据
+let resetObj = util.clone(styleConf());
+// 渲染数据
+let customStyle = setScaleStyle(resetObj, rem());
 
 export default {
   name: "Dinner",
@@ -244,6 +287,8 @@ export default {
       pageNo: 1,
       pageSize: 10, // 初始每页数据数
       lastPage: false, //最后一页
+      moveY: 0,
+      instance: null,
       scrollTop: 0,
       // customStyle:{},
       // 项目详情
@@ -264,14 +309,25 @@ export default {
           {
             name: "相关文档",
             val: "",
-            type: "projectId"
+            type: "docAddr"
           },
           {
             name: "需求描述",
             val: "",
             type: "description"
           }
-        ]
+        ],
+        docProps: {
+          label: "name",
+          isLeaf: function(data, node) {
+            if (node.level > 0) {
+              return data["kind"]["id"] === 1;
+            } else {
+              return false;
+            }
+          }
+        },
+        docData: []
       },
       // showProject: false,
       // offsetProject: [0, 0],
@@ -368,8 +424,46 @@ export default {
       }
     };
   },
+  directives: {
+    scroll(el, binding, vNode) {
+      let instance = vNode.componentInstance;
+      let _this = vNode.context;
+      let wrap = instance.$refs.wrap;
+      let moveY = instance.moveY;
+      let sizeHeight = instance.sizeHeight;
+      let sign = 10;
+      // let div =el.querySelector('.el-scrollbar__wrap')
+      if (!wrap.clientHeight) return;
+      let mY;
+      let sH = (parseFloat(sizeHeight) * wrap.clientHeight) / 100;
+      if (moveY) {
+        mY = (moveY / 100) * sH;
+      } else {
+        mY = 0;
+      }
+      if (wrap.clientHeight - (sH + mY) < sign) {
+        binding.value(mY + wrap.clientHeight, instance);
+      }
+    }
+  },
   created() {
     // this.$slMsg.show('sdfsdf')
+    var div = document.createElement("div");
+    // div.style.visibility = 'hidden'
+    div.style.fontSize = customStyle.project.fontSize + "px";
+    div.style.position = "absolute";
+    div.style.float = "left";
+    div.style["white-space"] = "nowrap";
+    div.innerText = "智能3";
+    document.body.appendChild(div);
+    //  console.log(getComputedStyle(div,null)['borderBottomWidth'])
+    // console.log(getComputedStyle(div, null)["width"]);
+    //  console.log(div.currentStyle['width'])
+    // var width = div.style.width ;
+    document.body.removeChild(div);
+
+    //  console.log(div.currentStyle)
+    // console.log(width)
   },
   watch: {
     // offset
@@ -388,7 +482,13 @@ export default {
         that.init();
       }, 300);
     });
-    this.fnScroll();
+    // this.fnScroll();
+    // console.log(this.$refs['scroll-elem'])
+    // console.log(this.$refs['scroll-elem'].$refs['wrap'])
+    // let div =this.$refs['scroll-elem'].$refs['wrap']
+    // div.addEventListener('scroll',(e)=>{
+    //   console.log(e)
+    // })
   },
   methods: {
     // 刷新
@@ -409,8 +509,7 @@ export default {
     },
     resetData() {
       //重新生成
-      let obj = util.clone(resetObj);
-      customStyle = setScaleStyle(obj, rem());
+      customStyle = setScaleStyle(resetObj, rem());
       this.groupH = customStyle.groupH;
       this.bscroll = true; // 是否加载
       // this.pageNo = 1;
@@ -433,7 +532,7 @@ export default {
         background: "rgba(0, 0, 0, 0.7)"
       });
       this.$http.post(
-        "/api/suit/suit/findAllSuitInfo",
+        "api/suit/suit/findAllSuitInfo",
         {
           pageNo: pageNo ? pageNo : 1,
           pageSize: this.pageSize
@@ -463,7 +562,15 @@ export default {
               // console.log(groupH)
 
               this.groupPosition(res.data.data.suits, listLen);
-              util.setScrollTop(this.scrollTop);
+              // util.setScrollTop(this.scrollTop);
+
+              if (this.instance) {
+                this.$nextTick(() => {
+                  // console.log(this.instance.moveY);
+                  // this.instance.moveY =this.moveY
+                  this.instance.$refs.wrap.scrollTop = this.moveY;
+                });
+              }
             } else {
               if (pageNo > 1) {
                 this.pageNo -= 1;
@@ -497,7 +604,7 @@ export default {
       // 圆角
       let rectR = conf.project.rr;
       //元素组的总宽度
-      let groupWidth = conf.groupWidth
+      let groupWidth = conf.groupWidth;
       // 获取y轴的定位
       let elPosition = cutLen => {
         if (data.length < 2) {
@@ -515,9 +622,9 @@ export default {
           };
         }
       };
+
       // 包围盒总高度
       let group = new zrender.Group();
-
       data.forEach((t, i) => {
         let g = new zrender.Group();
         // 矩形组元素  elPosition(i).elrp
@@ -532,13 +639,28 @@ export default {
           },
           style: {
             fill: conf.project.bgColor,
-            text: textFormat(t.projectName, 18, 38),
+            text: textFormat(
+              t.projectName,
+              conf.project.textsize,
+              conf.project.textSizeSum
+            ),
             textFill: conf.project.color,
             fontSize: conf.project.fontSize,
             textPosition: "left",
             textAlign: "left",
-            textOffset: [10, 0]
-            // textLineHeight:60,
+            textOffset: conf.project.textOffset
+            // textBackgroundColor:'red',
+            // textVerticalAlign:'top',
+            // textPadding:20,
+            // textDistance:100,
+            // textWidth:10000,
+            // textRect:{
+            //   x:0,
+            //   y:0,
+            //   width: elW-100,
+            //   height: elH,
+            // },
+            // textLineHeight:6,
             // textRect:{
             //   x: 0,
             //   y: 0,
@@ -598,7 +720,7 @@ export default {
       // // line x轴
       let lineRX = conf.project.width + conf.suit.width + xInterval;
       //元素组的总宽度
-      let groupWidth = conf.groupWidth
+      let groupWidth = conf.groupWidth;
       // 获取y轴的定位
       let elPosition = cutLen => {
         if (data.length < 2) {
@@ -635,8 +757,8 @@ export default {
             fill: conf.product.bgColor,
             text: textFormat(
               `${t.productName + " " + t.productVersion}`,
-              20,
-              40
+              conf.product.textsize,
+              conf.product.textSizeSum
             ),
             textFill: conf.product.color,
             fontSize: conf.product.fontSize
@@ -674,14 +796,14 @@ export default {
       // line x轴
       let lineRX = conf.project.width + conf.suit.width + xInterval;
       //元素组的总宽度
-      let groupWidth = conf.groupWidth
+      let groupWidth = conf.groupWidth;
       let group = new zrender.Group();
       group.attr({
         shape: {
           width: elW,
           height: elH
         },
-        position: [(conf.project.width + xInterval), (groupH - elH) / 2]
+        position: [conf.project.width + xInterval, (groupH - elH) / 2]
       });
       let ellipseEl = ellipse({
         shape: {
@@ -692,9 +814,11 @@ export default {
         },
         style: {
           fill: conf.suit.bgColor,
-          text: `${textFormat(data.suitName || "", 12, 24)}${
-            data.suitDate ? "\n" + data.suitDate : ""
-          }`,
+          text: `${textFormat(
+            data.suitName || "",
+            conf.suit.textsize,
+            conf.suit.textSizeSum
+          )}${data.suitDate ? "\n" + data.suitDate : ""}`,
           // text:'{a1|haha}\n{a2|sdfdf}',
           textFill: conf.suit.color,
           fontSize: conf.suit.fontSize
@@ -1014,13 +1138,84 @@ export default {
       let that = this;
       //元素组的总宽度
       let projectW = customStyle.project.width;
+      let projectH = customStyle.project.height;
+      let projectFontSize = customStyle.project.fontSize;
+
       let productW = customStyle.product.width;
+      let productH = customStyle.product.height;
+      let productFontSize = customStyle.product.fontSize;
+
       let suitW = customStyle.suit.width;
+      let suitH = customStyle.suit.height;
+      let suitFontSize = customStyle.suit.fontSize;
       let lineW = customStyle.line.width;
       let hInterval = customStyle.hInterval; // 间隔基础
       let groupWidth = projectW + productW + suitW + lineW * 2;
-      customStyle.groupWidth = groupWidth
-      //y 坐标起点
+      customStyle.groupWidth = groupWidth;
+
+      let computedTextNum = (elw, elh, marLen, size, type) => {
+        let w, h, textSize;
+        if (elw < marLen * 2) {
+          w = elw;
+        } else {
+          w = elw - marLen * 2;
+        }
+        if (elh < marLen * 2) {
+          h = elh;
+        } else {
+          h = elh - marLen * 2;
+        }
+        if (type === "L") {
+          textSize = Math.round((w - marLen * 2) / size) * 2;
+        } else if (type === "R") {
+          textSize = Math.round(w / size) * 2;
+        } else {
+          if (h < marLen * 2) {
+            h = marLen;
+          } else {
+            h = elh - marLen;
+          }
+          textSize = Math.round((w - marLen / 2) / size) * 2;
+        }
+        return {
+          textsize: textSize,
+          textSizeSum: Math.round(h / size) * textSize
+        };
+      };
+      // 文字每行显示的数量 总共显示的数量 project
+      // let projecttextSizeNum = Math.round(((projectW - customStyle.project.textOffset[0]*5)/projectFontSize) *2)
+      let projecttextSizeNum = computedTextNum(
+        projectW,
+        projectH,
+        customStyle.project.textOffset[0],
+        projectFontSize,
+        "L"
+      );
+      customStyle.project.textsize = projecttextSizeNum.textsize;
+      customStyle.project.textSizeSum = projecttextSizeNum.textSizeSum;
+
+      // product
+      let producttextSizeNum = computedTextNum(
+        productW,
+        productH,
+        customStyle.project.textOffset[0],
+        productFontSize,
+        "R"
+      );
+      customStyle.product.textsize = producttextSizeNum.textsize;
+      customStyle.product.textSizeSum = producttextSizeNum.textSizeSum;
+
+      // suit
+      let suittextSizeNum = computedTextNum(
+        suitW,
+        suitH,
+        suitW / 5,
+        suitFontSize,
+        "M"
+      );
+      customStyle.suit.textsize = suittextSizeNum.textsize;
+      customStyle.suit.textSizeSum = suittextSizeNum.textSizeSum;
+      // y 坐标起点
       let groupH = this.groupH;
 
       data.forEach((t, i) => {
@@ -1034,7 +1229,7 @@ export default {
             height: base.H
           },
           // position: [(that.w - groupWidth) / 2, groupH]
-          position: [that.w / 2 - ( projectW +lineW +suitW/2), groupH]
+          position: [that.w / 2 - (projectW + lineW + suitW / 2), groupH]
         });
         // 保存下次渲染的初始高度
         groupH += hInterval + base.H;
@@ -1208,6 +1403,8 @@ export default {
             }
           });
           this.projectDetil.data = projectData;
+          // let docAddr = data[i]['docAddr']
+          // this.relationDoc(docAddr)
         });
         editEl.on("click", e => {
           //当前项目实例
@@ -1344,34 +1541,44 @@ export default {
         }
       );
     },
-    fnScroll() {
-      let that = this;
-      let beforeScrollTop = util.getScrollTop();
-      let fn = function(e) {
-        if (that.lastPage) {
-          return;
-        }
-        if (!that.bscroll) return;
-        // 窗口可视范围的高度
-        var height = util.getClientHeight(),
-          // 窗口滚动条高度
-          theight = util.getScrollTop(),
-          // 文档内容的高度
-          rheight = util.getScrollHeight(),
-          // 滚动的距离
-          detal = theight - beforeScrollTop,
-          // 滚动条距离底部的高度
-          bheight = rheight - theight - height;
-        beforeScrollTop = theight;
-        if (detal > 0) {
-          if (bheight <= 100) {
-            that.pageNo += 1;
-            that.scrollTop = theight;
-            that.getData(that.pageNo);
-          }
-        }
-      };
-      window.addEventListener("scroll", fn, false);
+    // fnScroll() {
+    //   let that = this;
+    //   let beforeScrollTop = util.getScrollTop();
+    //   let fn = function(e) {
+    //     if (that.lastPage) {
+    //       return;
+    //     }
+    //     if (!that.bscroll) return;
+    //     // 窗口可视范围的高度
+    //     var height = util.getClientHeight(),
+    //       // 窗口滚动条高度
+    //       theight = util.getScrollTop(),
+    //       // 文档内容的高度
+    //       rheight = util.getScrollHeight(),
+    //       // 滚动的距离
+    //       detal = theight - beforeScrollTop,
+    //       // 滚动条距离底部的高度
+    //       bheight = rheight - theight - height;
+    //     beforeScrollTop = theight;
+    //     if (detal > 0) {
+    //       if (bheight <= 100) {
+    //         that.pageNo += 1;
+    //         that.scrollTop = theight;
+    //         that.getData(that.pageNo);
+    //       }
+    //     }
+    //   };
+    //   window.addEventListener("scroll", fn, false);
+    // },
+    scrollfn(val, instance) {
+      this.instance = instance;
+      if (this.lastPage) return;
+      if (!this.bscroll) return;
+      if (this.moveY < val) {
+        this.pageNo += 1;
+        this.moveY = val;
+        this.getData(this.pageNo);
+      }
     },
     editProject(priorityName) {
       this.$http.post("/api/suit-jira/project/findAllProjectPriority", res => {
@@ -1430,7 +1637,6 @@ export default {
               // this.getData();
               this.init();
             } else {
-
             }
           }
         }
@@ -1532,9 +1738,10 @@ export default {
         if (res.status === 200) {
           if (res.data.code === 200) {
             let customObj = transitionStyle(res.data.data);
+
             resetObj = util.merge(resetObj, customObj);
-            let obj = util.clone(resetObj)
-            customStyle = setScaleStyle(obj, rem());    
+
+            customStyle = setScaleStyle(resetObj, rem());
             this.render();
             this.getData();
           }
@@ -1544,29 +1751,67 @@ export default {
     //重新渲染
     customSetstyle(data) {
       //重新计算
-      // let objtonumber = obj =>{
-      //   for(let k in obj){
-      //     if(Object.prototype.hasOwnProperty.call(obj,k)){
-      //       if(typeof obj[k] != "object"){
-      //          if(/^\d/.test(obj[k])){
-      //            obj[k] = Number(obj[k])
-      //          }
-      //       }else{
-      //         objtonumber(obj[k])
-      //       }
-      //     }
-      //   }
-      //   return obj
-      // }
-      // resetObj = util.merge(resetObj, objtonumber(data));
       resetObj = util.merge(resetObj, data);
-      this.resetData(); 
+      this.resetData();
       this.init();
     },
     customResetStyle() {
       resetObj = util.clone(styleConf());
       this.resetData();
       this.init();
+    },
+    // 请求树形结构的数据
+    relationDoc(docAddr, resolve) {
+      this.$http.post(
+        "/api/suit/project/findFolderBySvnPath",
+        {
+          svnPath: docAddr || ""
+        },
+        res => {
+          if (res.status === 200) {
+            if (res.data.code === 200) {
+              resolve(res.data.data);
+            }
+          }
+        }
+      );
+    },
+    // 树形控件的懒加载
+    loadNode(node, resolve) {
+      if (node.level === 0) {
+        // console.log(node)
+        let docAddr = this.projectDetil.data[2].val;
+        this.relationDoc(docAddr, resolve);
+        return;
+      }
+      var hasChild;
+      if (node.data.kind["id"] === 0) {
+        hasChild = true;
+      } else {
+        hasChild = false;
+        return resolve([]);
+        // return
+      }
+      if (hasChild) {
+        let urlData = node.data.url;
+        let docAddr = `${urlData.protocol}://${urlData.host}${urlData.path}`;
+        this.relationDoc(docAddr, resolve);
+      }
+    },
+    // 点击节点的回调
+    checkNode(data, node, ctx) {
+      //http://192.168.95.93:8085/project/downloadSvnFile?svnPathJson=xxxx
+      if (data.kind.id === 1) {
+        let obj = {
+          name: data.name,
+          host: data.url.host,
+          path: data.url.path,
+          protocol: data.url.protocol
+        };
+        util.StandardPost("/api/suit/project/downloadSvnFile", {
+          svnPathJson: JSON.stringify(obj)
+        });
+      }
     }
   }
 };
@@ -1584,9 +1829,13 @@ export default {
 .dinner {
   width: 100%;
   height: 100%;
+  overflow: hidden;
   /* position: absolute */
 }
-
+.container {
+  height: 100%;
+  overflow: hidden;
+}
 /***addvepal csy add***/
 .version {
   position: absolute;
@@ -1658,5 +1907,10 @@ export default {
 .item-produt-btn {
   overflow: hidden;
   max-width: 90%;
+}
+</style>
+<style>
+.el-scrollbar__wrap {
+  overflow-x: hidden;
 }
 </style>

@@ -134,11 +134,11 @@ function clone(obj) {
   if (obj instanceof Array | obj instanceof Object) {
     var copy = (obj instanceof Array) ? [] : {};
     for (var attr in obj) {
+      
       if (obj.hasOwnProperty(attr))
-        copy[attr] = clone(obj[attr]);
+        copy[attr] = clone(obj[attr]);  
     }
     return copy;
-
   }
 }
 // merge
@@ -248,6 +248,7 @@ let StandardPost = (url, args) => {
   }
   document.body.appendChild(form)
   form.submit();
+  form.parentNode.removeChild(form)
 }
 export {
   rect,
