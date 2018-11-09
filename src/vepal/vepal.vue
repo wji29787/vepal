@@ -2,7 +2,10 @@
   <div style="height:100%;width:100%;">
     <add-vepal @saveComplete = "reRender"  @customstyleChange = "customSetstyle" @customResetStyle = "customResetStyle"/>
     <span class="version">套装展示<strong>v1.0.1</strong></span>
-      <el-scrollbar ref = "scroll-elem" style="height:100%;" v-scroll:moveY = "scrollfn">
+      <el-scrollbar 
+         ref = "scroll-elem" 
+         style="height:100%;" 
+         v-scroll = "{  el:'.el-scrollbar__wrap',scrollfn:scrollfn }" >
              <div class = "dinner">
      <div id="container">
             </div>
@@ -288,8 +291,7 @@ export default {
       pageSize: 10, // 初始每页数据数
       lastPage: false, //最后一页
       moveY: 0,
-      instance: null,
-      scrollTop: 0,
+      scrollctx :null,
       // customStyle:{},
       // 项目详情
       projectDetil: {
@@ -424,28 +426,6 @@ export default {
       }
     };
   },
-  directives: {
-    scroll(el, binding, vNode) {
-      let instance = vNode.componentInstance;
-      let _this = vNode.context;
-      let wrap = instance.$refs.wrap;
-      let moveY = instance.moveY;
-      let sizeHeight = instance.sizeHeight;
-      let sign = 10;
-      // let div =el.querySelector('.el-scrollbar__wrap')
-      if (!wrap.clientHeight) return;
-      let mY;
-      let sH = (parseFloat(sizeHeight) * wrap.clientHeight) / 100;
-      if (moveY) {
-        mY = (moveY / 100) * sH;
-      } else {
-        mY = 0;
-      }
-      if (wrap.clientHeight - (sH + mY) < sign) {
-        binding.value(mY + wrap.clientHeight, instance);
-      }
-    }
-  },
   created() {
     // this.$slMsg.show('sdfsdf')
     var div = document.createElement("div");
@@ -482,13 +462,6 @@ export default {
         that.init();
       }, 300);
     });
-    // this.fnScroll();
-    // console.log(this.$refs['scroll-elem'])
-    // console.log(this.$refs['scroll-elem'].$refs['wrap'])
-    // let div =this.$refs['scroll-elem'].$refs['wrap']
-    // div.addEventListener('scroll',(e)=>{
-    //   console.log(e)
-    // })
   },
   methods: {
     // 刷新
@@ -557,18 +530,13 @@ export default {
               } else {
                 listLen = this.list.length;
                 this.list = this.list.concat(res.data.data.suits);
-              }
-              // let groupH = this.groupH
-              // console.log(groupH)
+              }  
 
               this.groupPosition(res.data.data.suits, listLen);
-              // util.setScrollTop(this.scrollTop);
-
-              if (this.instance) {
+              // 改变滚动距离
+              if (this.scrollctx) {
                 this.$nextTick(() => {
-                  // console.log(this.instance.moveY);
-                  // this.instance.moveY =this.moveY
-                  this.instance.$refs.wrap.scrollTop = this.moveY;
+                  this.scrollctx.scrollTop = this.moveY
                 });
               }
             } else {
@@ -756,7 +724,7 @@ export default {
           style: {
             fill: conf.product.bgColor,
             text: textFormat(
-              `${t.productName + " " + t.productVersion}`,
+              `${t.productName  +"\t\t\t"+  t.productVersion}`,
               conf.product.textsize,
               conf.product.textSizeSum
             ),
@@ -1166,6 +1134,7 @@ export default {
           h = elh - marLen * 2;
         }
         if (type === "L") {
+          
           textSize = Math.round((w - marLen * 2) / size) * 2;
         } else if (type === "R") {
           textSize = Math.round(w / size) * 2;
@@ -1177,6 +1146,8 @@ export default {
           }
           textSize = Math.round((w - marLen / 2) / size) * 2;
         }
+        // 临时加大行距
+        h = h- marLen
         return {
           textsize: textSize,
           textSizeSum: Math.round(h / size) * textSize
@@ -1541,48 +1512,21 @@ export default {
         }
       );
     },
-    // fnScroll() {
-    //   let that = this;
-    //   let beforeScrollTop = util.getScrollTop();
-    //   let fn = function(e) {
-    //     if (that.lastPage) {
-    //       return;
-    //     }
-    //     if (!that.bscroll) return;
-    //     // 窗口可视范围的高度
-    //     var height = util.getClientHeight(),
-    //       // 窗口滚动条高度
-    //       theight = util.getScrollTop(),
-    //       // 文档内容的高度
-    //       rheight = util.getScrollHeight(),
-    //       // 滚动的距离
-    //       detal = theight - beforeScrollTop,
-    //       // 滚动条距离底部的高度
-    //       bheight = rheight - theight - height;
-    //     beforeScrollTop = theight;
-    //     if (detal > 0) {
-    //       if (bheight <= 100) {
-    //         that.pageNo += 1;
-    //         that.scrollTop = theight;
-    //         that.getData(that.pageNo);
-    //       }
-    //     }
-    //   };
-    //   window.addEventListener("scroll", fn, false);
-    // },
-    scrollfn(val, instance) {
-      this.instance = instance;
+    scrollfn(ctx,val) {
+       
       if (this.lastPage) return;
       if (!this.bscroll) return;
+      // 保存滚动元素
+      this.scrollctx = ctx
+      // 元素的总高度
       if (this.moveY < val) {
-        this.pageNo += 1;
-        this.moveY = val;
-        this.getData(this.pageNo);
+           this.moveY = val;
+           this.pageNo += 1;
+           this.getData(this.pageNo);  
       }
     },
     editProject(priorityName) {
       this.$http.post("/api/suit-jira/project/findAllProjectPriority", res => {
-        console.log("项目级别接口返回结果:" + res);
         if (res.status === 200) {
           // this.productEdit.data = res.data
           if (res.data.code === 200) {
@@ -1592,7 +1536,6 @@ export default {
               return t.priorityName === priorityName.trim();
             }).priorityID;
           }
-          // console.log(res.data)
         }
       });
     },

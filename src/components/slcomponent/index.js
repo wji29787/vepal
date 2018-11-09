@@ -1,32 +1,14 @@
-const VueLogger = {
-  name: 'vue-logger'
-}
-VueLogger.install = (Vue, options) => {
-  const defaults = {
-    silent: Vue.config.silent,
-    format: (...str) => {
-      str.unshift('[Vue Logger]: ')
-      return str
-    }
-  }
-  options = Object.assign({}, defaults, options)
-  /* eslint-disable func-names  */
-  let arr = ['log', 'warn', 'error']
-  arr.forEach((op) => {
-    Vue.prototype[`$${op}`] = function (...str) {
-      if (options.silent) {
-        return
-      }
-      str = options.format.apply(this, str)
-      console[op](...str)
-    }
-  })
-}
+import VueLogger from './lib/vue-logger'
+import Directive from './lib/directive'
+
 const components = ['dialog', 'msg', 'loading']
+
+// 插件
 const install = function (Vue, options = {}) {
   if (install.installed) {
     return
   }
+  //全局调用方法
   const singletonComponents = []
   components.every(val => {
     let comp = require(`./${val}/main.vue`)
@@ -44,9 +26,18 @@ const install = function (Vue, options = {}) {
     })
     Vue.prototype[`$${Component.options.name.replace('sl-', 'sl')}`] = instance
   })
+
+  /**
+   * 自定义指令 不通用 
+   * 适用于 el-scrollbar
+   * el-table
+   * 
+   */
+  Directive.install(Vue)
+
   VueLogger.install(Vue, {
     /* eslint-disable func-names  */
-    format (...str) {
+    format(...str) {
       str.unshift(`[Vue Component ${this.$options.name}]: `)
       return str
     }

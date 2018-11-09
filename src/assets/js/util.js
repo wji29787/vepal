@@ -97,7 +97,7 @@ function textFormat(str, L, L1) {
       }
     }
   }
-  return arr.join('\n')
+  return arr.join('\n\n')
 }
 
 // 类型转换

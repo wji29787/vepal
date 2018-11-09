@@ -3,6 +3,7 @@
 //import Vue from 'vue'
 import './assets/css/base.css'
 import Vue from './element'
+import './assets/css/common.css'
 import App from './App'
 import router from './router'
 
