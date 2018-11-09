@@ -389,7 +389,7 @@ export default {
      *   
      */
     getPriorityList(){
-       this.$http.get('dev/project/findAllPriority',res=>{
+       this.$http.get('api/pjc/project/findAllPriority',res=>{
           if(res.status===200){
               if(res.data.code ===200){
                  this.priorityList = res.data.data
