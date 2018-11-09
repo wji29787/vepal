@@ -61,6 +61,10 @@
                                 </el-col>   
                             </el-row>
                             <el-row type = "flex" class="extend-h-w">
+                              <!-- :formatter = "formatter(item,index)"  
+                                      @header-click = "handleClickheader"
+                                      :label= "item.label" 
+                               -->
                                     <el-table
                                         :data="list"
                                         :span-method="objectSpanMethod"
@@ -68,9 +72,41 @@
                                         height = "98%"
                                         header-cell-class-name = ""
                                         v-scroll = "{el:'.el-table__body-wrapper',scrollfn:scrollfn}"
-                                        @header-click = "handleClickheader"
                                         style="width: 100%; margin-top: 20px">
                                         <el-table-column
+                                            v-for = "(item, index) in renderTableList" 
+                                            :key = "index"
+                                            :width = "item.width" 
+                                            :render-header="customRenderH(item,index)"          
+                                            >
+                                            <template slot-scope="scope1">
+                                                  <template v-if = "index === 9">
+                                                      <el-button type="text" @click="productDown(scope1.row)" icon = "el-icon-tickets" ></el-button>
+                                                      <el-popover
+                                                          placement="left"
+                                                          width="160"
+                                                          v-model = "scope1.row.visible"
+                                                        >
+                                                          <p>这是一段内容这是一段内容确定删除吗？</p>
+                                                          <div style="text-align: right; margin: 0">
+                                                            <el-button size="mini" type="text" @click = "delcancle(scope1)">取消</el-button>
+                                                            <el-button type="primary" size="mini" @click = "delsure(scope1)">确定</el-button>
+                                                          </div>
+                                                          <el-button slot="reference" type="text"  class = "textColor" @click= "deletebtn(scope1)" icon = "el-icon-delete"></el-button>
+                                                      </el-popover>
+                                                  </template>
+                                                  <template v-else-if = "index === 0">
+                                                    {{scope1['$index']+1}}
+                                                  </template>
+                                                  <template v-else>
+                                                    <!-- scope1['row'][item['prop']] -->
+                                                      {{formatter(item,index,scope1)}}
+                                                  </template>
+                                             </template>
+                                             
+                                              
+                                        </el-table-column>
+                                        <!-- <el-table-column
                                             prop="id"
                                             label="序号"
                                             type = "index"
@@ -86,13 +122,13 @@
                                             label="项目名称">
                                           
                                         </el-table-column>
+                                       
                                         <el-table-column
-                                            prop="priorityName"
-                                            width="100"
-                                            label="优先级">
-                                            <template slot="header" slot-scope="slot">
-                                              <span :class = "[searchObj.prioritySort?'el-icon-sort-down':'el-icon-sort-up']">优先级11</span>
-                                            </template>
+                                          prop="priorityName"
+                                          width="100"
+                                         :render-header="customFieldColumn"
+                                          label="优先级22"
+                                        >
                                         </el-table-column>
                                         <el-table-column
                                             prop="needperson"
@@ -139,7 +175,7 @@
                                                       <el-button slot="reference" type="text"  class = "textColor" @click= "deletebtn(scope1)" icon = "el-icon-delete"></el-button>
                                                   </el-popover>
                                              </template>
-                                        </el-table-column>
+                                        </el-table-column> -->
                                     </el-table> 
                        
                             </el-row>
@@ -150,6 +186,7 @@
     </div>
 </template>
 <script>
+import tableList from "./projectTableList.js";
 export default {
   data() {
     return {
@@ -161,19 +198,20 @@ export default {
       moveY: 0, // 滚动元素的总告诉
       scrollctx: null, // 滚动元素的上下文
       searchObj: {
-        priorityId: '',  // 优先级
-        typeId :'',    // 类型
-        needPerson:'',  // 需求人
-        name:'',       // 项目名
-        startTime:'',  // 开始时间
-        finshTime:'',  // 结束时间
-        prioritySort:true, // 排序   asc desc
-        typeSort:true,     // 类型排序 
-        startTimeSort:true,  // 开始时间排序
-        finishTimeSort:true, // 结束时间排序
+        priorityId: "", // 优先级
+        typeId: "", // 类型
+        needPerson: "", // 需求人
+        name: "", // 项目名
+        startTime: "", // 开始时间
+        finshTime: "", // 结束时间
+        prioritySort: true, // 排序   asc desc
+        typeSort: true, // 类型排序
+        startTimeSort: true, // 开始时间排序
+        finishTimeSort: true // 结束时间排序
       },
-      typeList:[],
-      priorityList:[],
+      renderTableList: tableList,
+      typeList: [],
+      priorityList: [],
       options: [
         { name: "MVP1", value: "value1" },
         { name: "MVP2", value: "value2" },
@@ -220,8 +258,8 @@ export default {
     };
   },
   mounted() {
-    this.getTypeList()
-    this.getPriorityList()
+    this.getTypeList();
+    this.getPriorityList();
     this.getData();
     // console.log(11)
   },
@@ -251,33 +289,50 @@ export default {
       //   }
       // }
     },
+    // customFieldColumn(h, { column, $index }) {
+    //   console.log(column, $index);
+    //   //  <i :class = "[searchObj.prioritySort?'el-icon-sort-down':'el-icon-sort-up']"></i>
+
+    //   let className = this.searchObj.prioritySort
+    //     ? "el-icon-sort-down"
+    //     : "el-icon-sort-up";
+    //   return h(
+    //     "span",
+    //     {
+    //       style: {
+    //         cursor: "pointer"
+    //       }
+    //     },
+    //     [
+    //       h("i", {
+    //         class: "el-icon-sort"
+    //       }),
+    //       "优先级"
+    //     ]
+    //   );
+    // },
+
     getData(pageNo) {
       if (!this.bscroll) {
         return;
       }
       this.bscroll = false;
-      //  typeId 、needPerson、name、startTime、finshTime、prioritySort、typeSort、startTimeSort、finishTimeSort
-      let searchObj = this.searchObj 
+      let searchObj = this.searchObj;
       let obj = {
         pageNo: pageNo ? pageNo : 1,
         pageSize: this.pageSize,
-        // typeId :''||searchObj.typeId||'',    // 类型
-        //  :searchObj.needPerson,  // 需求人
-        // name:searchObj.name,       // 项目名
-        // startTime:searchObj.startTime,  // 开始时间
-        // finshTime:searchObj.finshTime,  // 结束时间
-        prioritySort:searchObj.prioritySort?'asc':'desc', // 排序
-        typeSort:searchObj.typeSort ? 'asc':'desc',     // 类型排序 
-        startTimeSort:searchObj.startTimeSort ? 'asc':'desc',  // 开始时间排序
-        finishTimeSort:searchObj.finishTimeSort ? 'asc':'desc', // 结束时间排序
+        prioritySort: searchObj.prioritySort ? "asc" : "desc", // 排序
+        typeSort: searchObj.typeSort ? "asc" : "desc", // 类型排序
+        startTimeSort: searchObj.startTimeSort ? "asc" : "desc", // 开始时间排序
+        finishTimeSort: searchObj.finishTimeSort ? "asc" : "desc" // 结束时间排序
       };
-      searchObj.typeId && (obj.typeId = searchObj.typeId)
-      searchObj.priorityId && (obj.priorityId = searchObj.priorityId)
-      searchObj.needPerson && (obj.needPerson = searchObj.needPerson)
-      searchObj.name && (obj.name = searchObj.name)
-      searchObj.startTime && (obj.startTime = searchObj.startTime)
-      searchObj.finshTime && (obj.finshTime = searchObj.finshTime)
-    
+      searchObj.typeId && (obj.typeId = searchObj.typeId); // 类型
+      searchObj.priorityId && (obj.priorityId = searchObj.priorityId);
+      searchObj.needPerson && (obj.needPerson = searchObj.needPerson); // 需求人
+      searchObj.name && (obj.name = searchObj.name); // 项目名
+      searchObj.startTime && (obj.startTime = searchObj.startTime); // 开始时间
+      searchObj.finshTime && (obj.finshTime = searchObj.finshTime); // 结束时间
+
       this.$http.post("/api/pjc/project/findAllProject", obj, res => {
         // 使可以加载
         setTimeout(() => {
@@ -296,11 +351,10 @@ export default {
             list.forEach(t => {
               t.visible = false;
             });
-             // 搜索或者加载 
+            // 搜索或者加载
             // if(!pageNo){
-                // 搜索时 重置数据
-               
-                
+            // 搜索时 重置数据
+
             // }
 
             if (this.list.length === 0) {
@@ -312,50 +366,66 @@ export default {
         }
       });
     },
-    searchData(){
-      this.list = []
-      this.moveY = 0
-      this.pageNo = 1
-      this.lastPage =false;
-      this.getData()
+    searchData() {
+      this.list = [];
+      this.moveY = 0;
+      this.pageNo = 1;
+      this.lastPage = false;
+      this.getData();
     },
-    handleClickheader(column, event){
-      console.log(column,event)
-      let propertys =['starttime','finshtime','priorityName','typeName'];
-      let property = column['property']
-      let searchObj = this.searchObj
-      // if(propertys.includes(property)){
-          // prioritySort:true, // 排序   asc desc
-        //typeSort:true,     // 类型排序 
-        //startTimeSort:true,  // 开始时间排序
-        //finishTimeSort:true,
+    handleClickheader(item, column) {
+      // console.log(column);
+      // let propertys = ["starttime", "finshtime", "priorityName", "typeName"];
+      // let property = column["property"];
+      // let searchObj = this.searchObj;
+      // if (!propertys.includes(property)) {
+      //   return;
+      // }
+      // switch (property) {
+      //   case "starttime":
+      //     this.searchObj.startTimeSort = !searchObj.startTimeSort;
+      //     break;
+      //   case "finshtime":
+      //     this.searchObj.finishTimeSort = !searchObj.finishTimeSort;
+      //     break;
+      //   case "priorityName":
+      //     this.searchObj.prioritySort = !searchObj.prioritySort;
+      //     break;
+      //   case "typeName":
+      //     this.searchObj.typeSort = !searchObj.typeSort;
+      //     break;
+      // }
 
-      // } 
-       if(!propertys.includes(property)){
-        
-         return ;
-       } 
-      switch(property){
-        case 'starttime':
-          this.searchObj.startTimeSort = !searchObj.startTimeSort;
-          break;
-        case 'finshtime':
-          this.searchObj.finishTimeSort = !searchObj.finishTimeSort;
-          break;  
-        case 'priorityName':
-          this.searchObj.prioritySort = !searchObj.prioritySort;
-          break;
-        case 'typeName':
-          this.searchObj.typeSort = !searchObj.typeSort;
-          break;   
-      }
-     
-       this.list = []
-          this.moveY = 0
-          this.pageNo = 1
-          this.lastPage =false;
-          this.getData() 
+      // this.list = [];
+      // this.moveY = 0;
+      // this.pageNo = 1;
+      // this.lastPage = false;
+      // this.getData();
+      // let propertys = ["starttime", "finshtime", "priorityName", "typeName"];
 
+      return () => {
+        let property = item["prop"];
+        let searchObj = this.searchObj;
+        switch (property) {
+          case "starttime":
+            this.searchObj.startTimeSort = !searchObj.startTimeSort;
+            break;
+          case "finshtime":
+            this.searchObj.finishTimeSort = !searchObj.finishTimeSort;
+            break;
+          case "priorityName":
+            this.searchObj.prioritySort = !searchObj.prioritySort;
+            break;
+          case "typeName":
+            this.searchObj.typeSort = !searchObj.typeSort;
+            break;
+        }
+        this.list = [];
+        this.moveY = 0;
+        this.pageNo = 1;
+        this.lastPage = false;
+        this.getData();
+      };
     },
     scrollfn(ctx, val) {
       if (this.lastPage) return;
@@ -370,33 +440,31 @@ export default {
 
     /**
      * 优先级列表
-     *  
+     *
      */
-     getTypeList(){
-       this.$http.get('api/pjc/project/findAllProjectType',res=>{
-       
-            if(res.status ===200){
-              if(res.data.code ===200){
-                  this.typeList = res.data.data
-                  
-              }
-            }
-       })
-     },
+    getTypeList() {
+      this.$http.get("api/pjc/project/findAllProjectType", res => {
+        if (res.status === 200) {
+          if (res.data.code === 200) {
+            this.typeList = res.data.data;
+          }
+        }
+      });
+    },
 
     /**
      * 所属类型列表
-     *   
+     *
      */
-    getPriorityList(){
-       this.$http.get('api/pjc/project/findAllPriority',res=>{
-          if(res.status===200){
-              if(res.data.code ===200){
-                 this.priorityList = res.data.data
-              }
-            }
-       })
-     },
+    getPriorityList() {
+      this.$http.get("api/pjc/project/findAllPriority", res => {
+        if (res.status === 200) {
+          if (res.data.code === 200) {
+            this.priorityList = res.data.data;
+          }
+        }
+      });
+    },
     // 删除按钮
     deletebtn(value) {
       value.row.visible = true;
@@ -410,11 +478,77 @@ export default {
     /**
      * 格式化事件
      */
-    formatTime(row, column, cellValue, index) {
-      if (cellValue) {
+    // formatTime(row, column, cellValue, index) {
+    //   // switch(index){
+    //   //   case 5:
+    //   //   case 6:
+    //   //   return this.$moment(cellValue).format("YYYY-MM-DD");
+    //   //   default:
+    //   //   return cellValue
+    //   // }
+    //   if (cellValue) {
+    //   }
+    //   return this.$moment(cellValue).format("YYYY-MM-DD");
+    //   // return this.$moment(cellValue).format("YYYY-MM-DD h:mm:ss");
+    // },
+    formatter(item, k,scoped) {
+      let _this = this;
+      switch (k) {
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 7:
+        case 8:
+          // return (row, column, cellValue, index) => {
+          //   return row[item.prop];
+          // };
+          return scoped['row'][item['prop']]
+        case 5:
+        case 6:
+          let cellValue = scoped['row'][item['prop']]
+          return _this.$moment(cellValue).format("YYYY-MM-DD");
+          // return (row, column, cellValue, index) => {
+          //   return _this.$moment(cellValue).format("YYYY-MM-DD");
+          // };
       }
-      return this.$moment(cellValue).format("YYYY-MM-DD");
-      // return this.$moment(cellValue).format("YYYY-MM-DD h:mm:ss");
+    },
+    customRenderH(item, index) {
+      let _this = this;
+      return (h, { column, $index }) => {
+        // let className = this.searchObj.prioritySort
+        // ? "el-icon-sort-down"
+        // : "el-icon-sort-up";
+        // console.log($index)
+        let header;
+        switch (index) {
+          case 1:
+          case 3:
+          case 5:
+          case 6:
+            header = h(
+              "span",
+              {
+                style: {
+                  cursor: "pointer"
+                },
+                on: {
+                  click: _this.handleClickheader(item, column)
+                }
+              },
+              [
+                h("i", {
+                  class: "el-icon-sort"
+                }),
+                item["label"]
+              ]
+            );
+            break;
+          default:
+            header = h("span", item["label"]);
+        }
+        return header;
+      };
     }
   }
 };
