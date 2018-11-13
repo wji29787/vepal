@@ -11,26 +11,34 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/api': { 
-        target: 'http://192.168.112.168:8085', 
+      '/api': {
+        target: 'http://192.168.112.168:8092',
         changeOrigin: true,
         // ws: true,
         pathRewrite: {
-          '^/api' : '',     // rewrite path 
+          '^/api' : '',     // rewrite path
         },
-      },   
-      '/dev': { 
-        target: 'http://192.168.95.74:8085', 
+      },
+      '/dev': {
+        target: 'http://192.168.112.168:8088',
         changeOrigin: true,
         // ws: true,
         pathRewrite: {
-          '^/dev' : '',     // rewrite path 
+          '^/dev' : '',     // rewrite path
+        },
+      },
+      '/suit-jira': {
+        target: 'http://192.168.112.168:8092/suit-jira',
+        changeOrigin: true,
+        // ws: true,
+        pathRewrite: {
+          '^/suit-jira' : '',     // rewrite path
         },
       }
     },
 
     // Various Dev Server settings
-    host: 'localhost', // can be overwritten by process.env.HOST
+    host: '0.0.0.0', // can be overwritten by process.env.HOST
     port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,

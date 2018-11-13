@@ -17,11 +17,15 @@ let arc = opt => {
 let text = opt => {
   return new zrender.Text(opt)
 }
+
+let image = opt => { 
+  return new zrender.Image(opt)
+}
 let rem = (size) => {
   let baseSize = parseInt(document.querySelector('html').style.fontSize)
-  // if(baseSize <= 50){
-  //   baseSize = 50
-  // }
+  if (baseSize <= 50) {
+    baseSize = 50
+  }
   return Math.round(baseSize / 100 * size)
 }
 let getTextLen = str => {
@@ -93,7 +97,7 @@ function textFormat(str, L, L1) {
       }
     }
   }
-  return arr.join('\n')
+  return arr.join('\n\n')
 }
 
 // 类型转换
@@ -115,8 +119,91 @@ let filterNull = function filterNull(o) {
   }
   return o
 }
+// clone
+
+function clone(obj) {
+  if (null == obj || "object" != typeof obj) return obj;
+
+  // Handle Date
+  if (obj instanceof Date) {
+    var copy = new Date();
+    copy.setTime(obj.getTime());
+    return copy;
+  }
+  // Handle Array or Object
+  if (obj instanceof Array | obj instanceof Object) {
+    var copy = (obj instanceof Array) ? [] : {};
+    for (var attr in obj) {
+      
+      if (obj.hasOwnProperty(attr))
+        copy[attr] = clone(obj[attr]);  
+    }
+    return copy;
+  }
+}
+// merge
+function merge(def, obj) {
+  if (!obj) {
+    return def;
+  } else if (!def) {
+    return obj;
+  }
+
+  for (var i in obj) {
+    // if its an object
+    if (obj[i] != null && obj[i].constructor == Object) {
+      def[i] = merge(def[i], obj[i]);
+    }
+    // if its an array, simple values need to be joined. Object values need to be remerged.
+    else if (obj[i] != null && (obj[i] instanceof Array) && obj[i].length > 0) {
+      // test to see if the first element is an object or not so we know the type of array we're dealing with.
+      if (obj[i][0].constructor == Object) {
+        var newobjs = [];
+        // create an index of all the existing object IDs for quick access. There is no way to know how many items will be in the arrays.
+        var objids = {}
+        for (var x = 0, l = def[i].length; x < l; x++) {
+          objids[def[i][x].id] = x;
+        }
+
+        // now walk through the objects in the new array
+        // if the ID exists, then merge the objects.
+        // if the ID does not exist, push to the end of the def array
+        for (var x = 0, l = obj[i].length; x < l; x++) {
+          var newobj = obj[i][x];
+          if (objids[newobj.id] !== undefined) {
+            def[i][x] = merge(def[i][x], newobj);
+          } else {
+            newobjs.push(newobj);
+          }
+        }
+
+        for (var x = 0, l = newobjs.length; x < l; x++) {
+          def[i].push(newobjs[x]);
+        }
+      } else {
+        for (var x = 0; x < obj[i].length; x++) {
+          var idxObj = obj[i][x];
+          if (def[i].indexOf(idxObj) === -1) {
+            def[i].push(idxObj);
+          }
+        }
+      }
+    } else {
+      def[i] = obj[i];
+    }
+  }
+  return def;
+}
+//sort
+function arrSort(property) {
+  return function (a, b) {
+    var value1 = a[property];
+    var value2 = b[property];
+    return value1 - value2;
+  };
+}
 // 获取窗口可视范围的高度
-function getClientHeight () {
+function getClientHeight() {
   var clientHeight = 0
   if (document.body.clientHeight && document.documentElement.clientHeight) {
     clientHeight = (document.body.clientHeight < document.documentElement.clientHeight) ? document.body.clientHeight : document.documentElement.clientHeight
@@ -126,7 +213,7 @@ function getClientHeight () {
   return clientHeight
 }
 // 获取窗口滚动条高度
-function getScrollTop () {
+function getScrollTop() {
   var scrollTop = 0
   if (document.documentElement && document.documentElement.scrollTop) {
     scrollTop = document.documentElement.scrollTop
@@ -136,10 +223,33 @@ function getScrollTop () {
   return scrollTop
 }
 // 获取文档内容实际高度
-function getScrollHeight () {
+function getScrollHeight() {
   return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight)
 }
+// 文档滚动到指定高度 
+function setScrollTop(el, scrollTop) {
+  if (!scrollTop) {
+    scrollTop = el
+    el = document.documentElement || document.body
 
+  }
+  el.scrollTop = scrollTop
+}
+let StandardPost = (url, args) => {
+  let form = document.createElement("form"),
+    input = document.createElement('input');
+  form.method = 'post';
+  form.action = url;
+  for (let key in args) {
+    input.setAttribute('type', 'hidden')
+    input.setAttribute('name', key)
+    input.setAttribute('value', args[key])
+    form.appendChild(input)
+  }
+  document.body.appendChild(form)
+  form.submit();
+  form.parentNode.removeChild(form)
+}
 export {
   rect,
   rem,
@@ -154,6 +264,11 @@ export {
   filterNull,
   getClientHeight,
   getScrollTop,
-  getScrollHeight
-
+  getScrollHeight,
+  image,
+  StandardPost,
+  setScrollTop,
+  clone,
+  merge,
+  arrSort
 }

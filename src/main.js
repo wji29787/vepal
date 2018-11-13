@@ -3,26 +3,35 @@
 import Vue from 'vue'
 import './assets/css/base.css'
 import './element'
+import './assets/css/common.css'
 import App from './App'
 import router from './router'
-import http from './assets/js/axioshttp'
-// import axios from 'axios'
-import slcomponent from './components/slcomponent'
-Vue.use(slcomponent)
+
+// store Vuex
+import Vuex from 'vuex'
+import storejs from './model/store'
+Vue.use(Vuex)
+const store = new Vuex.Store(storejs)
+
+// 全局 路由 导航前回调
+router.beforeEach((to, from, next) => {
+  
+  if (to.meta.title) {
+    document.title = to.meta.title;
+  }
+  next()
+})
+
 Vue.config.productionTip = false
 // 引入axios
-// axios.defaults.baseURL = 'http://192.168.95.253:8085'
-// axios.defaults.baseURL = 'http://localhost:8080'
-// axios.defaults.headers.common['Authorization'] = AUTH_TOKEN
-// axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*'
-// axios.defaults.headers['Content-Type'] = 'application/json;charset=UTF-8'
-// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
-Vue.prototype.$http = http
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
+  store,
   router,
-  components: { App },
+  components: {
+    App
+  },
   template: '<App/>'
 })

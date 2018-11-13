@@ -156,7 +156,7 @@ import "ztree";
 import "ztree/css/zTreeStyle/zTreeStyle.css";
 import "ztree/js/jquery.ztree.core.js";
 import "ztree/js/jquery.ztree.excheck.js";
-import {transitionStyle} from './vepalconf.js'
+import {transitionStyle} from './createVepal/vepalconf.js'
 export default {
   name: "addvepal",
   data() {
