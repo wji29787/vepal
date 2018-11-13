@@ -1,3 +1,3 @@
-const componentList = ['dialog', 'msg', 'loading','scroll']
+const componentList = ['dialog', 'msg', 'loading']
 
 export default  componentList

@@ -1,7 +1,8 @@
 import VueLogger from './lib/vue-logger'
 import Directive from './lib/directive'
+import components from './lib/components'
 
-const components = ['dialog', 'msg', 'loading']
+// const components = ['dialog', 'msg', 'loading']
 
 // 插件
 const install = function (Vue, options = {}) {
@@ -29,8 +30,6 @@ const install = function (Vue, options = {}) {
 
   /**
    * 自定义指令 不通用 
-   * 适用于 el-scrollbar
-   * el-table
    * 
    */
   Directive.install(Vue)

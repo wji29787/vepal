@@ -217,51 +217,14 @@ export default {
         { name: "MVP2", value: "value2" },
         { name: "MVP3", value: "value3" }
       ],
-      list: [],
-      tableData6: [
-        {
-          id: "12987122",
-          name: "王小虎",
-          amount1: "234",
-          amount2: "3.2",
-          amount3: 10
-        },
-        {
-          id: "12987123",
-          name: "王小虎",
-          amount1: "165",
-          amount2: "4.43",
-          amount3: 12
-        },
-        {
-          id: "12987124",
-          name: "王小虎",
-          amount1: "324",
-          amount2: "1.9",
-          amount3: 9
-        },
-        {
-          id: "12987125",
-          name: "王小虎",
-          amount1: "621",
-          amount2: "2.2",
-          amount3: 17
-        },
-        {
-          id: "12987126",
-          name: "王小虎",
-          amount1: "539",
-          amount2: "4.1",
-          amount3: 15
-        }
-      ]
+      list: []
     };
   },
   mounted() {
-    this.getTypeList();
-    this.getPriorityList();
+    // this.getTypeList();
+    // var aa = this.getPriorityList();
+    this.getTypeAndPriority()
     this.getData();
-    // console.log(11)
   },
   methods: {
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {
@@ -440,29 +403,32 @@ export default {
 
     /**
      * 优先级列表
-     *
-     */
-    getTypeList() {
-      this.$http.get("api/pjc/project/findAllProjectType", res => {
-        if (res.status === 200) {
-          if (res.data.code === 200) {
-            this.typeList = res.data.data;
-          }
-        }
-      });
-    },
-
-    /**
      * 所属类型列表
      *
      */
-    getPriorityList() {
-      this.$http.get("api/pjc/project/findAllPriority", res => {
-        if (res.status === 200) {
-          if (res.data.code === 200) {
-            this.priorityList = res.data.data;
+    getTypeAndPriority() {
+      let getList = [
+        {
+          url: "api/pjc/project/findAllProjectType",
+          method: "get"
+        },
+        {
+          url: "api/pjc/project/findAllPriority",
+          method: "get"
+        }
+      ]; 
+      this.$http.all(getList, (res1, res2) =>{
+        if (res1.status === 200) {
+          if (res1.data.code === 200) {
+            this.typeList = res1.data.data;
           }
         }
+        if (res2.status === 200) {
+          if (res2.data.code === 200) {
+            this.priorityList = res2.data.data;
+          }
+        }
+ 
       });
     },
     // 删除按钮
@@ -491,7 +457,7 @@ export default {
     //   return this.$moment(cellValue).format("YYYY-MM-DD");
     //   // return this.$moment(cellValue).format("YYYY-MM-DD h:mm:ss");
     // },
-    formatter(item, k,scoped) {
+    formatter(item, k, scoped) {
       let _this = this;
       switch (k) {
         case 1:
@@ -503,14 +469,14 @@ export default {
           // return (row, column, cellValue, index) => {
           //   return row[item.prop];
           // };
-          return scoped['row'][item['prop']]
+          return scoped["row"][item["prop"]];
         case 5:
         case 6:
-          let cellValue = scoped['row'][item['prop']]
+          let cellValue = scoped["row"][item["prop"]];
           return _this.$moment(cellValue).format("YYYY-MM-DD");
-          // return (row, column, cellValue, index) => {
-          //   return _this.$moment(cellValue).format("YYYY-MM-DD");
-          // };
+        // return (row, column, cellValue, index) => {
+        //   return _this.$moment(cellValue).format("YYYY-MM-DD");
+        // };
       }
     },
     customRenderH(item, index) {

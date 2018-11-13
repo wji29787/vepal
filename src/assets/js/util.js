@@ -18,7 +18,7 @@ let text = opt => {
   return new zrender.Text(opt)
 }
 
-let image = opt => {
+let image = opt => { 
   return new zrender.Image(opt)
 }
 let rem = (size) => {

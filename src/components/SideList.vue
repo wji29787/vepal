@@ -11,8 +11,13 @@
                         <i class="el-icon-location"></i>
                         <span>产品</span>
                     </template>
-                    <el-menu-item index="1-1">产品管理</el-menu-item>
-                    <el-menu-item index="1-2">发布版本相关</el-menu-item>
+                    <el-menu-item index="1-1"
+                        :route = "{path:'product'}"
+                    
+                    >产品管理</el-menu-item>
+                    <el-menu-item index="1-2"
+                        :route = "{path:'productEdit'}"
+                    >发布版本相关</el-menu-item>
                     <el-menu-item index="1-3">发部项目相关</el-menu-item>
                 </el-submenu>
                 <el-submenu index="2">

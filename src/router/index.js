@@ -1,12 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
-// import NotFound from '@/components/404'
 import Vepal from '@/vepal/vepal'
 import AddVepal from '@/vepal/addvepal'
 import vepalMain from '@/vepal/main'
 
-import { homedir } from 'os';
 import Home from '@/home/Home'
 // project
 import Project from '@/pages/project/Project'
@@ -14,14 +11,14 @@ import ProjectEdit from '@/pages/project/ProjectEdit'
 
 // product
 import Product from '@/pages/product/Product'
+import ProductEdit from '@/pages/product/ProductEdit'
 
 // suit
 import Suit from '@/pages/suit/Suit'
-// import Login from '@/login/login'
-const Login ={
-  template:`<div>login</div>`
-}
+import Login from '@/login/login'
 
+// vepal
+import testVepal from '@/pages/vepal/testVepal'
 
 Vue.use(Router)
 
@@ -46,7 +43,10 @@ export default new Router({
     {
       path: '/login',
       name: 'login',
-      component: Login
+      component: Login,
+      meta:{
+        title:'登陆'
+      }
     },
     //主页面
     {
@@ -65,12 +65,18 @@ export default new Router({
         {
           path: 'vepal',
           name: 'Vepal',
-          component: Vepal
+          component: Vepal,
+          meta:{
+            title:'图表展示'
+          }
         },
         {
           path: 'project',
           name: 'Project',
-          component: Project  
+          component: Project,
+          meta:{
+            title:'项目管理'
+          }  
         },
         {
           path: 'projectedit',
@@ -80,13 +86,32 @@ export default new Router({
         {
           path: 'product',
           name: 'Product',
-          component: Product
+          component: Product,
+          meta:{
+            title:'产品管理'
+          }  
+        },
+        {
+          path: 'productEdit',
+          name: 'productEdit',
+          component: ProductEdit
         },
         {
           path: 'suit',
           name: 'Suit',
-          component: Suit
+          component: Suit,
+          meta:{
+            title:'套装管理'
+          }  
         },
+        {
+          path:'testVepal',
+          name:'testVepal',
+          component:testVepal,
+          meta:{
+            title:'图标展示'
+          }
+        }
       ]
     },
     // 404 页面

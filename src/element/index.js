@@ -16,4 +16,4 @@ Vue.prototype.$http = http
 import slcomponent from '../components/slcomponent'
 Vue.use(slcomponent)
 
-export default Vue
+// export default Vue

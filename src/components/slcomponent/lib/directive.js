@@ -3,27 +3,6 @@ const Directive = {
 }
 Directive.install = (Vue, options) => {
 
-  // Vue.directive('scroll',(el, binding, vNode)=>{
-  //  console.log(this)   
-  // let instance = vNode.componentInstance;
-  // let _this = vNode.context;
-  // let wrap = instance.$refs.wrap;
-  // let moveY = instance.moveY;
-  // let sizeHeight = instance.sizeHeight;
-  // let sign = 10;
-  // // let div =el.querySelector('.el-scrollbar__wrap')
-  // if (!wrap.clientHeight) return;
-  // let mY;
-  // let sH = (parseFloat(sizeHeight) * wrap.clientHeight) / 100;
-  // if (moveY) {
-  //   mY = (moveY / 100) * sH;
-  // } else {
-  //   mY = 0;
-  // }
-  // if (wrap.clientHeight - (sH + mY) < sign) {
-  //   binding.value(mY + wrap.clientHeight, instance);
-  // }
-  // })
 
   let scrollTh = 0;
 //   let scrollAttr = "scrollfn";
@@ -54,12 +33,7 @@ Directive.install = (Vue, options) => {
       div.addEventListener('scroll', scrollfn, false)
     },
     update(el, binding, vNode) {
-      // console.log(el, binding)
-      // let instance = vNode.componentInstance;
-      // let _this = vNode.context;
-      // // let wrap = instance.$refs.wrap;
-      // let moveY = instance.moveY;
-      // let aa = instance.resizeState
+      
     },
     unbind(el, binding, vNode) {
     //   let fn = el.getAttribute(scrollAttr)

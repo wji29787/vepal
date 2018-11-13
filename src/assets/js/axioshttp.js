@@ -99,8 +99,9 @@ let http = axios.create({
     //     newData += encodeURIComponent(k) + '=' + encodeURIComponent(data[k]) + '&';
     //   }
     // }
+  
     return qs.stringify(data)
-  }]
+  }],
 })
 
 function apiAxios (method, url, params, response) {
@@ -114,16 +115,22 @@ function apiAxios (method, url, params, response) {
     data: method === 'POST' || method === 'PUT' ? params : null,
     params: method === 'GET' || method === 'DELETE' ? params : null
   }
-  // config = Object.assign({}, config, opt)
-  http(config)
+  return http(config)
     .then(function (res) {
       response(res)
-      return res
+      // return res
     }).catch(function (err) {
       response(err)
     })
 }
 
+// http.interceptors.request.use((config)=>{
+//   console.log('inter1')
+//   return config
+// })
+// http.interceptors.response.use((config)=>{
+//   console.log('inter2')
+// })
 export default {
   get: function (url, params, response) {
     return apiAxios('GET', url, params, response)
@@ -136,5 +143,24 @@ export default {
   },
   delete: function (url, params, response) {
     return apiAxios('DELETE', url, params, response)
+  },
+  all:function (list,response) {
+        let getApi=[]
+        list.forEach(api => {
+          let config = {
+            method :'GET',
+          }
+          config = Object.assign({},config,api)
+          let method = config.method.toUpperCase() 
+          config.method = method
+          if( method === 'GET' || method === 'DELETE'){
+            config.params  = config.data
+            config.data = null
+          } 
+          getApi.push(http(config))
+        });
+        axios.all(getApi).then(axios.spread(response)).catch((err)=>{
+          response(err)
+        })
   }
 }

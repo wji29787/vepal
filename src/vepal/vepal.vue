@@ -291,7 +291,7 @@ export default {
       pageSize: 10, // 初始每页数据数
       lastPage: false, //最后一页
       moveY: 0,
-      scrollctx :null,
+      scrollctx: null,
       // customStyle:{},
       // 项目详情
       projectDetil: {
@@ -444,6 +444,7 @@ export default {
 
     //  console.log(div.currentStyle)
     // console.log(width)
+    window.zrender = zrender
   },
   watch: {
     // offset
@@ -455,6 +456,7 @@ export default {
     // this.getData();
     let that = this;
     let timer = null;
+   
     window.addEventListener("resize", function() {
       if (timer) clearTimeout(timer);
       timer = setTimeout(function() {
@@ -530,13 +532,13 @@ export default {
               } else {
                 listLen = this.list.length;
                 this.list = this.list.concat(res.data.data.suits);
-              }  
+              }
 
               this.groupPosition(res.data.data.suits, listLen);
               // 改变滚动距离
               if (this.scrollctx) {
                 this.$nextTick(() => {
-                  this.scrollctx.scrollTop = this.moveY
+                  this.scrollctx.scrollTop = this.moveY;
                 });
               }
             } else {
@@ -724,7 +726,7 @@ export default {
           style: {
             fill: conf.product.bgColor,
             text: textFormat(
-              `${t.productName  +"\t\t\t"+  t.productVersion}`,
+              `${t.productName + "\t\t\t" + t.productVersion}`,
               conf.product.textsize,
               conf.product.textSizeSum
             ),
@@ -1134,7 +1136,6 @@ export default {
           h = elh - marLen * 2;
         }
         if (type === "L") {
-          
           textSize = Math.round((w - marLen * 2) / size) * 2;
         } else if (type === "R") {
           textSize = Math.round(w / size) * 2;
@@ -1147,7 +1148,7 @@ export default {
           textSize = Math.round((w - marLen / 2) / size) * 2;
         }
         // 临时加大行距
-        h = h- marLen
+        h = h - marLen;
         return {
           textsize: textSize,
           textSizeSum: Math.round(h / size) * textSize
@@ -1512,17 +1513,16 @@ export default {
         }
       );
     },
-    scrollfn(ctx,val) {
-       
+    scrollfn(ctx, val) {
       if (this.lastPage) return;
       if (!this.bscroll) return;
       // 保存滚动元素
-      this.scrollctx = ctx
+      this.scrollctx = ctx;
       // 元素的总高度
       if (this.moveY < val) {
-           this.moveY = val;
-           this.pageNo += 1;
-           this.getData(this.pageNo);  
+        this.moveY = val;
+        this.pageNo += 1;
+        this.getData(this.pageNo);
       }
     },
     editProject(priorityName) {
@@ -1687,6 +1687,7 @@ export default {
             customStyle = setScaleStyle(resetObj, rem());
             this.render();
             this.getData();
+             window.zr = this.zr
           }
         }
       });
