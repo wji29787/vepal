@@ -267,12 +267,14 @@ export default {
               issueId:_this.issueId
           },(res)=>{
               if(res.status===200){
-                      alert("保存成功");
+                   alert("保存成功");
+                   window.location.reload();
               }else{
                   console.log(res) 
               }
       })
       _this.dialogVisible = false;
+      
   },
     render() {
       let container = document.getElementById("container");
