@@ -8,10 +8,13 @@ import Home from '@/home/Home'
 // project
 import Project from '@/pages/project/Project'
 import ProjectEdit from '@/pages/project/ProjectEdit'
+import AddProject from '@/pages/project/AddProject'
 
 // product
 import Product from '@/pages/product/Product'
 import ProductEdit from '@/pages/product/ProductEdit'
+import AddProduct from '@/pages/product/AddProduct'
+import AddVersion from '@/pages/product/AddVersion'
 
 // suit
 import Suit from '@/pages/suit/SuitList'
@@ -74,6 +77,7 @@ export default new Router({
             title:'图表展示'
           }
         },
+        // 项目管理
         {
           path: 'project',
           name: 'Project',
@@ -88,6 +92,29 @@ export default new Router({
           component: ProjectEdit
         },
         {
+          path: 'addproject',
+          name: 'addproject',
+          component: AddProject,
+          meta:{
+            title:'项目新增'
+          },
+          props:{
+            type:'add'
+          }
+        },
+        {
+          path: 'editproject',
+          name: 'editproject',
+          component: AddProject,
+          meta:{
+            title:'项目编辑'
+          },
+          props:{
+            type:'edit'
+          }
+        },
+        // 产品管理
+        {
           path: 'product',
           name: 'Product',
           component: Product,
@@ -96,10 +123,41 @@ export default new Router({
           }  
         },
         {
+          path:'addproduct',
+          name:'addproduct',
+          component:AddProduct,
+          meta:{
+            title:'产品新增'
+          }
+        },
+        {
+          path:'addversion',
+          name:'addversion',
+          component:AddVersion,
+          meta:{
+            title:'版本新增'
+          },
+          props:{
+            type:'add'
+          }
+        },
+        {
+          path:'editversion',
+          name:'editversion',
+          component:AddVersion,
+          meta:{
+            title:'版本编辑'
+          },
+          props:{
+            type:'edit'
+          }
+        },
+        {
           path: 'productEdit',
           name: 'productEdit',
           component: ProductEdit
         },
+        // 套装管理
         {
           path: 'suit',
           name: 'Suit',
