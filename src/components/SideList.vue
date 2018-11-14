@@ -38,8 +38,12 @@
                         <i class="el-icon-document"></i>
                         <span>套装管理</span>
                     </template>         
-                    <el-menu-item index="3-1">套装列表</el-menu-item>    
-                    <el-menu-item index="3-2">套装新增</el-menu-item>
+                    <el-menu-item index="3-1"
+                     :route = "{path:'suit'}"
+                    >套装列表</el-menu-item>    
+                    <el-menu-item index="3-2"
+                    :route = "{path:'addsuit'}"
+                    >套装新增</el-menu-item>
                 </el-submenu>
                 <el-submenu index="4">
                     <template slot="title">
@@ -49,8 +53,10 @@
                     <el-menu-item index="4-1"
                     >套装产品报表</el-menu-item>
                     <el-menu-item index="4-2"
+                    :route = "{path:'vepal'}"
                     >套装产品竖图</el-menu-item>
                      <el-menu-item index="4-3"
+                     :route = "{path:'pptview'}"
                     >套装产品横图</el-menu-item>
                         <el-menu-item index="4-4"
                     >套装项目报表</el-menu-item>
