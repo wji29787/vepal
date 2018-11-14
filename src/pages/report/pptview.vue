@@ -1,210 +1,41 @@
 <template>
     <div>
         <h3 class="title">
-             产品计划升级套装情况（未来两周）
+            产品计划升级套装情况
+            <div class="fr">
+               <el-date-picker
+                v-model="startTime"
+                type="date"
+                placeholder="开始时间">
+                </el-date-picker>
+                <el-date-picker
+                v-model="endTime"
+                type="date"
+                placeholder="结束时间">
+                </el-date-picker>
+                 <el-button icon="el-icon-search" circle @click="getlist"></el-button>
+            </div>
         </h3>
         <div class="view">
-                <div class="zhou">
-            <span class="zhoutop">产品</span>
-            <span class="zhoucenter">套装(时间)</span>
-            <span class="zhoubottom">项目</span>
-        </div>
+            <div class="zhou">
+                <span class="zhoutop">产品</span>
+                <span class="zhoucenter">套装(时间)</span>
+                <span class="zhoubottom">项目</span>
+            </div>
         <ul class="viewbar">
-            <li>
+            <li v-for="item in list" :key="item.suitId">
                 <div class="linetop">
                      <ul>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
+                         <li :key="versionlist.versionId" v-for="versionlist in item.versionVos">{{versionlist.productName}}{{versionlist.verName}}</li>
                      </ul>
                 </div>
                 <div class="line">
                     <b></b>
-                    <span>9月21日（SP1.0.0）</span>
+                    <span>{{item.suitName}}（{{formatDate(item.suitDate)}}）</span>
                 </div>
                 <div class="linebottom">
                      <ul>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                     </ul>
-                </div>
-            </li>
-               <li>
-                <div class="linetop">
-                     <ul>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                     </ul>
-                </div>
-                <div class="line">
-                     <b></b>
-                    <span>9月21日（SP1.0.0）</span>
-                </div>
-                <div class="linebottom">
-                     <ul>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                     </ul>
-                </div>
-            </li>
-               <li>
-                <div class="linetop">
-                     <ul>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                     </ul>
-                </div>
-                <div class="line">
-                     <b></b>
-                    <span>9月21日（SP1.0.0）</span>
-                </div>
-                <div class="linebottom">
-                     <ul>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                     </ul>
-                </div>
-
-            </li>
-            
-                           <li>
-                <div class="linetop">
-                     <ul>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                     </ul>
-                </div>
-                <div class="line">
-                     <b></b>
-                    <span>9月21日（SP1.0.0）</span>
-                </div>
-                <div class="linebottom">
-                     <ul>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                     </ul>
-                </div>
-            </li> 
-                           <li>
-                <div class="linetop">
-                     <ul>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                     </ul>
-                </div>
-                <div class="line">
-                     <b></b>
-                    <span>9月21日（SP1.0.0）</span>
-                </div>
-                <div class="linebottom">
-                     <ul>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                     </ul>
-                </div>
-            </li> 
-               <li>
-                <div class="linetop">
-                     <ul>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                     </ul>
-                </div>
-                <div class="line">
-                     <b></b>
-                    <span>9月21日（SP1.0.0）</span>
-                </div>
-                <div class="linebottom">
-                     <ul>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                     </ul>
-                </div>
-            </li>
-                        <li>
-                <div class="linetop">
-                     <ul>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                     </ul>
-                </div>
-                <div class="line">
-                    <b></b>
-                    <span>9月21日（SP1.0.0）</span>
-                </div>
-                <div class="linebottom">
-                     <ul>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
-                         <li>视联王会议调度软件（Pamir）5.5.5版本</li>
+                         <li :key="projectVos.projectId" v-for="projectVos in item.projectVos">{{projectVos.name}}</li>
                      </ul>
                 </div>
             </li>
@@ -217,11 +48,32 @@
     export default {
         data() {
             return {
-                key: value
+                list:[],
+                startTime:'',
+                endTime:''
             }
         },mounted() {
-            
-        },
+            this.getlist();
+        },methods:{
+            getlist(){
+                var _this=this;
+                this.$http.get(
+                    "api/suit/view2/findAllSuitInfo",
+                    {
+                        startTime:_this.startTime,
+                        endTime:_this.endTime
+                    },
+                    res => {
+                        if (res.status === 200) {
+                           _this.list=res.data.data.list;
+                        }
+                    }
+                );
+            },
+            formatDate(cellValue){
+                return this.$moment(cellValue).format("YYYY-MM-DD");
+            }
+        }
     }
 </script>
 
@@ -242,13 +94,17 @@
     background: rgba(0,0,0,0.1);
 }
 .view{
-    margin: 1rem 0.5rem;
+    margin: 1rem;
     height: 5.8rem;
     width:auto;
 }
 .title{
     font-size: 0.3rem;
-    text-align: center;
+    margin:0 0 0 0.8rem;
+    font-family: 微软雅黑;
+}
+.title div.fr{
+    margin-right: 3rem;
 }
 .zhou{
     position: absolute;
@@ -266,7 +122,7 @@
 .zhoucenter{
     position: absolute;
     top:50%;
-    left:-0.5rem;
+    left:-1rem;
     font-size: 0.2rem;
 }
 .zhoubottom{
