@@ -14,11 +14,15 @@ import Product from '@/pages/product/Product'
 import ProductEdit from '@/pages/product/ProductEdit'
 
 // suit
-import Suit from '@/pages/suit/Suit'
+import Suit from '@/pages/suit/SuitList'
 import Login from '@/login/login'
+import addsuit from '@/pages/suit/SuitEdit'
 
 // vepal
 import testVepal from '@/pages/vepal/testVepal'
+
+//视图
+import pptview from '@/pages/report/pptview'
 
 Vue.use(Router)
 
@@ -105,11 +109,26 @@ export default new Router({
           }  
         },
         {
+          path: 'addsuit',
+          name: 'addsuit',
+          component: addsuit,
+          meta:{
+            title:'套装管理'
+          }  
+        },
+        {
           path:'testVepal',
           name:'testVepal',
           component:testVepal,
           meta:{
             title:'图标展示'
+          }
+        },{
+          path:'pptview',
+          name:'pptview',
+          component:pptview,
+          meta:{
+            title:'视图2'
           }
         }
       ]
