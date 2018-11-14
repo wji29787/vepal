@@ -482,10 +482,7 @@ export default {
     customRenderH(item, index) {
       let _this = this;
       return (h, { column, $index }) => {
-        // let className = this.searchObj.prioritySort
-        // ? "el-icon-sort-down"
-        // : "el-icon-sort-up";
-        // console.log($index)
+     
         let header;
         switch (index) {
           case 1:

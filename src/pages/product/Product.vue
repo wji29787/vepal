@@ -2,63 +2,40 @@
     <div  class="extend-h-w">
                <el-container class="extend-h-w" direction = "vertical">
                    <el-row class ="sl-item-h100" type = "flex" justify = "center" align ="middle">
-                             <h2 class = "sl-title">项目管理列表</h2>
+                             <h2 class = "sl-title">产品管理列表</h2>
                     </el-row>
                      
                           <el-container class="extend-h-w" direction = "vertical">
                             <el-row :gutter = "10">
-                                <el-col :lg = "4"  :md= "6"><el-input placeholder="请输入项目名称" v-model = "searchObj.name" ></el-input></el-col>  
-                                <el-col :lg = "4"  :md= "5"><el-input placeholder="请输入需求提出人" v-model = "searchObj.needPerson"></el-input></el-col> 
-                                <el-col :lg = "3"  :md= "4" >
-                                  <el-select clearable v-model = "searchObj.typeId" placeholder="项目类型">
-                                      <el-option
-                                        v-for="item in typeList"
-                                        :key="item.projecttypeId"
-                                        :label="item.typeName"
-                                        :value="item.projecttypeId">
-                                      </el-option>
-                                    </el-select>
-                                  
-                                  </el-col>  
-                                 <el-col :lg = "3"  :md= "4">
-                                    <el-select clearable v-model = "searchObj.priorityId" placeholder="优先级">
+                             <!--  remote 
+                                        :remote-method="productobj.remoteMethod"
+                                        :loading="productobj.loading"  -->
+                                <el-col :lg = "7"  :md= "9">
+                                    <span>产品名称：</span>
+                                   <el-select 
+                                       filterable 
+                                       v-model = "searchObj.productName" 
+                                       placeholder="请输入"
+                                       
+                                        class = "itemL7">
                                         <el-option
-                                          v-for="item in priorityList"
-                                          :key="item.priorityId"
-                                          :label="item.priorityName"
-                                          :value="item.priorityId">
+                                          v-for="item in productobj.list"
+                                          :key="item.productId"
+                                          :label="item.productName"
+                                          :value="item.productName">
                                         </el-option>
                                       </el-select>
-                                   
-                                   </el-col>  
+                                  </el-col>  
+                                <el-col :lg = "6"  :md= "8">
+                                   <span>版本号：</span>
+                                  <el-input placeholder="请输入版本号" v-model = "searchObj.verName" class = "itemL6"></el-input>
                                   
+                                  </el-col> 
+                                        
                                  <el-col :span = "1.5"><el-button @click = "searchData()">搜索</el-button></el-col>    
-                                 <el-col :span = "1.5" ><el-button>导出</el-button></el-col>    
-                                 <el-col :span = "2"  class="fr"><el-button class="fr">新增</el-button></el-col>    
+           
+                                 <el-col :span = "2"  class="fr"><el-button class="fr" @click = "addProduct">新增</el-button></el-col>    
                                  
-                            </el-row>
-                            <br>
-                            <el-row :gutter = "10">
-                               <el-col :lg = "4"  :md= "6"> 
-                                    <el-date-picker
-                                      class = "extend-w"
-                                      type="date"
-                                      placeholder="开始时间"
-                                      value-format = "yyyy-MM-dd"
-                                      v-model = "searchObj.startTime"
-                                      >
-                                    </el-date-picker>
-                                </el-col> 
-                                <el-col :lg = "4"  :md= "6"> 
-                                    <el-date-picker
-                                      class = "extend-w"
-                                      type="date"
-                                      value-format = "yyyy-MM-dd"
-                                      placeholder="结束时间"
-                                       v-model = "searchObj.finshTime"
-                                      >
-                                    </el-date-picker>
-                                </el-col>   
                             </el-row>
                             <el-row type = "flex" class="extend-h-w">
                               <!-- :formatter = "formatter(item,index)"  
@@ -72,31 +49,36 @@
                                         height = "98%"
                                         header-cell-class-name = ""
                                         v-scroll = "{el:'.el-table__body-wrapper',scrollfn:scrollfn}"
+                                        :header-cell-style = "setHeaderStyle"
                                         style="width: 100%; margin-top: 20px">
                                         <el-table-column
                                             v-for = "(item, index) in renderTableList" 
                                             :key = "index"
                                             :width = "item.width" 
-                                            :render-header="customRenderH(item,index)"          
+                                            :render-header="customRenderH(item,index)"         
                                             >
                                             <template slot-scope="scope1">
-                                                  <template v-if = "index === 9">
-                                                      <el-button type="text" @click="productDown(scope1.row)" icon = "el-icon-tickets" ></el-button>
+                                                  <template v-if = "index === 4">
+                                                      <el-button type="text" @click="editVersion(scope1.row)" icon = "el-icon-tickets" ></el-button>
                                                       <el-popover
                                                           placement="left"
                                                           width="160"
                                                           v-model = "scope1.row.visible"
                                                         >
-                                                          <p>这是一段内容这是一段内容确定删除吗？</p>
+                                                          <p>确定删除吗？</p>
                                                           <div style="text-align: right; margin: 0">
                                                             <el-button size="mini" type="text" @click = "delcancle(scope1)">取消</el-button>
                                                             <el-button type="primary" size="mini" @click = "delsure(scope1)">确定</el-button>
                                                           </div>
                                                           <el-button slot="reference" type="text"  class = "textColor" @click= "deletebtn(scope1)" icon = "el-icon-delete"></el-button>
                                                       </el-popover>
+                                                      
                                                   </template>
                                                   <template v-else-if = "index === 0">
                                                     {{scope1['$index']+1}}
+                                                  </template>
+                                                  <template v-else-if = "index === 5">
+                                                    <el-button type="text" @click="addVersion(scope1.row)" >新增</el-button>
                                                   </template>
                                                   <template v-else>
                                                     <!-- scope1['row'][item['prop']] -->
@@ -128,57 +110,51 @@ export default {
       moveY: 0, // 滚动元素的总告诉
       scrollctx: null, // 滚动元素的上下文
       searchObj: {
-        priorityId: "", // 优先级
-        typeId: "", // 类型
-        needPerson: "", // 需求人
-        name: "", // 项目名
-        startTime: "", // 开始时间
-        finshTime: "", // 结束时间
-        prioritySort: true, // 排序   asc desc
-        typeSort: true, // 类型排序
-        startTimeSort: true, // 开始时间排序
-        finishTimeSort: true // 结束时间排序
+        productName: "", // 优先级
+        verName: "" // 类型
       },
       renderTableList: tableList,
-      typeList: [],
-      priorityList: [],
-      options: [
-        { name: "MVP1", value: "value1" },
-        { name: "MVP2", value: "value2" },
-        { name: "MVP3", value: "value3" }
-      ],
-      list: []
+      list: [],
+      arrname: [],
+      productobj: {
+        list: [], // 产品列表
+        loading: ""
+      },
     };
   },
   mounted() {
-    this.getTypeAndPriority()
+    this.getProductList();
     this.getData();
   },
   methods: {
+    addProduct() {
+      this.$router.push({
+        path: "addproduct"
+      });
+    },
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {
-      // if (rowIndex % 2 === 0) {
-      //   if (columnIndex === 0) {
-      //     return [1, 2];
-      //   } else if (columnIndex === 1) {
-      //     return [0, 0];
-      //   }
-      // }
+ 
     },
 
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-      // if (columnIndex === 0) {
-      //   if (rowIndex % 2 === 0) {
-      //     return {
-      //       rowspan: 2,
-      //       colspan: 1
-      //     };
-      //   } else {
-      //     return {
-      //       rowspan: 0,
-      //       colspan: 0
-      //     };
-      //   }
-      // }
+   
+      if (columnIndex === 0||columnIndex === 1||columnIndex === 5) {
+         
+          let _col = 0, _row = 0  
+          this.arrname.forEach(t=>{
+             if(t.index === rowIndex){
+                 _row = t.listLen
+                 _col = 1
+             }
+          })
+          return {
+            rowspan:_row,
+            colspan:_col
+          }
+          
+      }
+      
+      
     },
     getData(pageNo) {
       if (!this.bscroll) {
@@ -187,21 +163,11 @@ export default {
       this.bscroll = false;
       let searchObj = this.searchObj;
       let obj = {
-        pageNo: pageNo ? pageNo : 1,
-        pageSize: this.pageSize,
-        prioritySort: searchObj.prioritySort ? "asc" : "desc", // 排序
-        typeSort: searchObj.typeSort ? "asc" : "desc", // 类型排序
-        startTimeSort: searchObj.startTimeSort ? "asc" : "desc", // 开始时间排序
-        finishTimeSort: searchObj.finishTimeSort ? "asc" : "desc" // 结束时间排序
+        productName: searchObj.productName || "", // 优先级
+        verName: searchObj.verName || "" // 类型
       };
-      searchObj.typeId && (obj.typeId = searchObj.typeId); // 类型
-      searchObj.priorityId && (obj.priorityId = searchObj.priorityId);
-      searchObj.needPerson && (obj.needPerson = searchObj.needPerson); // 需求人
-      searchObj.name && (obj.name = searchObj.name); // 项目名
-      searchObj.startTime && (obj.startTime = searchObj.startTime); // 开始时间
-      searchObj.finshTime && (obj.finshTime = searchObj.finshTime); // 结束时间
 
-      this.$http.post("/api/pjc/project/findAllProject", obj, res => {
+      this.$http.post("/vdev/product/findAllProductVersion", obj, res => {
         // 使可以加载
         setTimeout(() => {
           this.bscroll = true;
@@ -216,19 +182,37 @@ export default {
               this.lastPage = true;
             }
             // 添加 删除按钮属性
-            list.forEach(t => {
-              t.visible = false;
+            // list.forEach(t => {
+            //   t.visible = false;
+            // });
+            let arr = [],
+              arrname = [];
+            list.forEach((t, i) => {
+              if (t.versionList.length > 0) {
+                 let obj ={}
+                if(i === 0){
+                  obj.index = 0,
+                  obj.listLen = t.versionList.length
+                  
+                }else{
+                  obj.index = arrname[arrname.length-1].index+arrname[arrname.length-1].listLen
+                  obj.listLen = t.versionList.length
+                }
+                arrname.push(obj)
+                t.versionList.forEach(k => {
+                  k.name = t.productName;
+                  k.visible = false;
+                  k.productId = t.productId;
+                });
+                arr = arr.concat(t.versionList);
+              }
             });
-            // 搜索或者加载
-            // if(!pageNo){
-            // 搜索时 重置数据
-
-            // }
-
             if (this.list.length === 0) {
-              this.list = list;
+              this.list = arr;
+              this.arrname = arrname;
             } else {
-              this.list = this.list.concat(list);
+              this.list = this.list.concat(arr);
+              this.arrname = this.list.concat(arrname);
             }
           }
         }
@@ -240,31 +224,6 @@ export default {
       this.pageNo = 1;
       this.lastPage = false;
       this.getData();
-    },
-    handleClickheader(item, column) {
-      return () => {
-        let property = item["prop"];
-        let searchObj = this.searchObj;
-        switch (property) {
-          case "starttime":
-            this.searchObj.startTimeSort = !searchObj.startTimeSort;
-            break;
-          case "finshtime":
-            this.searchObj.finishTimeSort = !searchObj.finishTimeSort;
-            break;
-          case "priorityName":
-            this.searchObj.prioritySort = !searchObj.prioritySort;
-            break;
-          case "typeName":
-            this.searchObj.typeSort = !searchObj.typeSort;
-            break;
-        }
-        this.list = [];
-        this.moveY = 0;
-        this.pageNo = 1;
-        this.lastPage = false;
-        this.getData();
-      };
     },
     scrollfn(ctx, val) {
       if (this.lastPage) return;
@@ -282,30 +241,21 @@ export default {
      * 所属类型列表
      *
      */
-    getTypeAndPriority() {
-      let getList = [
+    getProductList(pageNo) {
+      this.$http.get(
+        "vdev/product/findAllProduct",
         {
-          url: "api/pjc/project/findAllProjectType",
-          method: "get"
+          pageNo: 0,
+          pageSize: 0
         },
-        {
-          url: "api/pjc/project/findAllPriority",
-          method: "get"
-        }
-      ]; 
-      this.$http.all(getList, (res1, res2) =>{
-        if (res1.status === 200) {
-          if (res1.data.code === 200) {
-            this.typeList = res1.data.data;
+        res => {
+          if (res.status === 200) {
+            if (res.data.code === 200) {
+              this.productobj.list = res.data.data.list;
+            }
           }
         }
-        if (res2.status === 200) {
-          if (res2.data.code === 200) {
-            this.priorityList = res2.data.data;
-          }
-        }
- 
-      });
+      );
     },
     // 删除按钮
     deletebtn(value) {
@@ -314,8 +264,25 @@ export default {
     delcancle(value) {
       value.row.visible = false;
     },
-    delsure(value) {
-      value.row.visible = false;
+    delsure({row}) {
+      this.$http.post('vdev/version/delVersionById',{
+        productId:row.productId,
+        versionId:row.versionId
+      },res =>{
+           if(res.status ===200){
+             if(res.data.code ===200){
+                 this.searchData()
+                 row.visible = false;
+                 this.$message({
+                    message: '删除成功',
+                    type: "success"
+                  });
+             }else{
+               this.$message.error(res.data.msg);
+             }
+           }
+      })
+      
     },
     /**
      * 格式化事件
@@ -338,50 +305,65 @@ export default {
       switch (k) {
         case 1:
         case 2:
+            return scoped["row"][item["prop"]];
         case 3:
-        case 4:
-        case 7:
-        case 8:
-          return scoped["row"][item["prop"]];
-        case 5:
-        case 6:
-          let cellValue = scoped["row"][item["prop"]];
-          return _this.$moment(cellValue).format("YYYY-MM-DD");
+            let cellValue = scoped["row"][item["prop"]]||'';
+            return cellValue.length>20? (cellValue.substr(20)+'...'):cellValue
       }
     },
     customRenderH(item, index) {
       let _this = this;
       return (h, { column, $index }) => {
-  
         let header;
         switch (index) {
-          case 1:
-          case 3:
-          case 5:
-          case 6:
-            header = h(
-              "span",
-              {
-                style: {
-                  cursor: "pointer"
-                },
-                on: {
-                  click: _this.handleClickheader(item, column)
-                }
-              },
-              [
-                h("i", {
-                  class: "el-icon-sort"
-                }),
-                item["label"]
-              ]
-            );
+           
+          case 4:
+            // header = h(
+            //   "span",
+            //   {
+            //     style: {
+            //       cursor: "pointer"
+            //     },
+            //     on: {
+            //       click: _this.handleClickheader(item, column)
+            //     }
+            //   },
+            //   [
+            //     h("i", {
+            //       class: "el-icon-sort"
+            //     }),
+            //     item["label"]
+            //   ]
+            // );
+            // column.colSpan =2
+            // console.log(column)
+            header = h("span", item["label"]);
             break;
           default:
             header = h("span", item["label"]);
         }
         return header;
       };
+    },
+    setHeaderStyle({row, column, rowIndex, columnIndex}){
+      
+    },
+    addVersion(row) {
+      this.$router.push({
+        name: "addversion",
+        params: {
+          data: row
+        }
+      });
+    },
+    editVersion(row) {
+      console.log(row)
+      this.$router.push({
+        name: "editversion",
+        params: {
+          data: row
+        }
+      });
     }
   }
 };

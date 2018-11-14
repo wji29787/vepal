@@ -12,6 +12,15 @@
     width: 100% !important;
 
 }
+.textm{
+    
+}
+.itemL6{
+   width: 70%;
+}
+.extend-w{
+    width: 100%;
+}
 .extend-h{
     height: 100%;
 }
@@ -33,5 +42,13 @@
     /* background-color: red !important; */
 }
 .ss{
+    cursor: pointer;
+}
+
+.foot {
+    margin-top:10px;
+}
+.foot span {
+    padding: 0 20px;
     cursor: pointer;
 }

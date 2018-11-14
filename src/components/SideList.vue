@@ -14,12 +14,12 @@
                     <el-menu-item index="1-1"
                         :route = "{path:'product'}"
                     >产品列表</el-menu-item>
-                    <el-menu-item index="1-2"
+                    <!-- <el-menu-item index="1-2"
+                        :route = "{path:'addproduct'}"
+                    >产品新增</el-menu-item> -->
+                     <!-- <el-menu-item index="1-3"
                         :route = "{path:'productEdit'}"
-                    >产品新增</el-menu-item>
-                     <el-menu-item index="1-3"
-                        :route = "{path:'productEdit'}"
-                    >版本新增</el-menu-item>
+                    >版本新增</el-menu-item> -->
                 </el-submenu>
                 <el-submenu index="2">
                      <template slot="title">
