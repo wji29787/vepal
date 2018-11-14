@@ -17,7 +17,7 @@
                                                   <el-input v-model="sizeForm.verName"></el-input>
                                         </el-form-item>
                                         <el-form-item label="研发负责人">
-                                           <el-select v-model="sizeForm.verRdperson" placeholder="请选择">
+                                           <el-select v-model="sizeForm.verRdperson" placeholder="请选择" class="extend-w">
                                               <el-option 
                                                 v-for = "(item) in rdList"
                                                 :key = "item.userId"
@@ -101,7 +101,7 @@ export default {
   data() {
     let checkName = (rule, value, callback) => {
       this.$http.get(
-        "/vdev/product/findProductByName",
+        "/api/pdc/product/findProductByName",
         {
           productName: value
         },
@@ -217,10 +217,10 @@ export default {
     onSubmit(formName) {
       let obj = this.sizeForm;
   
-      this.$http.post("vdev/product/addProduct", obj, res => {
+      this.$http.post("api/pdc/product/addProduct", obj, res => {
   
         if (res.status === 200) {
-          if (res.code === 200) {
+          if (res.data.code === 200) {
             this.$message({
               message: "添加成功",
               type: "success"

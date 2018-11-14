@@ -8,6 +8,7 @@ import Home from '@/home/Home'
 // project
 import Project from '@/pages/project/Project'
 import ProjectEdit from '@/pages/project/ProjectEdit'
+import AddProject from '@/pages/project/AddProject'
 
 // product
 import Product from '@/pages/product/Product'
@@ -89,6 +90,28 @@ export default new Router({
           path: 'projectedit',
           name: 'ProjectEdit',
           component: ProjectEdit
+        },
+        {
+          path: 'addproject',
+          name: 'addproject',
+          component: AddProject,
+          meta:{
+            title:'项目新增'
+          },
+          props:{
+            type:'add'
+          }
+        },
+        {
+          path: 'editproject',
+          name: 'editproject',
+          component: AddProject,
+          meta:{
+            title:'项目编辑'
+          },
+          props:{
+            type:'edit'
+          }
         },
         // 产品管理
         {

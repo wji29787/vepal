@@ -221,14 +221,14 @@ export default {
       if (this.type === "add") {
         obj = this.sizeForm;
         obj.productId = this.$route.params.data.productId;
-        url = "vdev/version/addVersion";
+        url = "api/pdc/version/addVersion";
         msgsuc = "添加成功";
         msger = "添加失败";
       } else {
         obj = this.sizeForm;
         obj.productId = this.$route.params.data.productId;
         obj.versionId = this.$route.params.data.versionId;
-        url = "vdev/version/updateVersion";
+        url = "api/pdc/version/updateVersion";
         msgsuc = "修改成功";
         msger = "修改失败";
       }
