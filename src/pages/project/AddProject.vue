@@ -34,7 +34,7 @@
                                             </el-select>
                                         </el-form-item>
                                         <el-form-item label="需求提出人">
-                                              <el-select v-model="sizeForm.needPerson" placeholder="请选择" class="extend-w">
+                                              <el-select v-model="sizeForm.needperson" placeholder="请选择" class="extend-w">
                                               <el-option 
                                                 v-for = "(item) in rdList"
                                                 :key = "item.userId"
@@ -177,7 +177,7 @@ export default {
       name	否	string	项目名称
       priorityId	否	string	项目优先级
       typeId	否	string	项目类型
-      needPerson	否	string	需求提出人（是人员姓名，不是人员ID）
+      needperson	否	string	需求提出人（是人员姓名，不是人员ID）
       starttime	否	string	项目开始时间
       finshtime	否	string	项目结束时间
       delaydays	否	string	项目推迟天数
@@ -206,7 +206,7 @@ export default {
         name: "",
         priorityId: "",
         typeId: "",
-        needPerson: "", //needperson
+        needperson: "", //needperson
         starttime: "",
         finshtime: "",
         delaydays: "", // 版本名称
@@ -330,7 +330,7 @@ export default {
                 if(checkObj.userId === this.sizeForm.chargeperson){
                             userName = checkObj.userName;
                 }
-                if(checkObj.userId === this.sizeForm.needPerson){
+                if(checkObj.userId === this.sizeForm.needperson){
                   needName = checkObj.userName;
                 }
                 if(userName && needName){
@@ -419,7 +419,7 @@ export default {
                   obj[k] = data[k];
                 }
               }
-              obj.needPerson = data["needperson"];
+            
               this.sizeForm = obj;
               this.proverList = [];
               if (data.productVrelList.length > 0) {
