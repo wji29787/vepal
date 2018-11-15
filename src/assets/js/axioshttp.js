@@ -104,6 +104,12 @@ let http = axios.create({
   }],
 })
 
+let http2 = axios.create({
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+
 function apiAxios (method, url, params, response) {
   if (typeof params === 'function') {
     response = params
@@ -162,5 +168,6 @@ export default {
         axios.all(getApi).then(axios.spread(response)).catch((err)=>{
           response(err)
         })
-  }
+  },
+  jsonAxios:http2
 }

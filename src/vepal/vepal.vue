@@ -553,7 +553,7 @@ export default {
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)"
       });
-      this.$http.post(
+      this.$http.get(
         "api/suit/suit/findAllSuitInfo",
         {
           pageNo: pageNo ? pageNo : 1,

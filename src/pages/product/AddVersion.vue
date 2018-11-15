@@ -5,7 +5,7 @@
                    <el-row class ="sl-item-h100" type = "flex" justify = "center" align ="middle">
                              <h2 class = "sl-title">{{$route.meta.title}}</h2>
                     </el-row>
-                     
+
                           <el-container class="extend-h-w" direction = "vertical">
                             <el-row type = "flex" justify = "center">
                                 <el-col :span = "10">
@@ -15,13 +15,13 @@
                                         </el-form-item>
                                         <el-form-item label="研发负责人">
                                            <el-select v-model="sizeForm.verRdperson" placeholder="请选择" class="extend-w">
-                                              <el-option 
+                                              <el-option
                                                 v-for = "(item) in rdList"
                                                 :key = "item.userId"
 
                                               :label="item.userName" :value="item.userId"></el-option>
                                             </el-select>
-                    
+
                                         </el-form-item>
                                         <el-form-item label="版本文件">
                                              <el-upload
@@ -29,7 +29,7 @@
                                                   :on-success = "uploadSuccess"
                                                   :on-error = 'uploadError'
                                                   :on-progress = "uploadProg"
-                                               
+
                                                   :show-file-list = "false"
                                                   :disabled = "isSuccess"
                                                   :before-upload = "beforeUpload"
@@ -38,20 +38,20 @@
                                                   <el-button size="small" type="primary" :loading="isSuccess" @click = "productUpload">选择文件</el-button>
                                                   <span style="width :">{{sizeForm.verUploadpath}}</span>
                                                 </el-upload>
-                                               
+
                                         </el-form-item>
                                         <el-form-item label="备注">
                                              <el-input v-model="sizeForm.verRemark"
                                              type="textarea"
                                              :rows="2"
-                                             placeholder="请输入内容" 
+                                             placeholder="请输入内容"
                                              ></el-input>
                                         </el-form-item>
                                         <el-form-item label="产品描述">
                                             <el-input v-model="sizeForm.verDescription"
                                              type="textarea"
                                              :rows="2"
-                                             placeholder="请输入内容" 
+                                             placeholder="请输入内容"
                                             ></el-input>
                                         </el-form-item>
                                         <el-form-item size="large">
@@ -60,15 +60,15 @@
                                         </el-form-item>
                                 </el-form>
                                 </el-col>
-                                       
+
                             </el-row>
-                        
+
                          </el-container >
                           <el-footer>
                             <sl-foot></sl-foot>
                           </el-footer>
                </el-container>
-          
+
 
     </div>
 </template>
@@ -77,16 +77,16 @@
  * http://192.168.95.93:8089/product/addProduct?
  *         productName=xxx&verName=xxx&verRdperson=xxx&verRemark=xxx&verDescription=xxx&userId=xxx
 
- *    
+ *
       http://192.168.95.93:8089/product/findProductByName?
                 productName=启明2
-      
-      http://192.168.95.93:8089/product/findAllProduct  
+
+      http://192.168.95.93:8089/product/findAllProduct
               --产品名称下拉列表(支持分页)
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
  */
 import Slfoot from "../../components/Foot";
 export default {
@@ -202,7 +202,7 @@ export default {
         if (res.status === 200) {
           if (res.data.code === 200) {
             this.rdList = res.data.data;
-          
+
           } else {
             this.$message.error(res.data.msg);
           }
@@ -221,14 +221,14 @@ export default {
       if (this.type === "add") {
         obj = this.sizeForm;
         obj.productId = this.$route.params.data.productId;
-        url = "api/pdc/version/addVersion";
+        url = "vdev/version/addVersion";
         msgsuc = "添加成功";
         msger = "添加失败";
       } else {
         obj = this.sizeForm;
         obj.productId = this.$route.params.data.productId;
         obj.versionId = this.$route.params.data.versionId;
-        url = "api/pdc/version/updateVersion";
+        url = "vdev/version/updateVersion";
         msgsuc = "修改成功";
         msger = "修改失败";
       }

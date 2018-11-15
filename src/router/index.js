@@ -8,7 +8,6 @@ import Home from '@/home/Home'
 // project
 import Project from '@/pages/project/Project'
 import ProjectEdit from '@/pages/project/ProjectEdit'
-import AddProject from '@/pages/project/AddProject'
 
 // product
 import Product from '@/pages/product/Product'
@@ -26,6 +25,8 @@ import testVepal from '@/pages/vepal/testVepal'
 
 //视图
 import pptview from '@/pages/report/pptview'
+import suitproductview from '@/pages/report/suitproductview'
+
 
 Vue.use(Router)
 
@@ -90,28 +91,6 @@ export default new Router({
           path: 'projectedit',
           name: 'ProjectEdit',
           component: ProjectEdit
-        },
-        {
-          path: 'addproject',
-          name: 'addproject',
-          component: AddProject,
-          meta:{
-            title:'项目新增'
-          },
-          props:{
-            type:'add'
-          }
-        },
-        {
-          path: 'editproject',
-          name: 'editproject',
-          component: AddProject,
-          meta:{
-            title:'项目编辑'
-          },
-          props:{
-            type:'edit'
-          }
         },
         // 产品管理
         {
@@ -188,6 +167,13 @@ export default new Router({
           meta:{
             title:'视图2'
           }
+        },{
+            path:'suitproductview',
+            name:'suitproductview',
+            component:suitproductview,
+            meta:{
+              title:'套装产品报表'
+            }
         }
       ]
     },
