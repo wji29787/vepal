@@ -4,20 +4,19 @@
                    <el-row class ="sl-item-h100" type = "flex" justify = "center" align ="middle">
                              <h2 class = "sl-title">产品管理列表</h2>
                     </el-row>
-                     
+
                           <el-container class="extend-h-w" direction = "vertical">
                             <el-row :gutter = "10">
-                             <!--  remote 
+                             <!--  remote
                                         :remote-method="productobj.remoteMethod"
                                         :loading="productobj.loading"  -->
                                 <el-col :lg = "7"  :md= "9">
                                     <span>产品名称：</span>
-                                   <el-select 
-                                       filterable 
-                                       clearable
-                                       v-model = "searchObj.productName" 
+                                   <el-select
+                                       filterable
+                                       v-model = "searchObj.productName"
                                        placeholder="请输入"
-                                       
+
                                         class = "itemL7">
                                         <el-option
                                           v-for="item in productobj.list"
@@ -26,37 +25,37 @@
                                           :value="item.productName">
                                         </el-option>
                                       </el-select>
-                                  </el-col>  
+                                  </el-col>
                                 <el-col :lg = "6"  :md= "8">
                                    <span>版本号：</span>
                                   <el-input placeholder="请输入版本号" v-model = "searchObj.verName" class = "itemL6"></el-input>
-                                  
-                                  </el-col> 
-                                        
-                                 <el-col :span = "1.5"><el-button @click = "searchData()">搜索</el-button></el-col>    
-           
-                                 <el-col :span = "2"  class="fr"><el-button class="fr" @click = "addProduct">新增产品</el-button></el-col>    
-                                 
+
+                                  </el-col>
+
+                                 <el-col :span = "1.5"><el-button @click = "searchData()">搜索</el-button></el-col>
+
+                                 <el-col :span = "2"  class="fr"><el-button class="fr" @click = "addProduct">新增</el-button></el-col>
+
                             </el-row>
                             <el-row type = "flex" class="extend-h-w">
-                              <!-- :formatter = "formatter(item,index)"  
+                              <!-- :formatter = "formatter(item,index)"
                                       @header-click = "handleClickheader"
-                                      :label= "item.label" 
+                                      :label= "item.label"
                                -->
                                     <el-table
                                         :data="list"
                                         :span-method="objectSpanMethod"
-                                        border 
+                                        border
                                         height = "98%"
                                         header-cell-class-name = ""
                                         v-scroll = "{el:'.el-table__body-wrapper',scrollfn:scrollfn}"
                                         :header-cell-style = "setHeaderStyle"
                                         style="width: 100%; margin-top: 20px">
                                         <el-table-column
-                                            v-for = "(item, index) in renderTableList" 
+                                            v-for = "(item, index) in renderTableList"
                                             :key = "index"
-                                            :width = "item.width" 
-                                            :render-header="customRenderH(item,index)"         
+                                            :width = "item.width"
+                                            :render-header="customRenderH(item,index)"
                                             >
                                             <template slot-scope="scope1">
                                                   <template v-if = "index === 4">
@@ -73,46 +72,28 @@
                                                           </div>
                                                           <el-button slot="reference" type="text"  class = "textColor" @click= "deletebtn(scope1)" icon = "el-icon-delete"></el-button>
                                                       </el-popover>
-                                                      
+
                                                   </template>
                                                   <template v-else-if = "index === 0">
                                                     {{scope1['$index']+1}}
                                                   </template>
-                                                  <template v-else-if = "index === 3">
-                                                    <!--  popper-class = "eloverflow" -->
-                                                     <el-popover
-                                                          placement="top-start"
-                                                          width="260"
-                                                          trigger="hover"
-                                                         
-                                                          >
-                                                          <p class="eloverflow">{{scope1['row'][item['prop']]}}</p>
-                                                          <!-- <el-scrollbar style="height:100%;">
-                                                             
-                                                         </el-scrollbar> -->
-                                                          
-                                                          <p slot="reference" class = "mousecur">{{formatter(item,index,scope1)}}</p>
-                                                      </el-popover>
-                                                    
-                                                   
-                                                  </template>
                                                   <template v-else-if = "index === 5">
-                                                    <el-button type="text" @click="addVersion(scope1.row)" >新增版本</el-button>
+                                                    <el-button type="text" @click="addVersion(scope1.row)" >新增</el-button>
                                                   </template>
                                                   <template v-else>
                                                     <!-- scope1['row'][item['prop']] -->
                                                       {{formatter(item,index,scope1)}}
                                                   </template>
                                              </template>
-                                             
-                                              
+
+
                                         </el-table-column>
-                                    </el-table> 
-                       
+                                    </el-table>
+
                             </el-row>
                          </el-container >
                </el-container>
-          
+
 
     </div>
 </template>
@@ -152,14 +133,14 @@ export default {
       });
     },
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {
- 
+
     },
 
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-   
+
       if (columnIndex === 0||columnIndex === 1||columnIndex === 5) {
-         
-          let _col = 0, _row = 0  
+
+          let _col = 0, _row = 0
           this.arrname.forEach(t=>{
              if(t.index === rowIndex){
                  _row = t.listLen
@@ -170,10 +151,10 @@ export default {
             rowspan:_row,
             colspan:_col
           }
-          
+
       }
-      
-      
+
+
     },
     getData(pageNo) {
       if (!this.bscroll) {
@@ -186,7 +167,7 @@ export default {
         verName: searchObj.verName || "" // 类型
       };
 
-      this.$http.post("/api/pdc/product/findAllProductVersion", obj, res => {
+      this.$http.post("/vdev/product/findAllProductVersion", obj, res => {
         // 使可以加载
         setTimeout(() => {
           this.bscroll = true;
@@ -212,7 +193,7 @@ export default {
                 if(i === 0){
                   obj.index = 0,
                   obj.listLen = t.versionList.length
-                  
+
                 }else{
                   obj.index = arrname[arrname.length-1].index+arrname[arrname.length-1].listLen
                   obj.listLen = t.versionList.length
@@ -261,9 +242,8 @@ export default {
      *
      */
     getProductList(pageNo) {
-    
       this.$http.get(
-        "/api/pdc/product/findAllProduct",
+        "vdev/product/findAllProduct",
         {
           pageNo: 0,
           pageSize: 0
@@ -285,7 +265,7 @@ export default {
       value.row.visible = false;
     },
     delsure({row}) {
-      this.$http.post('/api/pdc/version/delVersionById',{
+      this.$http.post('vdev/version/delVersionById',{
         productId:row.productId,
         versionId:row.versionId
       },res =>{
@@ -302,7 +282,7 @@ export default {
              }
            }
       })
-      
+
     },
     /**
      * 格式化事件
@@ -328,7 +308,7 @@ export default {
             return scoped["row"][item["prop"]];
         case 3:
             let cellValue = scoped["row"][item["prop"]]||'';
-            return cellValue.length > 20 ? (cellValue.substr(0,17)+'...'):cellValue
+            return cellValue.length>20? (cellValue.substr(20)+'...'):cellValue
       }
     },
     customRenderH(item, index) {
@@ -336,7 +316,7 @@ export default {
       return (h, { column, $index }) => {
         let header;
         switch (index) {
-           
+
           case 4:
             // header = h(
             //   "span",
@@ -366,7 +346,7 @@ export default {
       };
     },
     setHeaderStyle({row, column, rowIndex, columnIndex}){
-      
+
     },
     addVersion(row) {
       this.$router.push({
@@ -377,6 +357,7 @@ export default {
       });
     },
     editVersion(row) {
+      console.log(row)
       this.$router.push({
         name: "editversion",
         params: {
