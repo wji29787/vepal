@@ -34,7 +34,7 @@
                                   
                                  <el-col :span = "1.5"><el-button @click = "searchData()">搜索</el-button></el-col>    
                                  <el-col :span = "1.5" ><el-button>导出</el-button></el-col>    
-                                 <el-col :span = "2"  class="fr"><el-button class="fr" @click="addProject">新增</el-button></el-col>    
+                                 <el-col :span = "2"  class="fr"><el-button class="fr" @click="addProject">新增项目</el-button></el-col>    
                                  
                             </el-row>
                             <br>
@@ -67,7 +67,6 @@
                                -->
                                     <el-table
                                         :data="list"
-                                        :span-method="objectSpanMethod"
                                         border 
                                         height = "98%"
                                         header-cell-class-name = ""
@@ -87,7 +86,7 @@
                                                           width="160"
                                                           v-model = "scope1.row.visible"
                                                         >
-                                                          <p>这是一段内容这是一段内容确定删除吗？</p>
+                                                          <p>确定删除此项目吗？</p>
                                                           <div style="text-align: right; margin: 0">
                                                             <el-button size="mini" type="text" @click = "delcancle(scope1)">取消</el-button>
                                                             <el-button type="primary" size="mini" @click = "delsure(scope1)">确定</el-button>
@@ -150,8 +149,6 @@ export default {
     };
   },
   mounted() {
-    // this.getTypeList();
-    // var aa = this.getPriorityList();
     this.getTypeAndPriority()
     this.getData();
   },
@@ -166,35 +163,13 @@ export default {
     editProject(row) {
       this.$router.push({
         name: "editproject",
-        params: {
-          data: row
+        // params: {
+        //   projectId: row.projectId
+        // },
+        query:{
+          projectId: row.projectId
         }
       });
-    },
-    arraySpanMethod({ row, column, rowIndex, columnIndex }) {
-      // if (rowIndex % 2 === 0) {
-      //   if (columnIndex === 0) {
-      //     return [1, 2];
-      //   } else if (columnIndex === 1) {
-      //     return [0, 0];
-      //   }
-      // }
-    },
-
-    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-      // if (columnIndex === 0) {
-      //   if (rowIndex % 2 === 0) {
-      //     return {
-      //       rowspan: 2,
-      //       colspan: 1
-      //     };
-      //   } else {
-      //     return {
-      //       rowspan: 0,
-      //       colspan: 0
-      //     };
-      //   }
-      // }
     },
     // customFieldColumn(h, { column, $index }) {
     //   console.log(column, $index);
@@ -382,8 +357,23 @@ export default {
     delcancle(value) {
       value.row.visible = false;
     },
-    delsure(value) {
-      value.row.visible = false;
+    delsure({row}) {
+       this.$http.post('/api/pjc/project/delProject',{
+        projectId:row.projectId,
+      },res =>{
+           if(res.status ===200){
+             if(res.data.code ===200){
+                 this.searchData()
+                 row.visible = false;
+                 this.$message({
+                    message: '删除成功',
+                    type: "success"
+                  });
+             }else{
+               this.$message.error(res.data.msg);
+             }
+           }
+      })
     },
     /**
      * 格式化事件

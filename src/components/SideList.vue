@@ -29,9 +29,9 @@
                     <el-menu-item index="2-1"
                       :route = "{path:'project'}"
                       > 项目列表</el-menu-item>    
-                    <el-menu-item index="2-2"
+                    <!-- <el-menu-item index="2-2"
                         :route = "{path:'projectedit'}"
-                    > 项目新增</el-menu-item>
+                    > 项目新增</el-menu-item> -->
                 </el-submenu>
                 <el-submenu index="3">
                     <template slot="title">

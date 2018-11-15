@@ -67,7 +67,7 @@ export default new Router({
       children:[
         {
           path:'/',
-          redirect: 'vepal'
+          redirect: 'project'
         },
         {
           path: 'vepal',
