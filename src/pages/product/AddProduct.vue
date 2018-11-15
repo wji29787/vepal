@@ -199,13 +199,12 @@ export default {
       this.$http.get("api/umc/user/findUserByUser", res => {
         if (res.status === 200) {
           if (res.data.code === 200) {
-            this.rdList = res.data.data
+            this.rdList = res.data.data;
           } else {
-            // callback(new Error("名称重复"));
-             this.$message.error(res.data.msg);
+            this.$message.error(res.data.msg);
           }
         } else {
-            this.$message.error(res.status);
+          this.$message.error(res.status);
         }
       });
     },
@@ -218,7 +217,6 @@ export default {
       let obj = this.sizeForm;
 
       this.$http.post("api/pdc/product/addProduct", obj, res => {
-
         if (res.status === 200) {
           if (res.data.code === 200) {
             this.$message({

@@ -138,7 +138,7 @@ export default {
       productobj: {
         list: [], // 产品列表
         loading: ""
-      },
+      }
     };
   },
   mounted() {
@@ -151,29 +151,23 @@ export default {
         path: "addproduct"
       });
     },
-    arraySpanMethod({ row, column, rowIndex, columnIndex }) {
-
-    },
+    arraySpanMethod({ row, column, rowIndex, columnIndex }) {},
 
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-
-      if (columnIndex === 0||columnIndex === 1||columnIndex === 5) {
-
-          let _col = 0, _row = 0
-          this.arrname.forEach(t=>{
-             if(t.index === rowIndex){
-                 _row = t.listLen
-                 _col = 1
-             }
-          })
-          return {
-            rowspan:_row,
-            colspan:_col
+      if (columnIndex === 0 || columnIndex === 1 || columnIndex === 5) {
+        let _col = 0,
+          _row = 0;
+        this.arrname.forEach(t => {
+          if (t.index === rowIndex) {
+            _row = t.listLen;
+            _col = 1;
           }
-
+        });
+        return {
+          rowspan: _row,
+          colspan: _col
+        };
       }
-
-
     },
     getData(pageNo) {
       if (!this.bscroll) {
@@ -208,16 +202,16 @@ export default {
               arrname = [];
             list.forEach((t, i) => {
               if (t.versionList.length > 0) {
-                 let obj ={}
-                if(i === 0){
-                  obj.index = 0,
-                  obj.listLen = t.versionList.length
-
-                }else{
-                  obj.index = arrname[arrname.length-1].index+arrname[arrname.length-1].listLen
-                  obj.listLen = t.versionList.length
+                let obj = {};
+                if (i === 0) {
+                  (obj.index = 0), (obj.listLen = t.versionList.length);
+                } else {
+                  obj.index =
+                    arrname[arrname.length - 1].index +
+                    arrname[arrname.length - 1].listLen;
+                  obj.listLen = t.versionList.length;
                 }
-                arrname.push(obj)
+                arrname.push(obj);
                 t.versionList.forEach(k => {
                   k.name = t.productName;
                   k.visible = false;
@@ -261,7 +255,6 @@ export default {
      *
      */
     getProductList(pageNo) {
-
       this.$http.get(
         "/api/pdc/product/findAllProduct",
         {
@@ -284,25 +277,28 @@ export default {
     delcancle(value) {
       value.row.visible = false;
     },
-    delsure({row}) {
-      this.$http.post('/api/pdc/version/delVersionById',{
-        productId:row.productId,
-        versionId:row.versionId
-      },res =>{
-           if(res.status ===200){
-             if(res.data.code ===200){
-                 this.searchData()
-                 row.visible = false;
-                 this.$message({
-                    message: '删除成功',
-                    type: "success"
-                  });
-             }else{
-               this.$message.error(res.data.msg);
-             }
-           }
-      })
-
+    delsure({ row }) {
+      this.$http.post(
+        "/api/pdc/version/delVersionById",
+        {
+          productId: row.productId,
+          versionId: row.versionId
+        },
+        res => {
+          if (res.status === 200) {
+            if (res.data.code === 200) {
+              this.searchData();
+              row.visible = false;
+              this.$message({
+                message: "删除成功",
+                type: "success"
+              });
+            } else {
+              this.$message.error(res.data.msg);
+            }
+          }
+        }
+      );
     },
     /**
      * 格式化事件
@@ -325,10 +321,12 @@ export default {
       switch (k) {
         case 1:
         case 2:
-            return scoped["row"][item["prop"]];
+          return scoped["row"][item["prop"]];
         case 3:
-            let cellValue = scoped["row"][item["prop"]]||'';
-            return cellValue.length > 20 ? (cellValue.substr(0,17)+'...'):cellValue
+          let cellValue = scoped["row"][item["prop"]] || "";
+          return cellValue.length > 20
+            ? cellValue.substr(0, 17) + "..."
+            : cellValue;
       }
     },
     customRenderH(item, index) {
@@ -336,7 +334,6 @@ export default {
       return (h, { column, $index }) => {
         let header;
         switch (index) {
-
           case 4:
             // header = h(
             //   "span",
@@ -365,9 +362,7 @@ export default {
         return header;
       };
     },
-    setHeaderStyle({row, column, rowIndex, columnIndex}){
-
-    },
+    setHeaderStyle({ row, column, rowIndex, columnIndex }) {},
     addVersion(row) {
       this.$router.push({
         name: "addversion",
