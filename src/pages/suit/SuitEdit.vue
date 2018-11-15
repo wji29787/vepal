@@ -9,25 +9,34 @@
       </el-form-item>
       <el-form-item label="测试负责人">
         <el-select v-model="form.testPerson" placeholder="请选择测试负责人">
-          <el-option v-for="item in testUserList" :key="item.userId" :label="item.userName" :value="item.userName"></el-option>
+          <el-option v-for="item in testUserList" :key="item.userId" :label="item.userName" :value="item.userId"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="联调负责人">
           <el-select v-model="form.adjustPerson" placeholder="请选择测试负责人">
-          <el-option v-for="item in debuggingUserList" :key="item.userId" :label="item.userName" :value="item.userName"></el-option>
+          <el-option v-for="item in debuggingUserList" :key="item.userId" :label="item.userName" :value="item.userId"></el-option>
           </el-select>
+      </el-form-item>
+      <el-form-item label="已关联项目及产品" v-if="$route.query.suitId?true:false">
+        <div class="suitedit-list">
+          <div v-for="item in infoTreeData" :key="item.id" class="list-item">
+            <div class="item-project">项目名称 : {{item.projectName}}</div>
+            <div class="item-product">产品名称 : {{item.productName}}</div>
+            <div class="item-version">版本 : {{item.verName}}</div>
+            <el-button type="danger" icon="el-icon-close" circle @click="handleItemDeleteBtnClick"></el-button>
+          </div>
+        </div>
       </el-form-item>
       <el-form-item label="关联项目及产品" >
         <template>
           <div>
-            <treetransfer
-                :from_data='projectList'
-                :title="title"
-                :to_data='toData'
-                :defaultProps="{label:'label'}"
-                @addBtn='handleTransferAdd'
-                @removeBtn='handleTransferRemove'
-                :mode='mode' height='380px' filter openAll>
+            <treetransfer :from_data='projectList'
+                          :title="title"
+                          :to_data='toData'
+                          :defaultProps="{label:'label'}"
+                          @addBtn='handleTransferAdd'
+                          @removeBtn='handleTransferRemove'
+                          :mode='mode' height='380px' filter openAll>
               </treetransfer>
             </div>
           </template>
@@ -48,22 +57,22 @@
 
 <script>
 import treetransfer from "el-tree-transfer";
-import moment from 'moment';
+import moment,{ relativeTimeRounding } from 'moment';
 
 const GET_USER_LIST = '/api/umc/user/findUserByUser';
 const PROJECT_LIST = '/api/pjc/project/findAllProjectProductVer';
 const ADD_SUIT = '/api/suit/suit/addSuit';
-const EDIT_SUIT = '/api/suit/suit/findSuit?suitId=7a9166e6afcf4c11a06b587c64f27873';
+const EDIT_SUIT = '/api/suit/suit/findSuit';
 const UPDATE_SUIT = '/api/suit/suit/updateSuit';
 const SUIT_LIST = '/api/suit/suit/findAllProjectPage';
 const RESPONSE_SUCCESS_CODE = 200;
 
 export default {
-    name: 'SuitEdit',
-    components: {
-      treetransfer
-    },
-    data() {
+  name: 'SuitEdit',
+  components: {
+    treetransfer
+  },
+  data() {
     return {
       testUserList: [], // 测试人员列表
       debuggingUserList: [], // 联调任务列表
@@ -87,13 +96,14 @@ export default {
       },
       mode: "transfer", // transfer addressList
       title:['未关联列表', '已关联列表'],
-      toData: [] // 已关联的数据
+      toData: [], // 已关联的数据
+      infoTreeData: []
     };
   },
   mounted () {
     Promise.all([this._getUserList(), this._getPorjectList()]).then(res => {
       this.testFunc();
-      if (this.$route.query.suitId) {
+      if (this.$route.query.suitId !== '') {
         this.suitInfo();
       } else {
         this.resetData();
@@ -168,6 +178,9 @@ export default {
         });
       });
     },
+    handleItemDeleteBtnClick(item, index) {
+      this.infoTreeData.splice(index, 1);
+    },
     handleSubmitSave() {
       if (this.$route.query.suitId) {
         this.handleEditSuit();
@@ -178,6 +191,12 @@ export default {
     handleAddSuit() {
       this.$refs['form'].validate(valid => {
         if (valid) {
+          let selectTest = this.testUserList.filter(element => {
+            return element.userId === this.form.testPerson;
+          });
+          let selectAd = this.debuggingUserList.filter(element => {
+            return element.userId === this.form.adjustPerson;
+          });
           let _data = {
             suitName: this.form.suitName,
             suitDate: moment(this.form.suitDate).format('YYYY-MM-DD'),
@@ -185,7 +204,9 @@ export default {
             testPerson: this.form.testPerson,
             suitProjectProdctVer: this.setCheckedData(),
             suitDesc: this.form.suitDesc,
-            var1: this.form.remark
+            var1: this.form.remark,
+            var2: selectTest[0].userName,
+            var3: selectAd[0].userName
           };
           this.$http.post(ADD_SUIT, _data, res => {
             this.$nextTick(() => {
@@ -198,9 +219,87 @@ export default {
         }
       });
     },
+    concatData() {
+      if (this.form.toData.length) {
+        this.form.toData.forEach(element => {
+          this.infoTreeData.forEach(infoEle => {
+            if (element.projectId === infoEle.projectId) {
+              if (element.children.length) {
+                let itemCount = 0;
+                element.children.forEach(item => {
+                  if (item.productId === infoEle.productId) {
+                    itemCount++;
+                  }
+                  if (item.children.length) {
+                    let verCount = 0;
+                    item.children.forEach(verItem => {
+                      if (verItem.versionId === infoEle.verId) {
+                        verCount++;
+                      }
+                    });
+                    if (!verCount) {
+                      item.children.push({
+                        versionId: infoEle.verId,
+                        label: infoEle.verName
+                      });
+                    }
+                  }
+                });
+                if (!itemCount) {
+                  element.children.push({
+                    projectId: infoEle.projectId,
+                    label: infoEle.productName
+                  });
+                }
+              }
+            } else {
+              this.form.toData.push({
+                projectId: infoEle.projectId,
+                children: [{
+                  productId: infoEle.productId,
+                  label: infoEle.productName,
+                  children: [{
+                    versionId: infoEle.verId,
+                    label: infoEle.verName
+                  }]
+                }]
+              });
+            }
+          });
+        });
+      } else {
+        if (this.infoTreeData.length) {
+          this.infoTreeData.forEach(infoEle => {
+            this.form.toData.push({
+              projectId: infoEle.projectId,
+              children: [{
+                productId: infoEle.productId,
+                label: infoEle.productName,
+                children: [{
+                  versionId: infoEle.verId,
+                  label: infoEle.verName
+                }]
+              }]
+            });
+          })
+        } else {
+          this.form.toData = [];
+        }
+      }
+      console.log(this.form.toData, 'toData');
+    },
     handleEditSuit() {
+      this.concatData();
+      this.setCheckedData();
+      return;
       this.$refs['form'].validate(valid => {
         if (valid) {
+          let selectTest = this.testUserList.filter(element => {
+            return element.userId === this.form.testPerson;
+          });
+          let selectAd = this.debuggingUserList.filter(element => {
+            return element.userId === this.form.adjustPerson;
+          });
           let _data = {
             suitId: this.$route.query.suitId,
             suitName: this.form.suitName,
@@ -209,7 +308,9 @@ export default {
             testPerson: this.form.testPerson,
             suitProjectProdctVer: this.setCheckedData(),
             suitDesc: this.form.suitDesc,
-            var1: this.form.remark
+            var1: this.form.remark,
+            var2: selectTest[0].userName,
+            var3: selectAd[0].userName
           };
           this.$http.post(UPDATE_SUIT, _data, res => {
             this.$nextTick(() => {
@@ -243,58 +344,68 @@ export default {
               if (item.verId !== '') {
                 if (element.children.children.length) {
                   let delVerIndex = [];
-                  element.children.children.forEach((children, chIndex) => {});
+                  element.children.children.forEach((children, chIndex) => {
+                    children.versionId
+                  });
                 }
               }
             }
           }
         });
       });
-      let delProductIndex = [];
-      toData.forEach(element => {
-        if (element.children.length) {
-          element.children.forEach(item => {
-            
-          });
-        }
-      });
     },
     setCheckedData() {
       if (this.form.toData.length) {
-        let string = '';
-        this.form.toData.forEach(element => {
-          if (string !== '') {
-            string = `${string}&${element.projectId}`;
-          } else {
-            string += element.projectId;
-          }
-          if (element.children.length) {
-            element.children.forEach(item => {
-              string += ('#' + item.productId);
-              if (item.children.length) {
-                item.children.forEach(verItem => {
-                  string += ('#' + verItem.versionId);
-                });
+        let arr = [];
+        for(let i = 0; i < this.form.toData.length; i++) {
+          let clen = this.form.toData[i].children.length;
+          let clist = this.form.toData[i].children;
+          if(clen > 0){
+            for(let s = 0; s < clen; s++){
+              let cclen = clist[s].children.length;
+              let cclist = clist[s].children;
+              if(cclen > 0){
+                for(let k = 0; k < cclen; k++){
+                  let obj = {
+                    projectId: this.form.toData[i].projectId,
+                    productId: clist[s].productId,
+                    verId: cclist[k].versionId
+                  };
+                  arr.push(`${this.form.toData[i].projectId}#${clist[s].productId}#${cclist[k].versionId}`);
+                }
               }
-            });
+            }
           }
-        });
+        }
+        let string = arr.join('&');
+        console.log(string, 'string');
         return string;
+      } else {
+        return '';
       }
     },
     suitInfo() {
       let _data = {
-        suitId: this.$route.query.suitId || 'dbf73e9fbef94348bf2bee1a9ef4a2c7'
+        suitId: this.$route.query.suitId
       };
       this.$http.post(EDIT_SUIT, _data, res => {
         this.$nextTick(() => {
-          let responseData = res.data.data;
-          this.form.adjustPerson = responseData.adjustPerson;
-          this.form.suitDate = responseData.suitDate;
-          this.form.suitDesc = responseData.suitDesc;
-          this.form.suitName = responseData.suitName;
-          this.form.testPerson = responseData.testPerson;
-          this.form.remark = responseData.var1;
+          if (res.data.code === RESPONSE_SUCCESS_CODE) {
+            console.log(res, 'resEdit');
+            let responseData = res.data.data;
+            this.form.adjustPerson = responseData.adjustPerson;
+            this.form.suitDate = responseData.suitDate;
+            this.form.suitDesc = responseData.suitDesc;
+            this.form.suitName = responseData.suitName;
+            this.form.testPerson = responseData.testPerson;
+            this.form.remark = responseData.var1;
+            this.infoTreeData = responseData.projectProductVers;
+          } else {
+            this.$message({
+              message: res.data.msg,
+              type: 'error'
+            });
+          }
         });
       });
     },
@@ -371,5 +482,39 @@ export default {
 <style scoped>
 .el-transfer {
   width: 8rem;
+}
+.suitedit-list {
+  position: relative;
+  height: 200px;
+  width: 280px;
+  border: 1px solid #ebeef5;
+  border-radius: 5px;
+  overflow-y: auto;
+}
+.list-item {
+  position: relative;
+  height: 120px;
+  width: 100%;
+  border-bottom: #ebeef5;
+}
+.list-item:hover {
+  background: rgba(245, 247, 250);
+}
+.list-item>div {
+  padding-left: 5px;
+  padding-right: 26px;
+  line-height: 40px;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  color: #606266;
+}
+.suitedit-list .el-button {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 5px;
 }
 </style>
