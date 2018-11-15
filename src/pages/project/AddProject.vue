@@ -75,14 +75,27 @@
                                                   <el-input v-model="sizeForm.delaydays"></el-input>
                                         </el-form-item>
                                         <el-form-item label="关联产品">
+                                         
                                            <el-cascader
+                                           clearable
+                                           filterable
                                             class = "extend-w"
                                             expand-trigger="hover"
-                                            :options="options"
+                                            :options="allPudPjc"
+                                            :props = "allprotype"
                                             v-model="selectedOptions2"
+                                            change-on-select
                                             @change="handleChange">
+                                            
                                           </el-cascader>
-                    
+                                           <el-col><el-tag
+                                            :key="tag"
+                                            v-for="tag in proverList"
+                                            closable
+                                            :disable-transitions="false"
+                                            @close="handleClose(tag)">
+                                            {{tag}}
+                                          </el-tag></el-col>
                                         </el-form-item>
                                       <el-form-item label="SVN文档地址">
                                                   <el-input v-model="sizeForm.var2"></el-input>
@@ -180,6 +193,12 @@ export default {
       typeList:[],
       priorityList:[],
       allPudPjc:[], // 说有关联版本
+      allprotype:{
+        value:'value',
+        label:'label',
+        children:'products'
+      },
+      proverList:['标签一', '标签二', '标签三'],
       sizeForm: {
         projectId:'',
         name:'',
@@ -259,6 +278,7 @@ export default {
             this.typeList = res1.data.data;
           }
         }
+        // console.log(res2)
         if (res2.status === 200) {
           if (res2.data.code === 200) {
             this.priorityList = res2.data.data;
@@ -271,14 +291,51 @@ export default {
         }
          if (res4.status === 200) {
           if (res4.data.code === 200) {
-            this.allPudPjc = res4.data.data;
-            console.log(this.allPudPjc)
+            let list = res4.data.data
+            let  typeObj={
+              value:'id',
+              label:'name'
+            }
+            //  list.forEach(t => {
+            //      if(t.projectId){
+            //        t[typeObj.value] = t.projectId
+            //        t[typeObj.label] = t.name
+            //      }
+            //      if(t.products.length>0){
+            //        t.products.forEach(k =>{
+            //          k[typeObj.value] = k.productId
+            //          k[typeObj.label] = k.productName
+            //          if(k.versions.length>0){
+            //            k.versions.forEach(j=>{
+            //                j[typeObj.value] = j.versionId
+            //                j[typeObj.label] = j.verName
+            //            })
+            //          }
+            //        })
+            //      }
+            //  });
+            this.allPudPjc = list;
+            // console.log(this.allPudPjc)
+
           }
         }
  
       });
     },
+     formatData(data){
+       let obj =[{
+         value:'projectId',
+         label:'name'
+       },{
+         value:'productId',
+         label:'productName'
+       },{
+         value:'versionId',
+         label:'verName'
+       }]
 
+       
+     },
     /**
      * 级联关系表
      *
