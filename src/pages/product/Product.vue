@@ -14,6 +14,7 @@
                                     <span>产品名称：</span>
                                    <el-select
                                        filterable
+                                       clearable
                                        v-model = "searchObj.productName"
                                        placeholder="请输入"
 
@@ -34,7 +35,7 @@
 
                                  <el-col :span = "1.5"><el-button @click = "searchData()">搜索</el-button></el-col>
 
-                                 <el-col :span = "2"  class="fr"><el-button class="fr" @click = "addProduct">新增</el-button></el-col>
+                                 <el-col :span = "2"  class="fr"><el-button class="fr" @click = "addProduct">新增产品</el-button></el-col>
 
                             </el-row>
                             <el-row type = "flex" class="extend-h-w">
@@ -77,8 +78,26 @@
                                                   <template v-else-if = "index === 0">
                                                     {{scope1['$index']+1}}
                                                   </template>
+                                                  <template v-else-if = "index === 3">
+                                                    <!--  popper-class = "eloverflow" -->
+                                                     <el-popover
+                                                          placement="top-start"
+                                                          width="260"
+                                                          trigger="hover"
+
+                                                          >
+                                                          <p class="eloverflow">{{scope1['row'][item['prop']]}}</p>
+                                                          <!-- <el-scrollbar style="height:100%;">
+
+                                                         </el-scrollbar> -->
+
+                                                          <p slot="reference" class = "mousecur">{{formatter(item,index,scope1)}}</p>
+                                                      </el-popover>
+
+
+                                                  </template>
                                                   <template v-else-if = "index === 5">
-                                                    <el-button type="text" @click="addVersion(scope1.row)" >新增</el-button>
+                                                    <el-button type="text" @click="addVersion(scope1.row)" >新增版本</el-button>
                                                   </template>
                                                   <template v-else>
                                                     <!-- scope1['row'][item['prop']] -->
@@ -167,7 +186,7 @@ export default {
         verName: searchObj.verName || "" // 类型
       };
 
-      this.$http.post("/vdev/product/findAllProductVersion", obj, res => {
+      this.$http.post("/api/pdc/product/findAllProductVersion", obj, res => {
         // 使可以加载
         setTimeout(() => {
           this.bscroll = true;
@@ -242,8 +261,9 @@ export default {
      *
      */
     getProductList(pageNo) {
+
       this.$http.get(
-        "vdev/product/findAllProduct",
+        "/api/pdc/product/findAllProduct",
         {
           pageNo: 0,
           pageSize: 0
@@ -265,7 +285,7 @@ export default {
       value.row.visible = false;
     },
     delsure({row}) {
-      this.$http.post('vdev/version/delVersionById',{
+      this.$http.post('/api/pdc/version/delVersionById',{
         productId:row.productId,
         versionId:row.versionId
       },res =>{
@@ -308,7 +328,7 @@ export default {
             return scoped["row"][item["prop"]];
         case 3:
             let cellValue = scoped["row"][item["prop"]]||'';
-            return cellValue.length>20? (cellValue.substr(20)+'...'):cellValue
+            return cellValue.length > 20 ? (cellValue.substr(0,17)+'...'):cellValue
       }
     },
     customRenderH(item, index) {
@@ -357,7 +377,6 @@ export default {
       });
     },
     editVersion(row) {
-      console.log(row)
       this.$router.push({
         name: "editversion",
         params: {
