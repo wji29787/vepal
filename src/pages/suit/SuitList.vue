@@ -117,7 +117,7 @@
             editRow(obj){
                 var suitId=obj.row.suitId;
                 this.$router.push({
-                    path: '/SuitEdit',
+                    name: 'addsuit',
                     query: {
                         suitId: suitId
                     }
@@ -132,5 +132,8 @@
   font-size: 20px;
   font-family: "PingFang SC", "微软雅黑";
   line-height: 0.6rem;
+}
+.el-table {
+    overflow-y: auto;
 }
 </style>
