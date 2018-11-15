@@ -11,6 +11,14 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
+      '/api/pjc': {
+        target: 'http://192.168.112.168:8096',
+        changeOrigin: true,
+        // ws: true,
+        pathRewrite: {
+          '^/api/pjc' : '',     // rewrite path
+        },
+      },
       '/api/suit': {
         target: 'http://192.168.112.168:8085',
         changeOrigin: true,

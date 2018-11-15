@@ -130,7 +130,7 @@ export default {
         // productName: [{ validator: checkName, trigger: "blur" }]
       },
       uploadUrl: "/dev/file/upload",
-      isSuccess: false, // 是否禁用
+      isSuccess: false // 是否禁用
     };
   },
   watch: {
@@ -202,7 +202,6 @@ export default {
         if (res.status === 200) {
           if (res.data.code === 200) {
             this.rdList = res.data.data;
-
           } else {
             this.$message.error(res.data.msg);
           }

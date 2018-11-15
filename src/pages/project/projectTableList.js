@@ -39,7 +39,8 @@ const list = [{
   },
   {
     label: '项目负责人',
-    prop: 'chargeperson',
+    // prop: 'chargeperson',
+    prop: 'var1',
     width: 100,
   },
   {

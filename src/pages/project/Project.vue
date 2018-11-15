@@ -98,7 +98,6 @@
                                                     {{scope1['$index']+1}}
                                                   </template>
                                                   <template v-else>
-                                                    <!-- scope1['row'][item['prop']] -->
                                                       {{formatter(item,index,scope1)}}
                                                   </template>
                                              </template>
@@ -151,11 +150,11 @@ export default {
     };
   },
   mounted() {
-    this.getTypeAndPriority()
+    this.getTypeAndPriority();
     this.getData();
   },
   methods: {
-     // 项目新增
+    // 项目新增
     addProject() {
       this.$router.push({
         path: "addproject"
@@ -168,7 +167,7 @@ export default {
         // params: {
         //   projectId: row.projectId
         // },
-        query:{
+        query: {
           projectId: row.projectId
         }
       });
@@ -338,18 +337,20 @@ export default {
           method: "get"
         }
       ];
-      this.$http.all(getList, (res1, res2) =>{
+      this.$http.all(getList, (res1, res2) => {
         if (res1.status === 200) {
           if (res1.data.code === 200) {
             this.typeList = res1.data.data;
           }
         }
-        if (res2.status === 200) {
-          if (res2.data.code === 200) {
-            this.priorityList = res2.data.data;
+        try {
+          if (res2.status === 200) {
+            if (res2.data.code === 200) {
+              this.priorityList = res2.data.data;
+            }
           }
+        } catch (error) {
         }
-
       });
     },
     // 删除按钮
@@ -359,23 +360,27 @@ export default {
     delcancle(value) {
       value.row.visible = false;
     },
-    delsure({row}) {
-       this.$http.post('/api/pjc/project/delProject',{
-        projectId:row.projectId,
-      },res =>{
-           if(res.status ===200){
-             if(res.data.code ===200){
-                 this.searchData()
-                 row.visible = false;
-                 this.$message({
-                    message: '删除成功',
-                    type: "success"
-                  });
-             }else{
-               this.$message.error(res.data.msg);
-             }
-           }
-      })
+    delsure({ row }) {
+      this.$http.post(
+        "/api/pjc/project/delProject",
+        {
+          projectId: row.projectId
+        },
+        res => {
+          if (res.status === 200) {
+            if (res.data.code === 200) {
+              this.searchData();
+              row.visible = false;
+              this.$message({
+                message: "删除成功",
+                type: "success"
+              });
+            } else {
+              this.$message.error(res.data.msg);
+            }
+          }
+        }
+      );
     },
     /**
      * 格式化事件
@@ -418,7 +423,6 @@ export default {
     customRenderH(item, index) {
       let _this = this;
       return (h, { column, $index }) => {
-
         let header;
         switch (index) {
           case 1:
