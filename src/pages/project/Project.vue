@@ -4,11 +4,11 @@
                    <el-row class ="sl-item-h100" type = "flex" justify = "center" align ="middle">
                              <h2 class = "sl-title">项目管理列表</h2>
                     </el-row>
-                     
+
                           <el-container class="extend-h-w" direction = "vertical">
                             <el-row :gutter = "10">
-                                <el-col :lg = "4"  :md= "6"><el-input placeholder="请输入项目名称" v-model = "searchObj.name" ></el-input></el-col>  
-                                <el-col :lg = "4"  :md= "5"><el-input placeholder="请输入需求提出人" v-model = "searchObj.needPerson"></el-input></el-col> 
+                                <el-col :lg = "4"  :md= "6"><el-input placeholder="请输入项目名称" v-model = "searchObj.name" ></el-input></el-col>
+                                <el-col :lg = "4"  :md= "5"><el-input placeholder="请输入需求提出人" v-model = "searchObj.needPerson"></el-input></el-col>
                                 <el-col :lg = "3"  :md= "4" >
                                   <el-select clearable v-model = "searchObj.typeId" placeholder="项目类型">
                                       <el-option
@@ -18,8 +18,8 @@
                                         :value="item.projecttypeId">
                                       </el-option>
                                     </el-select>
-                                  
-                                  </el-col>  
+
+                                  </el-col>
                                  <el-col :lg = "3"  :md= "4">
                                     <el-select clearable v-model = "searchObj.priorityId" placeholder="优先级">
                                         <el-option
@@ -29,17 +29,17 @@
                                           :value="item.priorityId">
                                         </el-option>
                                       </el-select>
-                                   
-                                   </el-col>  
-                                  
-                                 <el-col :span = "1.5"><el-button @click = "searchData()">搜索</el-button></el-col>    
-                                 <el-col :span = "1.5" ><el-button>导出</el-button></el-col>    
-                                 <el-col :span = "2"  class="fr"><el-button class="fr">新增</el-button></el-col>    
-                                 
+
+                                   </el-col>
+
+                                 <el-col :span = "1.5"><el-button @click = "searchData()">搜索</el-button></el-col>
+                                 <el-col :span = "1.5" ><el-button>导出</el-button></el-col>
+                                 <el-col :span = "2"  class="fr"><el-button class="fr">新增</el-button></el-col>
+
                             </el-row>
                             <br>
                             <el-row :gutter = "10">
-                               <el-col :lg = "4"  :md= "6"> 
+                               <el-col :lg = "4"  :md= "6">
                                     <el-date-picker
                                       class = "extend-w"
                                       type="date"
@@ -48,8 +48,8 @@
                                       v-model = "searchObj.startTime"
                                       >
                                     </el-date-picker>
-                                </el-col> 
-                                <el-col :lg = "4"  :md= "6"> 
+                                </el-col>
+                                <el-col :lg = "4"  :md= "6">
                                     <el-date-picker
                                       class = "extend-w"
                                       type="date"
@@ -58,26 +58,26 @@
                                        v-model = "searchObj.finshTime"
                                       >
                                     </el-date-picker>
-                                </el-col>   
+                                </el-col>
                             </el-row>
                             <el-row type = "flex" class="extend-h-w">
-                              <!-- :formatter = "formatter(item,index)"  
+                              <!-- :formatter = "formatter(item,index)"
                                       @header-click = "handleClickheader"
-                                      :label= "item.label" 
+                                      :label= "item.label"
                                -->
                                     <el-table
                                         :data="list"
                                         :span-method="objectSpanMethod"
-                                        border 
+                                        border
                                         height = "98%"
                                         header-cell-class-name = ""
                                         v-scroll = "{el:'.el-table__body-wrapper',scrollfn:scrollfn}"
                                         style="width: 100%; margin-top: 20px">
                                         <el-table-column
-                                            v-for = "(item, index) in renderTableList" 
+                                            v-for = "(item, index) in renderTableList"
                                             :key = "index"
-                                            :width = "item.width" 
-                                            :render-header="customRenderH(item,index)"          
+                                            :width = "item.width"
+                                            :render-header="customRenderH(item,index)"
                                             >
                                             <template slot-scope="scope1">
                                                   <template v-if = "index === 9">
@@ -103,8 +103,8 @@
                                                       {{formatter(item,index,scope1)}}
                                                   </template>
                                              </template>
-                                             
-                                              
+
+
                                         </el-table-column>
                                         <!-- <el-table-column
                                             prop="id"
@@ -120,9 +120,9 @@
                                         <el-table-column
                                             prop="name"
                                             label="项目名称">
-                                          
+
                                         </el-table-column>
-                                       
+
                                         <el-table-column
                                           prop="priorityName"
                                           width="100"
@@ -138,7 +138,7 @@
                                          <el-table-column
                                             prop="starttime"
                                             :formatter = "formatTime"
-        
+
                                             label="开始时间">
                                         </el-table-column>
                                          <el-table-column
@@ -176,12 +176,12 @@
                                                   </el-popover>
                                              </template>
                                         </el-table-column> -->
-                                    </el-table> 
-                       
+                                    </el-table>
+
                             </el-row>
                          </el-container >
                </el-container>
-          
+
 
     </div>
 </template>
@@ -416,7 +416,7 @@ export default {
           url: "api/pjc/project/findAllPriority",
           method: "get"
         }
-      ]; 
+      ];
       this.$http.all(getList, (res1, res2) =>{
         if (res1.status === 200) {
           if (res1.data.code === 200) {
@@ -428,7 +428,7 @@ export default {
             this.priorityList = res2.data.data;
           }
         }
- 
+
       });
     },
     // 删除按钮
@@ -482,10 +482,7 @@ export default {
     customRenderH(item, index) {
       let _this = this;
       return (h, { column, $index }) => {
-        // let className = this.searchObj.prioritySort
-        // ? "el-icon-sort-down"
-        // : "el-icon-sort-up";
-        // console.log($index)
+
         let header;
         switch (index) {
           case 1:
