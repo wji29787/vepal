@@ -29,13 +29,13 @@
                                           :value="item.priorityId">
                                         </el-option>
                                       </el-select>
-
-                                   </el-col>
-
-                                 <el-col :span = "1.5"><el-button @click = "searchData()">搜索</el-button></el-col>
-                                 <el-col :span = "1.5" ><el-button>导出</el-button></el-col>
-                                 <el-col :span = "2"  class="fr"><el-button class="fr">新增</el-button></el-col>
-
+                                   
+                                   </el-col>  
+                                  
+                                 <el-col :span = "1.5"><el-button @click = "searchData()">搜索</el-button></el-col>    
+                                 <el-col :span = "1.5" ><el-button>导出</el-button></el-col>    
+                                 <el-col :span = "2"  class="fr"><el-button class="fr" @click="addProject">新增项目</el-button></el-col>    
+                                 
                             </el-row>
                             <br>
                             <el-row :gutter = "10">
@@ -67,8 +67,7 @@
                                -->
                                     <el-table
                                         :data="list"
-                                        :span-method="objectSpanMethod"
-                                        border
+                                        border 
                                         height = "98%"
                                         header-cell-class-name = ""
                                         v-scroll = "{el:'.el-table__body-wrapper',scrollfn:scrollfn}"
@@ -81,13 +80,13 @@
                                             >
                                             <template slot-scope="scope1">
                                                   <template v-if = "index === 9">
-                                                      <el-button type="text" @click="productDown(scope1.row)" icon = "el-icon-tickets" ></el-button>
+                                                      <el-button type="text" @click="editProject(scope1.row)" icon = "el-icon-tickets" ></el-button>
                                                       <el-popover
                                                           placement="left"
                                                           width="160"
                                                           v-model = "scope1.row.visible"
                                                         >
-                                                          <p>这是一段内容这是一段内容确定删除吗？</p>
+                                                          <p>确定删除此项目吗？</p>
                                                           <div style="text-align: right; margin: 0">
                                                             <el-button size="mini" type="text" @click = "delcancle(scope1)">取消</el-button>
                                                             <el-button type="primary" size="mini" @click = "delsure(scope1)">确定</el-button>
@@ -106,76 +105,7 @@
 
 
                                         </el-table-column>
-                                        <!-- <el-table-column
-                                            prop="id"
-                                            label="序号"
-                                            type = "index"
-                                            width="80">
-                                        </el-table-column>
-                                        <el-table-column
-                                            prop="typeName"
-                                            width="100"
-                                            label="所属类型">
-                                        </el-table-column>
-                                        <el-table-column
-                                            prop="name"
-                                            label="项目名称">
-
-                                        </el-table-column>
-
-                                        <el-table-column
-                                          prop="priorityName"
-                                          width="100"
-                                         :render-header="customFieldColumn"
-                                          label="优先级22"
-                                        >
-                                        </el-table-column>
-                                        <el-table-column
-                                            prop="needperson"
-                                             width="100"
-                                            label="需求提出人">
-                                        </el-table-column>
-                                         <el-table-column
-                                            prop="starttime"
-                                            :formatter = "formatTime"
-
-                                            label="开始时间">
-                                        </el-table-column>
-                                         <el-table-column
-                                            prop="finshtime"
-                                            :formatter = "formatTime"
-                                            label="计划完成时间">
-                                        </el-table-column>
-                                        <el-table-column
-                                            prop="chargeperson"
-                                              width="100"
-                                            label="项目负责人">
-                                        </el-table-column>
-                                        <el-table-column
-                                            prop="delaydays"
-                                             width="120"
-                                            label="项目延迟天数">
-                                        </el-table-column>
-                                        <el-table-column
-                                             prop="amount3"
-                                             width="150"
-                                             label="操作">
-                                            <template slot-scope="scope1">
-                                                  <el-button type="text" @click="productDown(scope1.row)" icon = "el-icon-tickets" ></el-button>
-                                                  <el-popover
-                                                      placement="left"
-                                                      width="160"
-                                                      v-model = "scope1.row.visible"
-                                                     >
-                                                      <p>这是一段内容这是一段内容确定删除吗？</p>
-                                                      <div style="text-align: right; margin: 0">
-                                                        <el-button size="mini" type="text" @click = "delcancle(scope1)">取消</el-button>
-                                                        <el-button type="primary" size="mini" @click = "delsure(scope1)">确定</el-button>
-                                                      </div>
-                                                      <el-button slot="reference" type="text"  class = "textColor" @click= "deletebtn(scope1)" icon = "el-icon-delete"></el-button>
-                                                  </el-popover>
-                                             </template>
-                                        </el-table-column> -->
+                                     
                                     </el-table>
 
                             </el-row>
@@ -221,36 +151,27 @@ export default {
     };
   },
   mounted() {
-    // this.getTypeList();
-    // var aa = this.getPriorityList();
     this.getTypeAndPriority()
     this.getData();
   },
   methods: {
-    arraySpanMethod({ row, column, rowIndex, columnIndex }) {
-      // if (rowIndex % 2 === 0) {
-      //   if (columnIndex === 0) {
-      //     return [1, 2];
-      //   } else if (columnIndex === 1) {
-      //     return [0, 0];
-      //   }
-      // }
+     // 项目新增
+    addProject() {
+      this.$router.push({
+        path: "addproject"
+      });
     },
-
-    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-      // if (columnIndex === 0) {
-      //   if (rowIndex % 2 === 0) {
-      //     return {
-      //       rowspan: 2,
-      //       colspan: 1
-      //     };
-      //   } else {
-      //     return {
-      //       rowspan: 0,
-      //       colspan: 0
-      //     };
-      //   }
-      // }
+    // 项目编辑
+    editProject(row) {
+      this.$router.push({
+        name: "editproject",
+        // params: {
+        //   projectId: row.projectId
+        // },
+        query:{
+          projectId: row.projectId
+        }
+      });
     },
     // customFieldColumn(h, { column, $index }) {
     //   console.log(column, $index);
@@ -438,8 +359,23 @@ export default {
     delcancle(value) {
       value.row.visible = false;
     },
-    delsure(value) {
-      value.row.visible = false;
+    delsure({row}) {
+       this.$http.post('/api/pjc/project/delProject',{
+        projectId:row.projectId,
+      },res =>{
+           if(res.status ===200){
+             if(res.data.code ===200){
+                 this.searchData()
+                 row.visible = false;
+                 this.$message({
+                    message: '删除成功',
+                    type: "success"
+                  });
+             }else{
+               this.$message.error(res.data.msg);
+             }
+           }
+      })
     },
     /**
      * 格式化事件

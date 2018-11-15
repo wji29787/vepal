@@ -77,24 +77,27 @@
                                         <el-form-item label="关联产品">
                                          
                                            <el-cascader
+                                            
+                                            ref = "cascaderInput"
                                            clearable
                                            filterable
                                             class = "extend-w"
                                             expand-trigger="hover"
                                             :options="allPudPjc"
                                             :props = "allprotype"
-                                            v-model="selectedOptions2"
-                                            change-on-select
+                                            v-model="selectedOptions"
                                             @change="handleChange">
                                             
                                           </el-cascader>
                                            <el-col><el-tag
-                                            :key="tag"
-                                            v-for="tag in proverList"
+                                            :key="index"
+                                            v-for="(item,index) in proverList"
+                                            class = "margin-r5"
                                             closable
                                             :disable-transitions="false"
-                                            @close="handleClose(tag)">
-                                            {{tag}}
+                                            size="small"
+                                            @close="handleClose(index)">
+                                            {{item.label}}
                                           </el-tag></el-col>
                                         </el-form-item>
                                       <el-form-item label="SVN文档地址">
@@ -142,7 +145,7 @@
  * 
  */
 import Slfoot from "../../components/Foot";
-import options from './optionList.js'
+// import options from "./optionList.js";
 export default {
   name: "addproduct",
   components: {
@@ -187,37 +190,38 @@ export default {
      */
 
     return {
-      options:options,
-      selectedOptions2:[],
+      // options: options,
+
       rdList: [],
-      typeList:[],
-      priorityList:[],
-      allPudPjc:[], // 说有关联版本
-      allprotype:{
-        value:'value',
-        label:'label',
-        children:'products'
+      typeList: [],
+      priorityList: [],
+      allprotype: {
+        value: "value",
+        label: "label",
+        children: "products"
       },
-      proverList:['标签一', '标签二', '标签三'],
+      allPudPjc: [], // 说有关联版本
+      proverList: [],  // 选中的多版本项目
+      selectedOptions: [], // 选中的值
       sizeForm: {
-        projectId:'',
-        name:'',
-        priorityId:'',
-        typeId:'',
-        needPerson:'',
-        starttime:'',
-        finshtime:'',
+        // projectId: "",
+        name: "",
+        priorityId: "",
+        typeId: "",
+        needPerson: "", //needperson
+        starttime: "",
+        finshtime: "",
         delaydays: "", // 版本名称
         chargeperson: "", // 研发负责人
         productVer: "", // 备注
-        var2: "", // 描述
-        var3: "" // 版本上传路径
+        var2: "", //  文档上传路径
+        var3: "" // 备注
       },
       rules: {
         // productName: [{ validator: checkName, trigger: "blur" }]
       },
       uploadUrl: "/dev/file/upload",
-      isSuccess: false, // 是否禁用
+      isSuccess: false // 是否禁用
     };
   },
   watch: {
@@ -227,24 +231,51 @@ export default {
   },
 
   mounted() {
-    this.getTypeAndPriority()
+    this.getTypeAndPriority();
     // this.getRdList();
     if (this.type === "edit") {
-      let obj = this.sizeForm;
-      for (let k in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, k)) {
-          obj[k] = this.$route.params.data[k];
-        }
-      }
-      this.sizeForm = obj;
+      // let obj = this.sizeForm;
+      // for (let k in obj) {
+      //   if (Object.prototype.hasOwnProperty.call(obj, k)) {
+      //     obj[k] = this.$route.params.data[k];
+      //   }
+      // }
+      // obj.needPerson = this.$route.params.data['needperson']
+      // // console.log(this.$route.params.data)
+      // this.sizeForm = obj;
+       console.log(this.$route.query.projectId)
+      this.getSigleProject(this.$route.query.projectId)
     }
   },
   methods: {
-      handleChange(value) {
-        console.log(value);
-        console.log(this.selectedOptions2)
-      },
-     /**
+    handleClose(index) {
+      this.proverList.splice(index, 1);
+      if(this.proverList.length ===0){
+        this.selectedOptions =[]
+      }
+    },
+    handleChange(value) {
+      if (value.length === 0) {
+        return;
+      }
+      let obj = {};
+      let label = this.$refs.cascaderInput.currentLabels;
+      let flag = true;
+      for (let i = 0, len = this.proverList.length; i < len; i++) {
+        let item = this.proverList[i];
+        let itemvalue = JSON.stringify(item.value);
+        if (itemvalue === JSON.stringify(value)) {
+          flag = false;
+          break;
+        }
+      }
+      if (flag) {
+        obj.value = value;
+        obj.label = label[label.length-1];
+        this.proverList.push(obj);
+      }
+    },
+    /**
      * 优先级列表
      * 所属类型列表
      *
@@ -263,16 +294,16 @@ export default {
         },
         // 级联关系
         {
-           url: "api/umc/user/findUserByUser",
+          url: "api/umc/user/findUserByUser",
           method: "get"
         },
-         // 查询所有项目及关联的版本
+        // 查询所有项目及关联的版本
         {
-           url: "api/pjc/project/findAllProjectProductVer",
+          url: "api/pjc/project/findAllProjectProductVer",
           method: "post"
         }
-      ]; 
-      this.$http.all(getList, (res1, res2,res3,res4) =>{
+      ];
+      this.$http.all(getList, (res1, res2, res3, res4) => {
         if (res1.status === 200) {
           if (res1.data.code === 200) {
             this.typeList = res1.data.data;
@@ -284,76 +315,34 @@ export default {
             this.priorityList = res2.data.data;
           }
         }
-         if (res3.status === 200) {
+        if (res3.status === 200) {
           if (res3.data.code === 200) {
             this.rdList = res3.data.data;
           }
         }
-         if (res4.status === 200) {
+        if (res4.status === 200) {
           if (res4.data.code === 200) {
-            let list = res4.data.data
-            let  typeObj={
-              value:'id',
-              label:'name'
-            }
-            //  list.forEach(t => {
-            //      if(t.projectId){
-            //        t[typeObj.value] = t.projectId
-            //        t[typeObj.label] = t.name
-            //      }
-            //      if(t.products.length>0){
-            //        t.products.forEach(k =>{
-            //          k[typeObj.value] = k.productId
-            //          k[typeObj.label] = k.productName
-            //          if(k.versions.length>0){
-            //            k.versions.forEach(j=>{
-            //                j[typeObj.value] = j.versionId
-            //                j[typeObj.label] = j.verName
-            //            })
-            //          }
-            //        })
-            //      }
-            //  });
+            let list = res4.data.data;
             this.allPudPjc = list;
-            // console.log(this.allPudPjc)
-
           }
         }
- 
       });
     },
-     formatData(data){
-       let obj =[{
-         value:'projectId',
-         label:'name'
-       },{
-         value:'productId',
-         label:'productName'
-       },{
-         value:'versionId',
-         label:'verName'
-       }]
-
-       
-     },
-    /**
-     * 级联关系表
-     *
-     *
-     */
-    getRdList() {
-      this.$http.get("api/umc/user/findUserByUser", res => {
-        if (res.status === 200) {
-          if (res.data.code === 200) {
-            this.rdList = res.data.data;
-          
-          } else {
-            this.$message.error(res.data.msg);
-          }
-        } else {
-          this.$message.error(res.status);
+    formatData(data) {
+      let obj = [
+        {
+          value: "projectId",
+          label: "name"
+        },
+        {
+          value: "productId",
+          label: "productName"
+        },
+        {
+          value: "versionId",
+          label: "verName"
         }
-      });
+      ];
     },
     /**
      *
@@ -361,18 +350,25 @@ export default {
      *
      */
     onSubmit(formName) {
-      let obj, url, msger, msgsuc;
+      let obj, url, msger, msgsuc, productVer;
+      productVer = this.proverList.map(t => {
+        return t.value.join("#");
+      });
+      productVer = productVer.join("&");
       if (this.type === "add") {
         obj = this.sizeForm;
-        obj.productId = this.$route.params.data.productId;
-        url = "vdev/version/addVersion";
+        // obj.productId = this.$route.params.data.productId;
+        // let  productVer
+        obj.productVer = productVer;
+        url = "api/pjc/project/addProject";
         msgsuc = "添加成功";
         msger = "添加失败";
       } else {
         obj = this.sizeForm;
-        obj.productId = this.$route.params.data.productId;
-        obj.versionId = this.$route.params.data.versionId;
-        url = "vdev/version/updateVersion";
+        obj.productVer = productVer;
+        obj.projectId = this.$route.query.projectId;
+        // obj.versionId = this.$route.params.data.versionId;
+        url = "api/pjc/project/updateProject";
         msgsuc = "修改成功";
         msger = "修改失败";
       }
@@ -395,6 +391,8 @@ export default {
                 }
               }
               this.sizeForm = sizeForm;
+              this.proverList =[]
+              this.selectedOptions =[]
             }
           } else {
             this.$message.error(msger);
@@ -414,6 +412,50 @@ export default {
         }
       }
       this.sizeForm = obj;
+      this.proverList =[]
+      this.selectedOptions =[]
+    },
+    /**
+     * 详情的获取
+     * 
+     * 
+     */
+    getSigleProject(projectId){
+      this.$http.post('api/pjc/project/findProject',{
+        projectId:projectId
+      },res =>{
+        if(res.status ===200){
+          if(res.data.code ===200){
+            let data = res.data.data;
+            let obj = this.sizeForm;
+            for(let k in obj){
+              if(Object.prototype.hasOwnProperty.call(obj,k)){
+                obj[k] = data[k] 
+              }
+            }
+            obj.needPerson = data['needperson']
+            this.sizeForm = obj;
+            this.proverList = []
+            if(data.productVrelList.length>0){
+               let arr =[]
+              data.productVrelList.forEach(t =>{
+                let value=[],label=[];
+                ['project','product','version'].forEach(k =>{
+                  if(t[`${k}Id`]){
+                      value.push(t[`${k}Id`])
+                      label.push(t[`${k}Name`])
+                  }
+                })
+              
+               arr.push({value,label})
+             
+              })   
+              this.proverList = arr;
+            }
+            
+          }
+        }
+      })
     }
   }
 };
