@@ -25,6 +25,8 @@ import testVepal from '@/pages/vepal/testVepal'
 
 //视图
 import pptview from '@/pages/report/pptview'
+import suitproductview from '@/pages/report/suitproductview'
+
 
 Vue.use(Router)
 
@@ -165,6 +167,13 @@ export default new Router({
           meta:{
             title:'视图2'
           }
+        },{
+            path:'suitproductview',
+            name:'suitproductview',
+            component:suitproductview,
+            meta:{
+              title:'套装产品报表'
+            }
         }
       ]
     },

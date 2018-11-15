@@ -25,11 +25,12 @@
                    <el-row type = "flex" class="extend-h-w">
                        <el-table
                             :data="list"
+                            scope="scope"
                             border
                             style="width: 100%">
                              <el-table-column
-                            prop="suitId"
-                            label="序号"
+                             type="index" label="序号"
+                             header-align="center" align="center"
                             width="80">
                             </el-table-column>
                              <el-table-column
@@ -49,15 +50,15 @@
                             <el-table-column
                             label="操作"
                             width="200">
-                            <template slot-scope="scope">
+                            <template slot-scope="suitId">
                                  <el-button
-                                @click.native.prevent="deleteRow(scope.$index, list)"
+                                @click.native.prevent="editRow(suitId)"
                                 type="text"
                                 size="small">
                                 编辑
                                 </el-button>
                                 <el-button
-                                @click.native.prevent="deleteRow(scope.$index, list)"
+                                @click.native.prevent="deleteRow(suitId)"
                                 type="text"
                                 size="small">
                                 删除
@@ -85,7 +86,7 @@
              getlist(){
                 var _this=this;
                 this.$http.post(
-                    "api/suit/findAllProjectPage",
+                    "api/suit/suit/findAllProjectPage",
                     {
                         suitName:_this.suitName,
                         suitDate:_this.suitDate
@@ -96,6 +97,31 @@
                         }
                     }
                 );
+            },
+            deleteRow(obj){
+                var _this=this;
+                var suitId=obj.row.suitId;
+                this.$http.post(
+                    "api/suit/suit/delSuit",
+                    {
+                        suitId:suitId
+                    },
+                    res => {
+                        if(res.data.code==200){
+                            alert("删除成功");
+                            _this.getlist();
+                        }
+                    }
+                );
+            },
+            editRow(obj){
+                var suitId=obj.row.suitId;
+                this.$router.push({
+                    path: '/SuitEdit',
+                    query: {
+                        suitId: suitId
+                    }
+                })
             }
         }
     }

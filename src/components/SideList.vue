@@ -50,27 +50,28 @@
                         <i class="el-icon-location"></i>
                         <span>报表管理</span>
                     </template>
-                    <el-menu-item index="4-1"
-                    >套装产品报表</el-menu-item>
+                    <!-- <el-menu-item index="4-1"
+                     :route="{path:'suitproductview'}"
+                    >套装产品报表</el-menu-item> -->
                     <el-menu-item index="4-2"
                     :route = "{path:'vepal'}"
                     >套装产品竖图</el-menu-item>
                      <el-menu-item index="4-3"
                      :route = "{path:'pptview'}"
                     >套装产品横图</el-menu-item>
-                        <el-menu-item index="4-4"
+                        <!-- <el-menu-item index="4-4"
                     >套装项目报表</el-menu-item>
                         <el-menu-item index="4-5"
-                    >项目产品报表</el-menu-item>
+                    >项目产品报表</el-menu-item> -->
                 </el-submenu>
-                 <el-submenu index="5">
+                 <!-- <el-submenu index="5">
                     <template slot="title">
                         <i class="el-icon-location"></i>
                         <span>系统设置</span>
                     </template>
                     <el-menu-item index="5-1"
                     >样式设置</el-menu-item>
-                </el-submenu>
+                </el-submenu> -->
         </el-menu>
     </div>
 </template>
