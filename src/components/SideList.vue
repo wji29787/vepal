@@ -51,6 +51,7 @@
                         <span>报表管理</span>
                     </template>
                     <el-menu-item index="4-1"
+                     :route="{path:'suitproductview'}"
                     >套装产品报表</el-menu-item>
                     <el-menu-item index="4-2"
                     :route = "{path:'vepal'}"
