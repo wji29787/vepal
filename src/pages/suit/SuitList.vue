@@ -25,11 +25,12 @@
                    <el-row type = "flex" class="extend-h-w">
                        <el-table
                             :data="list"
+                            scope="scope"
                             border
                             style="width: 100%">
                              <el-table-column
-                            prop="suitId"
-                            label="序号"
+                             type="index" label="序号"
+                             header-align="center" align="center"
                             width="80">
                             </el-table-column>
                              <el-table-column

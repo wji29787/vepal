@@ -11,6 +11,22 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
+      '/api/suit': {
+        target: 'http://192.168.112.168:8085',
+        changeOrigin: true,
+        // ws: true,
+        pathRewrite: {
+          '^/api/suit' : '',     // rewrite path
+        },
+      },
+      // '/api/pdj': {
+      //   target: 'http://localhost:8092',
+      //   changeOrigin: true,
+      //   // ws: true,
+      //   pathRewrite: {
+      //     '^/api' : '',     // rewrite path
+      //   },
+      // },
       '/api': {
         target: 'http://192.168.112.168:8092',
         changeOrigin: true,
@@ -35,7 +51,7 @@ module.exports = {
           '^/dev' : '',     // rewrite path
         },
       },
-      
+
       '/suit-jira': {
         target: 'http://192.168.112.168:8092/suit-jira',
         changeOrigin: true,
