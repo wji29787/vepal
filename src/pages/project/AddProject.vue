@@ -318,18 +318,29 @@ export default {
      *
      */
     onSubmit(formName) {
-      let obj, url, msger, msgsuc, productVer,userNameObj;
+      let obj, url, msger, msgsuc, productVer,userName,needName;
       productVer = this.proverList.map(t => {
         return t.value.join("#");
       });
       obj = this.sizeForm;
       obj.productVer = productVer.join("&");
        if(this.rdList.length > 0){
-           userNameObj = this.rdList.find(t =>{
-              return t.userId === this.sizeForm.chargeperson
-            });
-          obj.var1 = userNameObj.userName;  
-       }     
+          for(let i =0,len = this.rdList.length;i<len;i++){
+                let checkObj = this.rdList[i]
+                if(checkObj.userId === this.sizeForm.chargeperson){
+                            userName = checkObj.userName;
+                }
+                if(checkObj.userId === this.sizeForm.needPerson){
+                  needName = checkObj.userName;
+                }
+                if(userName && needName){
+                  break;
+                }
+          }
+          obj.var1 = userName;  
+          obj.var4 = needName;  
+       }  
+          
       // 获取项目负责人 name值
       if (this.type === "add") {
        
