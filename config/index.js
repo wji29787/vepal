@@ -20,7 +20,8 @@ module.exports = {
         },
       },
       '/api': {
-        target: 'http://192.168.112.168:8092',
+        //target: 'http://192.168.112.168:8092',
+         target:'http://192.168.95.4:8085',
         changeOrigin: true,
         // ws: true,
         pathRewrite: {
