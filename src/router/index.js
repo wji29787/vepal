@@ -8,6 +8,7 @@ import Home from '@/home/Home'
 // project
 import Project from '@/pages/project/Project'
 import ProjectEdit from '@/pages/project/ProjectEdit'
+import AddProject from '@/pages/project/AddProject'
 
 // product
 import Product from '@/pages/product/Product'
@@ -68,7 +69,7 @@ export default new Router({
       children:[
         {
           path:'/',
-          redirect: 'vepal'
+          redirect: 'project'
         },
         {
           path: 'vepal',
@@ -85,6 +86,29 @@ export default new Router({
           component: Project,
           meta:{
             title:'项目管理'
+          }  
+        },
+        // 项目管理
+        {
+          path: 'addproject',
+          name: 'addproject',
+          component: AddProject,
+          meta:{
+            title:'新增项目'
+          },
+          props:{
+            type:'add'
+          }  
+        },
+        {
+          path: 'editproject',
+          name: 'editproject',
+          component: AddProject,
+          meta:{
+            title:'编辑项目'
+          },
+          props:{
+            type:'edit'
           }  
         },
         {

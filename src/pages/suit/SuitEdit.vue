@@ -103,7 +103,7 @@ export default {
   mounted () {
     Promise.all([this._getUserList(), this._getPorjectList()]).then(res => {
       this.testFunc();
-      if (this.$route.query.suitId !== '') {
+      if (this.$route.query.suitId) {
         this.suitInfo();
       } else {
         this.resetData();
@@ -222,50 +222,52 @@ export default {
     concatData() {
       if (this.form.toData.length) {
         this.form.toData.forEach(element => {
-          this.infoTreeData.forEach(infoEle => {
-            if (element.projectId === infoEle.projectId) {
-              if (element.children.length) {
-                let itemCount = 0;
-                element.children.forEach(item => {
-                  if (item.productId === infoEle.productId) {
-                    itemCount++;
-                  }
-                  if (item.children.length) {
-                    let verCount = 0;
-                    item.children.forEach(verItem => {
-                      if (verItem.versionId === infoEle.verId) {
-                        verCount++;
-                      }
-                    });
-                    if (!verCount) {
-                      item.children.push({
-                        versionId: infoEle.verId,
-                        label: infoEle.verName
-                      });
+          if (this.infoTreeData.length) {
+            this.infoTreeData.forEach(infoEle => {
+              if (element.projectId === infoEle.projectId) {
+                if (element.children.length) {
+                  let itemCount = 0;
+                  element.children.forEach(item => {
+                    if (item.productId === infoEle.productId) {
+                      itemCount++;
                     }
-                  }
-                });
-                if (!itemCount) {
-                  element.children.push({
-                    projectId: infoEle.projectId,
-                    label: infoEle.productName
+                    if (item.children.length) {
+                      let verCount = 0;
+                      item.children.forEach(verItem => {
+                        if (verItem.versionId === infoEle.verId) {
+                          verCount++;
+                        }
+                      });
+                      if (!verCount) {
+                        item.children.push({
+                          versionId: infoEle.verId,
+                          label: infoEle.verName
+                        });
+                      }
+                    }
                   });
+                  if (!itemCount) {
+                    element.children.push({
+                      productId: infoEle.productId,
+                      label: infoEle.productName
+                    });
+                  }
                 }
-              }
-            } else {
-              this.form.toData.push({
-                projectId: infoEle.projectId,
-                children: [{
-                  productId: infoEle.productId,
-                  label: infoEle.productName,
+              } else {
+                this.form.toData.push({
+                  projectId: infoEle.projectId,
                   children: [{
-                    versionId: infoEle.verId,
-                    label: infoEle.verName
+                    productId: infoEle.productId,
+                    label: infoEle.productName,
+                    children: [{
+                      versionId: infoEle.verId,
+                      label: infoEle.verName
+                    }]
                   }]
-                }]
-              });
-            }
-          });
+                });
+              }
+            });
+          }
         });
       } else {
         if (this.infoTreeData.length) {
@@ -290,8 +292,6 @@ export default {
     },
     handleEditSuit() {
       this.concatData();
-      this.setCheckedData();
-      return;
       this.$refs['form'].validate(valid => {
         if (valid) {
           let selectTest = this.testUserList.filter(element => {
@@ -391,7 +391,6 @@ export default {
       this.$http.post(EDIT_SUIT, _data, res => {
         this.$nextTick(() => {
           if (res.data.code === RESPONSE_SUCCESS_CODE) {
-            console.log(res, 'resEdit');
             let responseData = res.data.data;
             this.form.adjustPerson = responseData.adjustPerson;
             this.form.suitDate = responseData.suitDate;
