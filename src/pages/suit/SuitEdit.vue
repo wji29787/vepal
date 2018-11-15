@@ -93,7 +93,7 @@ export default {
   mounted () {
     Promise.all([this._getUserList(), this._getPorjectList()]).then(res => {
       this.testFunc();
-      if (1) {
+      if (this.$route.query.suitId) {
         this.suitInfo();
       } else {
         this.resetData();
@@ -176,7 +176,6 @@ export default {
       }
     },
     handleAddSuit() {
-      this.setCheckedData();
       this.$refs['form'].validate(valid => {
         if (valid) {
           let _data = {
@@ -200,7 +199,6 @@ export default {
       });
     },
     handleEditSuit() {
-      this.setCheckedData();
       this.$refs['form'].validate(valid => {
         if (valid) {
           let _data = {
@@ -290,7 +288,6 @@ export default {
       };
       this.$http.post(EDIT_SUIT, _data, res => {
         this.$nextTick(() => {
-          console.log(res, 'res');
           let responseData = res.data.data;
           this.form.adjustPerson = responseData.adjustPerson;
           this.form.suitDate = responseData.suitDate;
