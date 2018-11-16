@@ -15,16 +15,10 @@
                                             value-format = "yyyy-MM-dd">
                             </el-date-picker>
                          </el-col> 
-<<<<<<< HEAD
-                         <el-col :lg="4"  :md="3">
-=======
-                         <el-col :lg = "16"  :md= "3">
->>>>>>> 8f7d9fd6933864d542e2b5f5eb291fb7c0d1e1b8
-                             <el-button icon="el-icon-search" @click="getlist()" circle></el-button>
+                         <el-col :lg = "16"   :md= "3">
+                             <el-button  icon="el-icon-search" @click="getlist()" circle></el-button>
                              <el-button class="fr" @click="deleteAllRow()">批量删除</el-button>
-                         </el-col>
-                         <el-col :lg="2" :md="3" style="float:right">
-                             <el-button style="margin-left:-23px;" @click="handleAddSuitBtnClick">新增套装</el-button>
+                            <el-button  class="fr" @click="handleAddSuitBtnClick">新增套装</el-button>
                          </el-col>
                    </el-row>
                    <br/>
@@ -150,8 +144,13 @@
              /*批量删除*/
             deleteAllRow(obj){
                 var _this=this;
-                var suitId='';
-                if(_this.multipleSelection.length>0){
+                 if(_this.multipleSelection.length>0){
+                    this.$confirm('此操作将永久删除该套装, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    var suitId='';
                     for(var i=0;i<_this.multipleSelection.length;i++){
                         suitId+=_this.multipleSelection[i].suitId+',';
                     }
@@ -168,7 +167,14 @@
                             }
                         }
                     );
-                }else{
+                
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });          
+                });
+                 }else{
                     alert("请选择删除的套装")
                 }
                
