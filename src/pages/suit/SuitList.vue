@@ -5,20 +5,21 @@
                      <h2 class = "sl-title">套装列表</h2>
                </el-row>
                <el-container class="extend-h-w" direction = "vertical">
-                   <el-row :gutter = "10">
-                         <el-col :lg = "4"  :md= "6"><el-input v-model="suitName" placeholder="请输入套装名称"></el-input></el-col>  
-                         <el-col :lg = "4"  :md= "5">
-                             <el-date-picker
-                                      class = "extend-w"
-                                      type="date"
-                                      placeholder="套装时间"
-                                      v-model="suitDate"
-                                      value-format = "yyyy-MM-dd"
-                                      >
-                                    </el-date-picker>
+                   <el-row :gutter="10">
+                         <el-col :lg ="4"  :md="6"><el-input v-model="suitName" placeholder="请输入套装名称"></el-input></el-col>  
+                         <el-col :lg ="4"  :md="5">
+                             <el-date-picker class = "extend-w"
+                                            type="date"
+                                            placeholder="套装时间"
+                                            v-model="suitDate"
+                                            value-format = "yyyy-MM-dd">
+                            </el-date-picker>
                          </el-col> 
-                         <el-col :lg = "4"  :md= "3">
+                         <el-col :lg="4"  :md="3">
                              <el-button icon="el-icon-search" @click="getlist()" circle></el-button>
+                         </el-col>
+                         <el-col :lg="2" :md="3" style="float:right">
+                             <el-button style="margin-left:-23px;" @click="handleAddSuitBtnClick">新增套装</el-button>
                          </el-col>
                    </el-row>
                    <br/>
@@ -122,6 +123,11 @@
                         suitId: suitId
                     }
                 })
+            },
+            handleAddSuitBtnClick() {
+                this.$router.push({
+                    name: 'addsuit'
+                });
             }
         }
     }

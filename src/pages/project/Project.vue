@@ -46,7 +46,7 @@
                                       placeholder="开始时间"
                                       value-format = "yyyy-MM-dd"
                                       v-model = "searchObj.startTime"
-                                      >
+                                      :picker-options="datePickerOptions">
                                     </el-date-picker>
                                 </el-col>
                                 <el-col :lg = "4"  :md= "6">
@@ -146,7 +146,12 @@ export default {
         { name: "MVP2", value: "value2" },
         { name: "MVP3", value: "value3" }
       ],
-      list: []
+      list: [],
+      datePickerOptions: {
+        disabledDate(time) {
+          return time.getTime() < new Date('2000/01/01 00:00:00').getTime();
+        }
+      }
     };
   },
   mounted() {
