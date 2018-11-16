@@ -12,11 +12,11 @@
                           <el-container class="extend-h-w" direction = "vertical">
                             <el-row type = "flex" justify = "center">
                                 <el-col :span = "10">
-                                   <el-form ref="form" :model="sizeForm"  label-width="100px" :rules="rules" size="small">
-                                        <el-form-item label="项目名称">
+                                   <el-form ref="form" :model="sizeForm"  label-width="120px" :rules="rules" size="small">
+                                        <el-form-item label="项目名称" prop = "name">
                                                   <el-input v-model="sizeForm.name"></el-input>
                                         </el-form-item>
-                                        <el-form-item label="项目类型">
+                                        <el-form-item label="项目类型" prop = "typeId">
                                               <el-select 
                                                 filterable
                                                 clearable 
@@ -30,7 +30,7 @@
                                               </el-option>
                                             </el-select>
                                         </el-form-item>
-                                        <el-form-item label="优先级">
+                                        <el-form-item label="优先级" prop = "priorityId">
                                             <el-select 
                                                 filterable
                                                 clearable 
@@ -44,7 +44,7 @@
                                               </el-option>
                                             </el-select>
                                         </el-form-item>
-                                        <el-form-item label="需求提出人">
+                                        <el-form-item label="需求提出人" prop = "needperson">
                                               <el-select 
                                                  filterable
                                                   clearable 
@@ -57,7 +57,7 @@
                                               :label="item.userName" :value="item.userId"></el-option>
                                             </el-select>
                                         </el-form-item>
-                                        <el-form-item label="项目负责人">
+                                        <el-form-item label="项目负责人" prop = "chargeperson">
                                               <el-select 
                                                  filterable
                                                 clearable 
@@ -70,7 +70,7 @@
                                               :label="item.userName" :value="item.userId"></el-option>
                                             </el-select>
                                         </el-form-item>
-                                        <el-form-item label="开始时间">
+                                        <el-form-item label="开始时间" prop = "starttime">
                                                   <el-date-picker
                                                     class = "extend-w"
                                                     type="date"
@@ -80,7 +80,7 @@
                                                     >
                                                    </el-date-picker>
                                         </el-form-item>
-                                        <el-form-item label="计划完成时间">
+                                        <el-form-item label="计划完成时间" prop = "finshtime">
                                                     <el-date-picker
                                                     class = "extend-w"
                                                     type="date"
@@ -90,8 +90,8 @@
                                                     >
                                                    </el-date-picker>
                                         </el-form-item>
-                                        <el-form-item label="项目推迟天数">
-                                                  <el-input v-model="sizeForm.delaydays"></el-input>
+                                        <el-form-item label="项目推迟天数" prop = "delaydays">
+                                                  <el-input v-model.number="sizeForm.delaydays"></el-input>
                                         </el-form-item>
                                         <el-form-item label="关联产品">
                                          
@@ -122,7 +122,7 @@
                                       <el-form-item label="SVN文档地址">
                                                   <el-input v-model="sizeForm.var2"></el-input>
                                         </el-form-item>
-                                        <el-form-item label="备注">
+                                        <el-form-item label="备注" prop = "var3">
                                              <el-input v-model="sizeForm.var3"
                                              type="textarea"
                                              :rows="2"
@@ -131,7 +131,7 @@
                                         </el-form-item>
                                         <el-form-item size="large">
                                             <el-button type="primary" @click="onSubmit('form')">保存</el-button>
-                                            <el-button @click = "resetForm('form')">重置</el-button>
+                                            <el-button @click = "cancleBtn('form')">取消</el-button>
                                         </el-form-item>
                                 </el-form>
                                 </el-col>
@@ -193,21 +193,44 @@ export default {
      * 
      * 
      */
+     const rules = {
+        name: [
+          { required: true, message: '请输入项目名称', trigger: 'blur' },
+          { max:20, message: '最多不超过20个字符', trigger: 'blur' }
+          ],
+        typeId: [
+           { required: true, message: '请选择类型', trigger: 'change' }],
+        priorityId: [
+           { required: true, message: '请上优先级',trigger: 'change' }],    
+        needperson: [
+           { required: true, message: '请选择项目需求人', trigger: 'change'}], 
+        chargeperson: [
+           { required: true, message: '请选择项目负责人', trigger: 'change'}], 
+        var3: [
+           { max:200, message: '最多不超过200个字符', trigger: 'blur' }], 
+        delaydays: [
+           { required: true, type: 'number',message: '必须为数字', trigger: 'blur' }]  
+      }
+    const allprotype ={}
+    if(this.type === 'edit'){
+        allprotype.value = 'value';
+        allprotype.label = 'label';
+        allprotype.children = 'versionList';
+    }else{
+        allprotype.value = 'value';
+        allprotype.label = 'label';
+        allprotype.children = 'products';
+    }
 
     return {
       rdList: [],
       typeList: [],
       priorityList: [],
-      allprotype: {
-        value: "value",
-        label: "label",
-        children: "products"
-      },
+      allprotype: allprotype,
       allPudPjc: [], // 说有关联版本
       proverList: [], // 选中的多版本项目
       selectedOptions: [], // 选中的值
       sizeForm: {
-        // projectId: "",
         name: "",
         priorityId: "",
         typeId: "",
@@ -216,14 +239,11 @@ export default {
         finshtime: "",
         delaydays: "", // 版本名称
         chargeperson: "", // 研发负责人
-        // var1:'', // 项目负责人
-        productVer: "", // 备注
+        productVer: "", // 多个产品版本
         var2: "", //  文档上传路径
         var3: "" // 备注
       },
-      rules: {
-        // productName: [{ validator: checkName, trigger: "blur" }]
-      },
+      rules: rules,
       uploadUrl: "/dev/file/upload",
       isSuccess: false // 是否禁用
     };
@@ -267,6 +287,7 @@ export default {
      *
      */
     getTypeAndPriority() {
+       this.allPudPjc =[];
       let getList = [
         // 优先级
         {
@@ -282,12 +303,12 @@ export default {
         {
           url: "api/umc/user/findUserByUser",
           method: "get"
-        }
+        },
       ];
       if (this.type === "edit") {
           // 查询所有项目及关联的版本
         getList.push({
-          url: "api/pdc/product/findAllProductVersion",
+          url: "vdev/product/findAllProductVersion",
           method: "post"
         }) 
           // 查询回显数据
@@ -307,30 +328,30 @@ export default {
       }
 
       this.$http.all(getList, (res1, res2, res3, res4, res5) => {
-        if (res1.status === 200) {
+        if (res1.status&&res1.status === 200) {
           if (res1.data.code === 200) {
             this.typeList = res1.data.data;
           }
         }
-        // console.log(res2)
-        if (res2.status === 200) {
+        if (res2.status&&res2.status === 200) {
           if (res2.data.code === 200) {
             this.priorityList = res2.data.data;
           }
         }
-        if (res3.status === 200) {
+        if (res3.status&&res3.status === 200) {
           if (res3.data.code === 200) {
             this.rdList = res3.data.data;
           }
         }
-        if (res4.status === 200) {
-          if (res4.data.code === 200) {
-            let list = res4.data.data;
-            this.allPudPjc = list;
-          }
-        }
-        if (this.type === "edit" && res5) {
-          if (res5.status === 200) {
+       
+        if (this.type === "edit" ) {
+          if (res4.status&&res4.status === 200) {
+            if (res4.data.code === 200) {
+              let list = res4.data.data.list;
+              this.allPudPjc = list;
+            }
+          } 
+          if (res5.status&&res5.status === 200) {
             if (res5.data.code === 200) {
               let data = res5.data.data;
               let obj = this.sizeForm;
@@ -362,6 +383,13 @@ export default {
               }
             }
           }
+        }else{
+           if (res4.status&&res4.status === 200) {
+            if (res4.data.code === 200) {
+              let list = res4.data.data;
+              this.allPudPjc = list;
+            }
+          }
         }
       });
     },
@@ -390,8 +418,8 @@ export default {
             break;
           }
         }
-        obj.var1 = userName;
-        obj.var4 = needName;
+        obj.var1 = userName; // 负责人名称
+        obj.var4 = needName; // 需求人名称
       }
 
       // 获取项目负责人 name值
@@ -401,37 +429,43 @@ export default {
         msger = "添加失败";
       } else {
         obj.projectId = this.$route.query.projectId;
-        // obj.versionId = this.$route.params.data.versionId;
         url = "api/pjc/project/updateProject";
         msgsuc = "修改成功";
         msger = "修改失败";
       }
-
-      this.$http.post(url, obj, res => {
-        if (res.status === 200) {
-          if (res.data.code === 200) {
-            this.$message({
-              message: msgsuc,
-              type: "success"
-            });
-
-            if (this.type === "add") {
-              this.$refs[formName].resetFields();
-              let sizeForm = this.sizeForm;
-              for (let k in sizeForm) {
-                if (Object.prototype.hasOwnProperty.call(sizeForm, k)) {
-                  sizeForm[k] = "";
-                }
-              }
-              this.sizeForm = sizeForm;
-              this.proverList = [];
-              this.selectedOptions = [];
-            }
-          } else {
-            this.$message.error(msger);
+      this.$refs[formName].validate((valid,result)=>{
+          if(valid){
+              this.$http.post(url, obj, res => {
+                  if (res.status === 200) {
+                    if (res.data.code === 200) {
+                      this.$message({
+                        message: msgsuc,
+                        type: "success"
+                      });
+                      this.$router.back(); 
+                      // if (this.type === "add") {
+                      //   this.$refs[formName].resetFields();
+                      //   let sizeForm = this.sizeForm;
+                      //   for (let k in sizeForm) {
+                      //     if (Object.prototype.hasOwnProperty.call(sizeForm, k)) {
+                      //       sizeForm[k] = "";
+                      //     }
+                      //   }
+                      //   this.sizeForm = sizeForm;
+                      //   this.proverList = [];
+                      //   this.selectedOptions = [];
+                      // }
+                    } else {
+                      this.$message.error(res.data.msg);
+                    }
+                  }
+                  });
+          }else{
+            return false
+              // console.log(result)
           }
-        }
-      });
+      })  
+      
     },
     /**
      * 重置
@@ -449,52 +483,13 @@ export default {
       this.selectedOptions = [];
     },
     /**
-     * 详情的获取
-     *
-     *
+     * 取消 离开
+     * 
      */
-    getSigleProject(projectId) {
-      this.$http.post(
-        "api/pjc/project/findProject",
-        {
-          projectId: projectId
-        },
-        res => {
-          if (res.status === 200) {
-            if (res.data.code === 200) {
-              let data = res.data.data;
-              let obj = this.sizeForm;
-              for (let k in obj) {
-                if (Object.prototype.hasOwnProperty.call(obj, k)) {
-                  obj[k] = data[k];
-                }
-              }
-
-              this.sizeForm = obj;
-              this.proverList = [];
-              if (data.productVrelList.length > 0) {
-                let arr = [];
-                data.productVrelList.forEach(t => {
-                  let value = [],
-                    label = [];
-                  ["project", "product", "version"].forEach(k => {
-                    if (t[`${k}Id`]) {
-                      value.push(t[`${k}Id`]);
-                      if (t[`${k}Name`]) {
-                        label.push(t[`${k}Name`]);
-                      }
-                    }
-                  });
-
-                  arr.push({ value, label: label[label.length - 1] });
-                });
-                this.proverList = arr;
-              }
-            }
-          }
-        }
-      );
+    cancleBtn(){
+      this.$router.back();
     }
+ 
   }
 };
 </script>

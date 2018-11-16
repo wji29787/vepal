@@ -1,4 +1,5 @@
-const list = [{
+const list = [
+  {
     label: '序号',
     width: 80,
     prop: 'id',
