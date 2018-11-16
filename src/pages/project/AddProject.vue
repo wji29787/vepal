@@ -190,8 +190,6 @@ export default {
      */
 
     return {
-      // options: options,
-
       rdList: [],
       typeList: [],
       priorityList: [],
@@ -201,7 +199,7 @@ export default {
         children: "products"
       },
       allPudPjc: [], // 说有关联版本
-      proverList: [],  // 选中的多版本项目
+      proverList: [], // 选中的多版本项目
       selectedOptions: [], // 选中的值
       sizeForm: {
         // projectId: "",
@@ -213,6 +211,7 @@ export default {
         finshtime: "",
         delaydays: "", // 版本名称
         chargeperson: "", // 研发负责人
+        // var1:'', // 项目负责人
         productVer: "", // 备注
         var2: "", //  文档上传路径
         var3: "" // 备注
@@ -224,34 +223,19 @@ export default {
       isSuccess: false // 是否禁用
     };
   },
-  watch: {
-    // $route(to, from) {
-    //   //   console.log(to);
-    // }
-  },
+  watch: {},
 
   mounted() {
     this.getTypeAndPriority();
-    // this.getRdList();
     if (this.type === "edit") {
-      // let obj = this.sizeForm;
-      // for (let k in obj) {
-      //   if (Object.prototype.hasOwnProperty.call(obj, k)) {
-      //     obj[k] = this.$route.params.data[k];
-      //   }
-      // }
-      // obj.needPerson = this.$route.params.data['needperson']
-      // // console.log(this.$route.params.data)
-      // this.sizeForm = obj;
-       console.log(this.$route.query.projectId)
-      this.getSigleProject(this.$route.query.projectId)
+      this.getSigleProject(this.$route.query.projectId);
     }
   },
   methods: {
     handleClose(index) {
       this.proverList.splice(index, 1);
-      if(this.proverList.length ===0){
-        this.selectedOptions =[]
+      if (this.proverList.length === 0) {
+        this.selectedOptions = [];
       }
     },
     handleChange(value) {
@@ -271,7 +255,7 @@ export default {
       }
       if (flag) {
         obj.value = value;
-        obj.label = label[label.length-1];
+        obj.label = label[label.length - 1];
         this.proverList.push(obj);
       }
     },
@@ -328,44 +312,44 @@ export default {
         }
       });
     },
-    formatData(data) {
-      let obj = [
-        {
-          value: "projectId",
-          label: "name"
-        },
-        {
-          value: "productId",
-          label: "productName"
-        },
-        {
-          value: "versionId",
-          label: "verName"
-        }
-      ];
-    },
     /**
      *
      * 保存信息
      *
      */
     onSubmit(formName) {
-      let obj, url, msger, msgsuc, productVer;
+      let obj, url, msger, msgsuc, productVer,userName,needName;
       productVer = this.proverList.map(t => {
         return t.value.join("#");
       });
-      productVer = productVer.join("&");
+      obj = this.sizeForm;
+      obj.productVer = productVer.join("&");
+       if(this.rdList.length > 0){
+          for(let i =0,len = this.rdList.length;i<len;i++){
+                let checkObj = this.rdList[i]
+                if(checkObj.userId === this.sizeForm.chargeperson){
+                            userName = checkObj.userName;
+                }
+                if(checkObj.userId === this.sizeForm.needPerson){
+                  needName = checkObj.userName;
+                }
+                if(userName && needName){
+                  break;
+                }
+          }
+          obj.var1 = userName;  
+          obj.var4 = needName;  
+       }  
+          
+      // 获取项目负责人 name值
       if (this.type === "add") {
-        obj = this.sizeForm;
-        // obj.productId = this.$route.params.data.productId;
-        // let  productVer
-        obj.productVer = productVer;
+       
         url = "api/pjc/project/addProject";
         msgsuc = "添加成功";
         msger = "添加失败";
+
       } else {
-        obj = this.sizeForm;
-        obj.productVer = productVer;
+       
         obj.projectId = this.$route.query.projectId;
         // obj.versionId = this.$route.params.data.versionId;
         url = "api/pjc/project/updateProject";
@@ -374,7 +358,6 @@ export default {
       }
 
       this.$http.post(url, obj, res => {
-        // console.log(res)
         if (res.status === 200) {
           if (res.data.code === 200) {
             this.$message({
@@ -391,8 +374,8 @@ export default {
                 }
               }
               this.sizeForm = sizeForm;
-              this.proverList =[]
-              this.selectedOptions =[]
+              this.proverList = [];
+              this.selectedOptions = [];
             }
           } else {
             this.$message.error(msger);
@@ -412,50 +395,56 @@ export default {
         }
       }
       this.sizeForm = obj;
-      this.proverList =[]
-      this.selectedOptions =[]
+      this.proverList = [];
+      this.selectedOptions = [];
     },
     /**
      * 详情的获取
-     * 
-     * 
+     *
+     *
      */
-    getSigleProject(projectId){
-      this.$http.post('api/pjc/project/findProject',{
-        projectId:projectId
-      },res =>{
-        if(res.status ===200){
-          if(res.data.code ===200){
-            let data = res.data.data;
-            let obj = this.sizeForm;
-            for(let k in obj){
-              if(Object.prototype.hasOwnProperty.call(obj,k)){
-                obj[k] = data[k] 
+    getSigleProject(projectId) {
+      this.$http.post(
+        "api/pjc/project/findProject",
+        {
+          projectId: projectId
+        },
+        res => {
+          if (res.status === 200) {
+            if (res.data.code === 200) {
+              let data = res.data.data;
+              let obj = this.sizeForm;
+              for (let k in obj) {
+                if (Object.prototype.hasOwnProperty.call(obj, k)) {
+                  obj[k] = data[k];
+                }
+              }
+              obj.needPerson = data["needperson"];
+              this.sizeForm = obj;
+              this.proverList = [];
+              if (data.productVrelList.length > 0) {
+                let arr = [];
+                data.productVrelList.forEach(t => {
+                  let value = [],
+                    label = [];
+                  ["project", "product", "version"].forEach(k => {
+                    if (t[`${k}Id`]) {
+                      value.push(t[`${k}Id`]);
+                      if(t[`${k}Name`]){
+                        label.push(t[`${k}Name`]);
+                      }
+                      
+                    }
+                  });
+
+                  arr.push({ value, label :label[label.length - 1]});
+                });
+                this.proverList = arr;
               }
             }
-            obj.needPerson = data['needperson']
-            this.sizeForm = obj;
-            this.proverList = []
-            if(data.productVrelList.length>0){
-               let arr =[]
-              data.productVrelList.forEach(t =>{
-                let value=[],label=[];
-                ['project','product','version'].forEach(k =>{
-                  if(t[`${k}Id`]){
-                      value.push(t[`${k}Id`])
-                      label.push(t[`${k}Name`])
-                  }
-                })
-              
-               arr.push({value,label})
-             
-              })   
-              this.proverList = arr;
-            }
-            
           }
         }
-      })
+      );
     }
   }
 };

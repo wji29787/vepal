@@ -24,7 +24,8 @@ const list = [{
   {
     label: '需求提出人',
     width: 100,
-    prop: 'needperson',
+    prop: 'var4',
+    // prop: 'needperson',
 
   },
   {
@@ -39,7 +40,8 @@ const list = [{
   },
   {
     label: '项目负责人',
-    prop: 'chargeperson',
+    // prop: 'chargeperson',
+    prop: 'var1',
     width: 100,
   },
   {
