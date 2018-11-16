@@ -176,6 +176,8 @@ export default {
       this.bscroll = false;
       let searchObj = this.searchObj;
       let obj = {
+        pageNo: pageNo ? pageNo : 1,
+        pageSize: this.pageSize,
         productName: searchObj.productName || "", // 优先级
         verName: searchObj.verName || "" // 类型
       };
@@ -225,7 +227,12 @@ export default {
               this.arrname = arrname;
             } else {
               this.list = this.list.concat(arr);
-              this.arrname = this.list.concat(arrname);
+                let obj = this.arrname[this.arrname.length-1]
+                let num =  obj.index+obj.listLen
+                arrname.forEach(t =>{
+                  t.index  +=num
+                })  
+              this.arrname = this.arrname.concat(arrname);
             }
           }
         }
@@ -366,16 +373,20 @@ export default {
     addVersion(row) {
       this.$router.push({
         name: "addversion",
-        params: {
-          data: row
+         query: {
+          productId: row.productId
         }
       });
     },
     editVersion(row) {
       this.$router.push({
         name: "editversion",
-        params: {
-          data: row
+        // params: {
+        //   data: row
+        // },
+         query: {
+          versionId: row.versionId,
+          productId: row.productId
         }
       });
     }

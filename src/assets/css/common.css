@@ -66,3 +66,9 @@
 .margin-r5{
     margin-right: 5px;
 }
+.min-h-formItem{
+    max-height: 100px;
+}
+.minc-height{
+    min-height: 830px   
+}

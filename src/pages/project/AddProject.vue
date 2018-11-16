@@ -1,7 +1,10 @@
 <template>
     <div  class="extend-h-w">
-               <el-container class="extend-h-w" direction = "vertical">
-                   <router-link to = "project">返回</router-link>
+               <el-container class="extend-h-w minc-height" direction = "vertical">
+                   <el-row>
+                     <router-link to = "project">返回</router-link>
+                   </el-row>
+                   
                    <el-row class ="sl-item-h100" type = "flex" justify = "center" align ="middle">
                              <h2 class = "sl-title">{{$route.meta.title}}</h2>
                     </el-row>
@@ -14,7 +17,11 @@
                                                   <el-input v-model="sizeForm.name"></el-input>
                                         </el-form-item>
                                         <el-form-item label="项目类型">
-                                              <el-select v-model="sizeForm.typeId" placeholder="请选择" class="extend-w">
+                                              <el-select 
+                                                filterable
+                                                clearable 
+                                                v-model="sizeForm.typeId" 
+                                                placeholder="请选择" class="extend-w">
                                               <el-option
                                                 v-for="item in typeList"
                                                 :key="item.projecttypeId"
@@ -24,7 +31,11 @@
                                             </el-select>
                                         </el-form-item>
                                         <el-form-item label="优先级">
-                                            <el-select v-model="sizeForm.priorityId" placeholder="请选择" class="extend-w">
+                                            <el-select 
+                                                filterable
+                                                clearable 
+                                                v-model="sizeForm.priorityId" 
+                                                placeholder="请选择" class="extend-w">
                                               <el-option
                                                 v-for="item in priorityList"
                                                 :key="item.priorityId"
@@ -34,7 +45,11 @@
                                             </el-select>
                                         </el-form-item>
                                         <el-form-item label="需求提出人">
-                                              <el-select v-model="sizeForm.needPerson" placeholder="请选择" class="extend-w">
+                                              <el-select 
+                                                 filterable
+                                                  clearable 
+                                                 v-model="sizeForm.needperson" 
+                                                 placeholder="请选择" class="extend-w">
                                               <el-option 
                                                 v-for = "(item) in rdList"
                                                 :key = "item.userId"
@@ -43,7 +58,11 @@
                                             </el-select>
                                         </el-form-item>
                                         <el-form-item label="项目负责人">
-                                              <el-select v-model="sizeForm.chargeperson" placeholder="请选择" class="extend-w">
+                                              <el-select 
+                                                 filterable
+                                                clearable 
+                                                 v-model="sizeForm.chargeperson" 
+                                                 placeholder="请选择" class="extend-w">
                                               <el-option 
                                                 v-for = "(item) in rdList"
                                                 :key = "item.userId"
@@ -89,7 +108,7 @@
                                             @change="handleChange">
                                             
                                           </el-cascader>
-                                           <el-col><el-tag
+                                           <el-col class = "min-h-formItem"><el-tag
                                             :key="index"
                                             v-for="(item,index) in proverList"
                                             class = "margin-r5"
@@ -129,21 +148,7 @@
     </div>
 </template>
 <script>
-/**
- * http://192.168.95.93:8089/product/addProduct?
- *         productName=xxx&verName=xxx&verRdperson=xxx&verRemark=xxx&verDescription=xxx&userId=xxx
 
- *    
-      http://192.168.95.93:8089/product/findProductByName?
-                productName=启明2
-      
-      http://192.168.95.93:8089/product/findAllProduct  
-              --产品名称下拉列表(支持分页)
- * 
- * 
- * 
- * 
- */
 import Slfoot from "../../components/Foot";
 // import options from "./optionList.js";
 export default {
@@ -177,7 +182,7 @@ export default {
       name	否	string	项目名称
       priorityId	否	string	项目优先级
       typeId	否	string	项目类型
-      needPerson	否	string	需求提出人（是人员姓名，不是人员ID）
+      needperson	否	string	需求提出人（是人员姓名，不是人员ID）
       starttime	否	string	项目开始时间
       finshtime	否	string	项目结束时间
       delaydays	否	string	项目推迟天数
@@ -206,7 +211,7 @@ export default {
         name: "",
         priorityId: "",
         typeId: "",
-        needPerson: "", //needperson
+        needperson: "", //needperson
         starttime: "",
         finshtime: "",
         delaydays: "", // 版本名称
@@ -227,9 +232,6 @@ export default {
 
   mounted() {
     this.getTypeAndPriority();
-    if (this.type === "edit") {
-      this.getSigleProject(this.$route.query.projectId);
-    }
   },
   methods: {
     handleClose(index) {
@@ -280,14 +282,31 @@ export default {
         {
           url: "api/umc/user/findUserByUser",
           method: "get"
-        },
-        // 查询所有项目及关联的版本
-        {
-          url: "api/pjc/project/findAllProjectProductVer",
-          method: "post"
         }
       ];
-      this.$http.all(getList, (res1, res2, res3, res4) => {
+      if (this.type === "edit") {
+          // 查询所有项目及关联的版本
+        getList.push({
+          url: "api/pdc/product/findAllProductVersion",
+          method: "post"
+        }) 
+          // 查询回显数据
+        getList.push({
+          url: "api/pjc/project/findProject",
+          method: "post",
+          data: {
+            projectId: this.$route.query.projectId
+          }
+        });
+      }else{
+          // 查询所有项目及关联的版本
+        getList.push({
+          url: "api/pjc/project/findAllProjectProductVer",
+          method: "post"
+        }) 
+      }
+
+      this.$http.all(getList, (res1, res2, res3, res4, res5) => {
         if (res1.status === 200) {
           if (res1.data.code === 200) {
             this.typeList = res1.data.data;
@@ -310,6 +329,40 @@ export default {
             this.allPudPjc = list;
           }
         }
+        if (this.type === "edit" && res5) {
+          if (res5.status === 200) {
+            if (res5.data.code === 200) {
+              let data = res5.data.data;
+              let obj = this.sizeForm;
+              for (let k in obj) {
+                if (Object.prototype.hasOwnProperty.call(obj, k)) {
+                  obj[k] = data[k];
+                }
+              }
+
+              this.sizeForm = obj;
+              this.proverList = [];
+              if (data.productVrelList.length > 0) {
+                let arr = [];
+                data.productVrelList.forEach(t => {
+                  let value = [],
+                    label = [];
+                  ["project", "product", "version"].forEach(k => {
+                    if (t[`${k}Id`]) {
+                      value.push(t[`${k}Id`]);
+                      if (t[`${k}Name`]) {
+                        label.push(t[`${k}Name`]);
+                      }
+                    }
+                  });
+
+                  arr.push({ value, label: label[label.length - 1] });
+                });
+                this.proverList = arr;
+              }
+            }
+          }
+        }
       });
     },
     /**
@@ -318,38 +371,35 @@ export default {
      *
      */
     onSubmit(formName) {
-      let obj, url, msger, msgsuc, productVer,userName,needName;
+      let obj, url, msger, msgsuc, productVer, userName, needName;
       productVer = this.proverList.map(t => {
         return t.value.join("#");
       });
       obj = this.sizeForm;
       obj.productVer = productVer.join("&");
-       if(this.rdList.length > 0){
-          for(let i =0,len = this.rdList.length;i<len;i++){
-                let checkObj = this.rdList[i]
-                if(checkObj.userId === this.sizeForm.chargeperson){
-                            userName = checkObj.userName;
-                }
-                if(checkObj.userId === this.sizeForm.needPerson){
-                  needName = checkObj.userName;
-                }
-                if(userName && needName){
-                  break;
-                }
+      if (this.rdList.length > 0) {
+        for (let i = 0, len = this.rdList.length; i < len; i++) {
+          let checkObj = this.rdList[i];
+          if (checkObj.userId === this.sizeForm.chargeperson) {
+            userName = checkObj.userName;
           }
-          obj.var1 = userName;  
-          obj.var4 = needName;  
-       }  
-          
+          if (checkObj.userId === this.sizeForm.needperson) {
+            needName = checkObj.userName;
+          }
+          if (userName && needName) {
+            break;
+          }
+        }
+        obj.var1 = userName;
+        obj.var4 = needName;
+      }
+
       // 获取项目负责人 name值
       if (this.type === "add") {
-       
         url = "api/pjc/project/addProject";
         msgsuc = "添加成功";
         msger = "添加失败";
-
       } else {
-       
         obj.projectId = this.$route.query.projectId;
         // obj.versionId = this.$route.params.data.versionId;
         url = "api/pjc/project/updateProject";
@@ -419,7 +469,7 @@ export default {
                   obj[k] = data[k];
                 }
               }
-              obj.needPerson = data["needperson"];
+
               this.sizeForm = obj;
               this.proverList = [];
               if (data.productVrelList.length > 0) {
@@ -430,14 +480,13 @@ export default {
                   ["project", "product", "version"].forEach(k => {
                     if (t[`${k}Id`]) {
                       value.push(t[`${k}Id`]);
-                      if(t[`${k}Name`]){
+                      if (t[`${k}Name`]) {
                         label.push(t[`${k}Name`]);
                       }
-                      
                     }
                   });
 
-                  arr.push({ value, label :label[label.length - 1]});
+                  arr.push({ value, label: label[label.length - 1] });
                 });
                 this.proverList = arr;
               }

@@ -27,14 +27,6 @@ module.exports = {
           '^/api/suit' : '',     // rewrite path
         },
       },
-      // '/api/pdj': {
-      //   target: 'http://localhost:8092',
-      //   changeOrigin: true,
-      //   // ws: true,
-      //   pathRewrite: {
-      //     '^/api' : '',     // rewrite path
-      //   },
-      // },
       '/api': {
         target: 'http://192.168.112.168:8092',
         changeOrigin: true,
