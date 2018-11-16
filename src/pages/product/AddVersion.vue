@@ -1,6 +1,6 @@
 <template>
     <div  class="extend-h-w">
-               <el-container class="extend-h-w" direction = "vertical">
+               <el-container class="extend-h-w  minc-height" direction = "vertical">
                    <router-link to = "product">返回</router-link>
                    <el-row class ="sl-item-h100" type = "flex" justify = "center" align ="middle">
                              <h2 class = "sl-title">{{$route.meta.title}}</h2>
@@ -10,11 +10,18 @@
                             <el-row type = "flex" justify = "center">
                                 <el-col :span = "10">
                                    <el-form ref="form" :model="sizeForm"  label-width="100px" :rules="rules" size="small">
-                                        <el-form-item label="版本名称">
+                                         <el-form-item label="产品名称" v-if = "type === 'edit'"  prop = "productName">
+                                                  <el-input v-model="sizeForm.productName"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="版本名称" prop = "verName">
                                                   <el-input v-model="sizeForm.verName"></el-input>
                                         </el-form-item>
-                                        <el-form-item label="研发负责人">
-                                           <el-select v-model="sizeForm.verRdperson" placeholder="请选择" class="extend-w">
+                                        <el-form-item label="研发负责人" prop = "verRdperson">
+                                           <el-select 
+                                             filterable
+                                             clearable 
+                                             v-model="sizeForm.verRdperson" 
+                                             placeholder="请选择" class="extend-w">
                                               <el-option
                                                 v-for = "(item) in rdList"
                                                 :key = "item.userId"
@@ -23,7 +30,7 @@
                                             </el-select>
 
                                         </el-form-item>
-                                        <el-form-item label="版本文件">
+                                        <el-form-item label="版本文件" prop = "verUploadpath">
                                              <el-upload
                                                   :action = "uploadUrl"
                                                   :on-success = "uploadSuccess"
@@ -73,21 +80,7 @@
     </div>
 </template>
 <script>
-/**
- * http://192.168.95.93:8089/product/addProduct?
- *         productName=xxx&verName=xxx&verRdperson=xxx&verRemark=xxx&verDescription=xxx&userId=xxx
 
- *
-      http://192.168.95.93:8089/product/findProductByName?
-                productName=启明2
-
-      http://192.168.95.93:8089/product/findAllProduct
-              --产品名称下拉列表(支持分页)
- *
- *
- *
- *
- */
 import Slfoot from "../../components/Foot";
 export default {
   name: "addproduct",
@@ -96,39 +89,54 @@ export default {
   },
   props: ["type"],
   data() {
-    // let checkName = (rule, value, callback) => {
-    //   this.$http.get(
-    //     "/vdev/product/findProductByName",
-    //     {
-    //       productName: value
-    //     },
-    //     res => {
-    //       if (res.status === 200) {
-    //         if (res.data.code === 200) {
-    //           callback();
-    //         } else {
-    //           callback(new Error("名称重复"));
-    //         }
-    //       } else {
-    //       }
-    //     }
-    //   );
-    // };
-
-    return {
-      rdList: [],
-      sizeForm: {
-        // productName: "", // 名称
-        // productId:'',
+    let checkName = (rule, value, callback) => {
+      this.$http.get(
+        "/vdev/product/findProductByName",
+        {
+          productName: value
+        },
+        res => {
+          if (res.status === 200) {
+            if (res.data.code === 200) {
+              callback();
+            } else {
+              callback(new Error("名称重复"));
+            }
+          } else {
+          }
+        }
+      );
+    };
+    const sizeForm = {
         verName: "", // 版本名称
         verRdperson: "", // 研发负责人
         verRemark: "", // 备注
         verDescription: "", // 描述
         verUploadpath: "" // 版本上传路径
-      },
-      rules: {
-        // productName: [{ validator: checkName, trigger: "blur" }]
-      },
+      } 
+
+    const rules = {
+        verName: [
+          { required: true, message: '请输入产品版本', trigger: 'blur' }],
+        verRdperson: [
+           { required: true, message: '请选择负责人', trigger: 'blur' }],
+        verUploadpath: [
+           { required: true, message: '请上传文件'}],    
+        verRemark: [
+           { required: true, message: '请输入产品备注', trigger: 'blur' }], 
+        verDescription: [
+           { required: true, message: '请输入产品描述', trigger: 'blur' }], 
+      }
+     if(this.type === "edit"){
+       sizeForm.productName =''; // 产品名称
+       rules.productName = [
+         { required: true, message: '请输入产品名称', trigger: 'blur' },
+         { validator: checkName, trigger: "blur" }];
+     } 
+    return {
+      rdList: [],
+      sizeForm:sizeForm,
+      rules:rules,
       uploadUrl: "/dev/file/upload",
       isSuccess: false // 是否禁用
     };
@@ -140,16 +148,7 @@ export default {
   },
 
   mounted() {
-    this.getRdList();
-    if (this.type === "edit") {
-      let obj = this.sizeForm;
-      for (let k in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, k)) {
-          obj[k] = this.$route.params.data[k];
-        }
-      }
-      this.sizeForm = obj;
-    }
+    this.getInitData();
   },
   methods: {
     /**
@@ -162,15 +161,19 @@ export default {
      * 上传之前
      */
     beforeUpload() {
+      this.sizeForm.verUploadpath='';
       this.isSuccess = true;
     },
     /**
      * 上传成功
      */
     uploadSuccess(res) {
-      //  console.log(res)
       if (res.code === 200) {
         this.sizeForm.verUploadpath = res.data;
+        this.$message({
+          message: res.msg,
+          type: 'success'
+        });
       }
       this.isSuccess = false;
     },
@@ -197,18 +200,50 @@ export default {
      *
      *
      */
-    getRdList() {
-      this.$http.get("api/umc/user/findUserByUser", res => {
-        if (res.status === 200) {
-          if (res.data.code === 200) {
-            this.rdList = res.data.data;
-          } else {
-            this.$message.error(res.data.msg);
+    getInitData(){
+     
+        let getList = [
+        // 级联关系
+          {
+            url: "api/umc/user/findUserByUser",
+            method: "get"
           }
-        } else {
-          this.$message.error(res.status);
+        ];
+        if (this.type === "edit") {
+          getList.push({
+            url: "vdev/project/findProject",
+            method: "post",
+            data: {
+              versionId: this.$route.query.versionId
+            }
+          });
         }
-      });
+         
+        this.$http.all(getList, (res1, res2) => {
+          //  console.log(11)
+          if (res1.status === 200) {
+            if (res1.data.code === 200) {
+              this.rdList = res1.data.data;
+            }
+          }
+          if(this.type === "edit" && res2){
+             console.log(res2)
+            if (res2.status === 200) {
+            
+              if (res2.data.code === 200) {
+                  let obj = this.sizeForm;
+                  
+                  for (let k in obj) {
+                    if (Object.prototype.hasOwnProperty.call(obj, k)) {
+                      obj[k] = res2.data.data[k];
+                    }
+                  }
+                  this.sizeForm = obj;
+              }
+            }
+          }
+        })
+        
     },
     /**
      *
@@ -219,14 +254,14 @@ export default {
       let obj, url, msger, msgsuc;
       if (this.type === "add") {
         obj = this.sizeForm;
-        obj.productId = this.$route.params.data.productId;
+        obj.productId = this.$route.query.productId;
         url = "vdev/version/addVersion";
         msgsuc = "添加成功";
         msger = "添加失败";
       } else {
         obj = this.sizeForm;
-        obj.productId = this.$route.params.data.productId;
-        obj.versionId = this.$route.params.data.versionId;
+        obj.productId = this.$route.query.productId;
+        obj.versionId = this.$route.query.versionId;
         url = "vdev/version/updateVersion";
         msgsuc = "修改成功";
         msger = "修改失败";

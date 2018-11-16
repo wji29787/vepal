@@ -1,6 +1,6 @@
 <template>
     <div  class="extend-h-w">
-               <el-container class="extend-h-w" direction = "vertical">
+               <el-container class="extend-h-w  minc-height" direction = "vertical">
                  <router-link to = "product">返回</router-link>
                    <el-row class ="sl-item-h100" type = "flex" justify = "center" align ="middle">
                              <h2 class = "sl-title">产品新增</h2>
@@ -13,11 +13,15 @@
                                         <el-form-item label="产品名称" prop = "productName">
                                             <el-input v-model="sizeForm.productName"></el-input>
                                         </el-form-item>
-                                        <el-form-item label="产品版本">
+                                        <el-form-item label="产品版本" prop = "verName">
                                                   <el-input v-model="sizeForm.verName"></el-input>
                                         </el-form-item>
-                                        <el-form-item label="研发负责人">
-                                           <el-select v-model="sizeForm.verRdperson" placeholder="请选择" class="extend-w">
+                                        <el-form-item label="研发负责人" prop = "verRdperson">
+                                           <el-select v-model="sizeForm.verRdperson"  
+                                               filterable
+                                               clearable 
+                                               placeholder="请选择" 
+                                               class="extend-w">
                                               <el-option
                                                 v-for = "(item) in rdList"
                                                 :key = "item.userId"
@@ -26,7 +30,7 @@
                                             </el-select>
 
                                         </el-form-item>
-                                        <el-form-item label="版本文件">
+                                        <el-form-item label="版本文件" prop = "verUploadpath">
                                              <el-upload
                                                   :action = "uploadUrl"
                                                   :on-success = "uploadSuccess"
@@ -43,14 +47,14 @@
                                                 </el-upload>
 
                                         </el-form-item>
-                                        <el-form-item label="备注">
+                                        <el-form-item label="备注" prop = "verRemark">
                                              <el-input v-model="sizeForm.verRemark"
                                              type="textarea"
                                              :rows="2"
                                              placeholder="请输入内容"
                                              ></el-input>
                                         </el-form-item>
-                                        <el-form-item label="产品描述">
+                                        <el-form-item label="产品描述" prop = "verDescription">
                                             <el-input v-model="sizeForm.verDescription"
                                              type="textarea"
                                              :rows="2"
@@ -76,21 +80,7 @@
     </div>
 </template>
 <script>
-/**
- * http://192.168.95.93:8089/product/addProduct?
- *         productName=xxx&verName=xxx&verRdperson=xxx&verRemark=xxx&verDescription=xxx&userId=xxx
 
- *
-      http://192.168.95.93:8089/product/findProductByName?
-                productName=启明2
-
-      http://192.168.95.93:8089/product/findAllProduct
-              --产品名称下拉列表(支持分页)
- *
- *
- *
- *
- */
 import Slfoot from "../../components/Foot";
 import tableList from "./productTableList.js";
 export default {
@@ -100,6 +90,7 @@ export default {
   },
   data() {
     let checkName = (rule, value, callback) => {
+     
       this.$http.get(
         "/api/pdc/product/findProductByName",
         {
@@ -117,7 +108,11 @@ export default {
         }
       );
     };
+    // let checkVerUploadpath = (rule, value, callback)=>{
+    //     if(!value){
 
+    //     }
+    // }
     return {
       rdList: [],
       sizeForm: {
@@ -129,7 +124,21 @@ export default {
         verUploadpath: "" // 路径
       },
       rules: {
-        productName: [{ validator: checkName, trigger: "blur" }]
+        productName: [
+          { required: true, message: '请输入产品名称', trigger: 'blur' },
+          { validator: checkName, trigger: "blur" }],
+        verName: [
+          { required: true, message: '请输入产品版本', trigger: 'blur' }],
+        verRdperson: [
+           { required: true, message: '请选择负责人', trigger: 'change' },
+           { required: true, message: '请选择负责人', trigger: 'blur' },
+           ],
+        verUploadpath: [
+           { required: true, message: '请上传文件'}],   
+        verRemark: [
+           { max:200, message: '请输入产品备注', trigger: 'blur' }], 
+        verDescription: [
+           { max:200, message: '请输入产品描述', trigger: 'blur' }],    
       },
       uploadUrl: "/dev/file/upload",
       isSuccess: false, // 是否禁用
@@ -138,7 +147,7 @@ export default {
   },
   watch: {
     $route(to, from) {
-      console.log(to);
+      // console.log(to);
     }
   },
 
@@ -156,21 +165,23 @@ export default {
      * 上传之前
      */
     beforeUpload() {
+      this.sizeForm.verUploadpath='';
       this.isSuccess = true;
     },
     /**
      * 上传成功
      */
     uploadSuccess(res) {
-      //  console.log(res)
+  
       if (res.code === 200) {
         this.sizeForm.verUploadpath = res.data;
+        this.$message({
+          message: res.msg,
+          type: 'success'
+        });
       }
       this.isSuccess = false;
-      // this.$message({
-      //   message: res.msg,
-      //   type: 'success'
-      // });
+     
     },
     /**
      * 上传进度
