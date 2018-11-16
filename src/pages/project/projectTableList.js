@@ -24,7 +24,8 @@ const list = [{
   {
     label: '需求提出人',
     width: 100,
-    prop: 'needperson',
+    prop: 'var4',
+    // prop: 'needperson',
 
   },
   {

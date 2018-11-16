@@ -250,7 +250,11 @@ export default {
             } else {
               this.list = this.list.concat(list);
             }
+          }else{
+            this.$message.error(res.data.msg)
           }
+        }else{
+           this.$message.error(res.status)
         }
       });
     },
