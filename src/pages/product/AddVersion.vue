@@ -63,7 +63,7 @@
                                         </el-form-item>
                                         <el-form-item size="large">
                                             <el-button type="primary" @click="onSubmit('form')">保存</el-button>
-                                            <el-button @click = "resetForm('form')">重置</el-button>
+                                            <el-button @click = "cancleBtn('form')">取消</el-button>
                                         </el-form-item>
                                 </el-form>
                                 </el-col>
@@ -117,15 +117,17 @@ export default {
 
     const rules = {
         verName: [
-          { required: true, message: '请输入产品版本', trigger: 'blur' }],
+          { required: true, message: '请输入产品版本', trigger: 'blur' },
+          { max:20, message: '最多不超过20个字符', trigger: 'blur' }
+          ],
         verRdperson: [
            { required: true, message: '请选择负责人', trigger: 'blur' }],
         verUploadpath: [
            { required: true, message: '请上传文件'}],    
         verRemark: [
-           { required: true, message: '请输入产品备注', trigger: 'blur' }], 
+           { required: true, message: '最多不超过200个字符', trigger: 'blur' }], 
         verDescription: [
-           { required: true, message: '请输入产品描述', trigger: 'blur' }], 
+           { required: true, message: '最多不超过200个字符', trigger: 'blur' }], 
       }
      if(this.type === "edit"){
        sizeForm.productName =''; // 产品名称
@@ -211,7 +213,7 @@ export default {
         ];
         if (this.type === "edit") {
           getList.push({
-            url: "vdev/project/findProject",
+            url: "vdev/version/findVersionById",
             method: "post",
             data: {
               versionId: this.$route.query.versionId
@@ -227,7 +229,6 @@ export default {
             }
           }
           if(this.type === "edit" && res2){
-             console.log(res2)
             if (res2.status === 200) {
             
               if (res2.data.code === 200) {
@@ -235,12 +236,18 @@ export default {
                   
                   for (let k in obj) {
                     if (Object.prototype.hasOwnProperty.call(obj, k)) {
-                      obj[k] = res2.data.data[k];
+                      obj[k] = res2.data.data[k]||'';
                     }
                   }
                   this.sizeForm = obj;
+              }else{
+                 this.$message.error(res2.data.msg);
               }
+            }else{
+              this.$message.error(res2.status);
             }
+          }else{
+            
           }
         })
         
@@ -266,31 +273,38 @@ export default {
         msgsuc = "修改成功";
         msger = "修改失败";
       }
-
-      this.$http.post(url, obj, res => {
-        // console.log(res)
-        if (res.status === 200) {
-          if (res.data.code === 200) {
-            this.$message({
-              message: msgsuc,
-              type: "success"
-            });
-
-            if (this.type === "add") {
-              this.$refs[formName].resetFields();
-              let sizeForm = this.sizeForm;
-              for (let k in sizeForm) {
-                if (Object.prototype.hasOwnProperty.call(sizeForm, k)) {
-                  sizeForm[k] = "";
+      this.$refs[formName].validate((valid,result)=>{
+         if(valid){
+              this.$http.post(url, obj, res => {
+                if (res.status === 200) {
+                  if (res.data.code === 200) {
+                    this.$message({
+                      message: msgsuc,
+                      type: "success"
+                    });
+                    this.$router.back(); 
+                    // if (this.type === "add") {
+                    //   this.$refs[formName].resetFields();
+                    //   let sizeForm = this.sizeForm;
+                    //   for (let k in sizeForm) {
+                    //     if (Object.prototype.hasOwnProperty.call(sizeForm, k)) {
+                    //       sizeForm[k] = "";
+                    //     }
+                    //   }
+                    //   this.sizeForm = sizeForm;
+                    // }else{
+                    //   this.$router.back()
+                    // }
+                  } else {
+                    this.$message.error(res.data.msg);
+                  }
                 }
-              }
-              this.sizeForm = sizeForm;
-            }
-          } else {
-            this.$message.error(msger);
-          }
-        }
-      });
+              });
+         }else{
+           return false
+         }
+      })
+      
     },
     /**
      * 重置
@@ -304,6 +318,13 @@ export default {
         }
       }
       this.sizeForm = obj;
+    },
+    /**
+     * 取消 离开
+     * 
+     */
+    cancleBtn(){
+      this.$router.back();
     }
   }
 };

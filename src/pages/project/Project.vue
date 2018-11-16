@@ -59,6 +59,23 @@
                                       >
                                     </el-date-picker>
                                 </el-col>
+                                <el-col :span = "2"  class="fr">
+                                  <el-popover
+                                      placement="left"
+                                      width="160"
+                                      v-model = "visible"
+                                    >
+                                      <p>确定删除所有选中项目吗？</p>
+                                      <div style="text-align: right; margin: 0">
+                                        <el-button size="mini" type="text" @click = "delcancle('all')">取消</el-button>
+                                        <el-button type="primary" size="mini" @click = "delsure('all')">确定</el-button>
+                                      </div>
+                                      <el-button slot="reference" type="primary"  class = "fr" @click= "deletebtn('all')">批量删除</el-button>
+                                  </el-popover>
+                                  
+                                  
+                                  <!-- <el-button type = "primary" class="fr" @click="addProject">批量删除</el-button> -->
+                                  </el-col>
                             </el-row>
                             <el-row type = "flex" class="extend-h-w">
                               <!-- :formatter = "formatter(item,index)"
@@ -66,6 +83,8 @@
                                       :label= "item.label"
                                -->
                                     <el-table
+                                       
+                                        @selection-change = "elSelectionChange"
                                         :data="list"
                                         border 
                                         height = "98%"
@@ -73,10 +92,15 @@
                                         v-scroll = "{el:'.el-table__body-wrapper',scrollfn:scrollfn}"
                                         style="width: 100%; margin-top: 20px">
                                         <el-table-column
+                                            type = "selection"
+                                            width="50"
+                                        ></el-table-column>
+                                        <el-table-column
                                             v-for = "(item, index) in renderTableList"
                                             :key = "index"
                                             :width = "item.width"
                                             :render-header="customRenderH(item,index)"
+                                             
                                             >
                                             <template slot-scope="scope1">
                                                   <template v-if = "index === 9">
@@ -97,6 +121,7 @@
                                                   <template v-else-if = "index === 0">
                                                     {{scope1['$index']+1}}
                                                   </template>
+                                                
                                                   <template v-else>
                                                       {{formatter(item,index,scope1)}}
                                                   </template>
@@ -126,6 +151,8 @@ export default {
       lastPage: false, //最后一页
       moveY: 0, // 滚动元素的总告诉
       scrollctx: null, // 滚动元素的上下文
+      visible:false,  // 批量删除弹框显隐
+      multipleSelection: [], // 批量删除的数据
       searchObj: {
         priorityId: "", // 优先级
         typeId: "", // 类型
@@ -232,7 +259,7 @@ export default {
             let data = res.data.data;
             let list = data.list;
             // 最后一页
-            if (list && list.length < this.pageSize) {
+            if ((list && list.length < this.pageSize)||data.isLastPage) {
               this.lastPage = true;
             }
             // 添加 删除按钮属性
@@ -364,22 +391,48 @@ export default {
     },
     // 删除按钮
     deletebtn(value) {
-      value.row.visible = true;
+      if(value === 'all'){
+        this.visible = true
+      }else{
+        value.row.visible = true;
+      }
+      
     },
     delcancle(value) {
-      value.row.visible = false;
+      if(value === 'all'){
+        this.visible = false
+      }else{
+        value.row.visible = false;
+      }
+      // value.row.visible = false;
     },
-    delsure({ row }) {
+    delsure(value) {
+      let projectIds ;
+      if(value === 'all'){
+        if(this.multipleSelection.length===0){
+          this.$message.error('请选择至少一项')
+          return;
+        }else{
+          projectIds = this.multipleSelection.join(',');
+        }
+      }else{
+        projectIds = value.row.projectId
+      }
       this.$http.post(
         "/api/pjc/project/delProject",
         {
-          projectId: row.projectId
+          projectId: projectIds
         },
         res => {
           if (res.status === 200) {
             if (res.data.code === 200) {
               this.searchData();
-              row.visible = false;
+              if(value === 'all'){
+                this.visible = false;
+              }else{
+                 value.row.visible = false;
+              }
+             
               this.$message({
                 message: "删除成功",
                 type: "success"
@@ -390,6 +443,23 @@ export default {
           }
         }
       );
+    },
+        // 单击选中的回调
+    elSelect(selection, row){
+      //  console.log(selection) 
+    },
+     // 全选的回调
+    elSelectAll(selection){
+      //  console.log(selection) 
+    },
+    // 选择change 时的回调
+    elSelectionChange(selection){
+      //  console.log(selection) 
+      let arr = [];
+      selection.forEach(t =>{
+         arr.push(t.projectId)
+      })
+      this.multipleSelection = arr;
     },
     /**
      * 格式化事件
@@ -461,7 +531,8 @@ export default {
         }
         return header;
       };
-    }
+    },
+ 
   }
 };
 </script>
