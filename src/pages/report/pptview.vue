@@ -26,16 +26,16 @@
             <li v-for="item in list" :key="item.suitId">
                 <div class="linetop">
                      <ul>
-                         <li :key="versionlist.versionId" v-for="versionlist in item.versionVos">{{versionlist.productName}}{{versionlist.verName}}</li>
+                         <li :key="versionlist.versionId" :title="versionlist.productName+versionlist.verName" v-for="versionlist in item.versionVos">{{versionlist.productName}}{{versionlist.verName}}</li>
                      </ul>
                 </div>
                 <div class="line">
                     <b></b>
-                    <span>{{item.suitName}}（{{formatDate(item.suitDate)}}）</span>
+                    <span :title="item.suitName+formatDate(item.suitDate)">{{item.suitName}}（{{formatDate(item.suitDate)}}）</span>
                 </div>
                 <div class="linebottom">
                      <ul>
-                         <li :key="projectVos.projectId" v-for="projectVos in item.projectVos">{{projectVos.name}}</li>
+                         <li :title="projectVos.name" :key="projectVos.projectId" v-for="projectVos in item.projectVos">{{projectVos.name}}</li>
                      </ul>
                 </div>
             </li>
@@ -81,17 +81,17 @@
  /*滚动条样式*/
 .viewbar::-webkit-scrollbar {/*滚动条整体样式*/
     width: 4px;     /*高宽分别对应横竖滚动条的尺寸*/
-    height:6px;
+    height:16px;
 }
 .viewbar::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
     border-radius: 5px;
     -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
-    background: rgba(0,0,0,0.2);
+    background: rgba(32,62,92,0.4);
 }
 .viewbar::-webkit-scrollbar-track {/*滚动条里面轨道*/
     -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
     border-radius: 0;
-    background: rgba(0,0,0,0.1);
+    background: rgba(32,62,92,0.2);
 }
 .view{
     margin: 1rem;
@@ -124,12 +124,14 @@
     top:50%;
     left:-1rem;
     font-size: 0.2rem;
+    font-weight: 600;
 }
 .zhoubottom{
     position: absolute;
     bottom:-0.3rem;
     left:-0.2rem;
     font-size: 0.2rem;
+    font-weight: 600;
 }
 .viewbar{
    height: 6.8rem;
@@ -144,7 +146,10 @@
 .viewbar > li{
     width:3.5rem;
     height: 6.8rem;
- display: inline-block;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
 }
 .line{
     border-top:1px solid #b5d2ec;
@@ -184,8 +189,34 @@
     top:10px; 
 }
 .linetop li,.linebottom li{
-    list-style: circle;
     line-height: 0.26rem;
     font-size: 0.14rem;
+    overflow: hidden;
+    width:100%;
+   
 }
+.linetop li:hover,.linebottom li:hover{
+    animation: 5s wordsLoop linear normal;
+}
+    @keyframes wordsLoop {
+        0% {
+            transform: translateX(0px);
+            -webkit-transform: translateX(0px);
+        }
+        100% {
+            transform: translateX(-100%);
+            -webkit-transform: translateX(-100%);
+        }
+    }
+
+    @-webkit-keyframes wordsLoop {
+        0% {
+            transform: translateX(0px);
+            -webkit-transform: translateX(0px);
+        }
+        100% {
+            transform: translateX(-100%);
+            -webkit-transform: translateX(-100%);
+        }
+    }
 </style>

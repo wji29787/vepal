@@ -17,8 +17,9 @@
                                       >
                                     </el-date-picker>
                          </el-col> 
-                         <el-col :lg = "4"  :md= "3">
+                         <el-col :lg = "16"  :md= "3">
                              <el-button icon="el-icon-search" @click="getlist()" circle></el-button>
+                             <el-button class="fr" @click="deleteAllRow()">批量删除</el-button>
                          </el-col>
                    </el-row>
                    <br/>
@@ -27,10 +28,16 @@
                             :data="list"
                             scope="scope"
                             border
+                            ref="multipleTable"
+                            @selection-change="handleSelectionChange"
                             style="width: 100%">
-                             <el-table-column
-                             type="index" label="序号"
-                             header-align="center" align="center"
+                            <el-table-column
+                            type="selection"
+                            width="55">
+                            </el-table-column>
+                            <el-table-column
+                            type="index" label="序号"
+                            header-align="center" align="center"
                             width="80">
                             </el-table-column>
                              <el-table-column
@@ -78,11 +85,16 @@
             return {
                 list:[],
                 suitName:'',
-                suitDate:''
+                suitDate:'',
+                multipleSelection:[]
             }
         },mounted() {
             this.getlist();
         },methods:{
+            //批量选择
+             handleSelectionChange(val) {
+                this.multipleSelection = val;
+             },
              getlist(){
                 var _this=this;
                 this.$http.post(
@@ -98,21 +110,63 @@
                     }
                 );
             },
+            /*单个删除*/
             deleteRow(obj){
                 var _this=this;
-                var suitId=obj.row.suitId;
-                this.$http.post(
-                    "api/suit/suit/delSuit",
-                    {
-                        suitId:suitId
-                    },
-                    res => {
-                        if(res.data.code==200){
-                            alert("删除成功");
-                            _this.getlist();
+                this.$confirm('此操作将永久删除该套装, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+                }).then(() => {
+                    var suitId=obj.row.suitId;
+                    this.$http.post(
+                        "api/suit/suit/delSuit",
+                        {
+                            suitId:suitId
+                        },
+                        res => {
+                            if(res.data.code==200){
+                                this.$message({
+                                    type: 'success',
+                                    message: '删除成功!'
+                                });
+                                _this.getlist();
+                            }
                         }
+                    );
+                
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });          
+                });
+            },
+             /*批量删除*/
+            deleteAllRow(obj){
+                var _this=this;
+                var suitId='';
+                if(_this.multipleSelection.length>0){
+                    for(var i=0;i<_this.multipleSelection.length;i++){
+                        suitId+=_this.multipleSelection[i].suitId+',';
                     }
-                );
+                    suitId=suitId.substring(0,suitId.length-1);
+                    this.$http.post(
+                        "api/suit/suit/delSuit",
+                        {
+                            suitId:suitId
+                        },
+                        res => {
+                            if(res.data.code==200){
+                                alert("删除成功");
+                                _this.getlist();
+                            }
+                        }
+                    );
+                }else{
+                    alert("请选择删除的套装")
+                }
+               
             },
             editRow(obj){
                 var suitId=obj.row.suitId;
