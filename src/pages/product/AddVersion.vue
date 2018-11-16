@@ -91,7 +91,7 @@ export default {
   data() {
     let checkName = (rule, value, callback) => {
       this.$http.get(
-        "/vdev/product/findProductByName",
+        "api/pdc/product/findProductByName",
         {
           productName: value
         },
@@ -122,8 +122,8 @@ export default {
           ],
         verRdperson: [
            { required: true, message: '请选择负责人', trigger: 'blur' }],
-        verUploadpath: [
-           { required: true, message: '请上传文件'}],    
+        // verUploadpath: [
+        //    { required: true, message: '请上传文件'}],    
         verRemark: [
            { required: true, message: '最多不超过200个字符', trigger: 'blur' }], 
         verDescription: [
@@ -139,7 +139,7 @@ export default {
       rdList: [],
       sizeForm:sizeForm,
       rules:rules,
-      uploadUrl: "/dev/file/upload",
+      uploadUrl: "/api/file/upload",
       isSuccess: false // 是否禁用
     };
   },
@@ -213,7 +213,7 @@ export default {
         ];
         if (this.type === "edit") {
           getList.push({
-            url: "vdev/version/findVersionById",
+            url: "api/pdc/version/findVersionById",
             method: "post",
             data: {
               versionId: this.$route.query.versionId
@@ -262,14 +262,14 @@ export default {
       if (this.type === "add") {
         obj = this.sizeForm;
         obj.productId = this.$route.query.productId;
-        url = "vdev/version/addVersion";
+        url = "api/pdc/version/addVersion";
         msgsuc = "添加成功";
         msger = "添加失败";
       } else {
         obj = this.sizeForm;
         obj.productId = this.$route.query.productId;
         obj.versionId = this.$route.query.versionId;
-        url = "vdev/version/updateVersion";
+        url = "api/pdc/version/updateVersion";
         msgsuc = "修改成功";
         msger = "修改失败";
       }

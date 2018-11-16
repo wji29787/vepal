@@ -135,14 +135,14 @@ export default {
            { required: true, message: '请选择负责人', trigger: 'change' },
            { required: true, message: '请选择负责人', trigger: 'blur' },
            ],
-        verUploadpath: [
-           { required: true, message: '请上传文件'}],   
+        // verUploadpath: [
+        //    { required: true, message: '请上传文件'}],   
         verRemark: [
            { max:200, message: '最多不超过200个字符', trigger: 'blur' }], 
         verDescription: [
            { max:200, message: '最多不超过200个字符', trigger: 'blur' }],    
       },
-      uploadUrl: "/dev/file/upload",
+      uploadUrl: "api/file/upload",
       isSuccess: false, // 是否禁用
       userId: 11
     };

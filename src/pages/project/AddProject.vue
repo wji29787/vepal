@@ -308,7 +308,7 @@ export default {
       if (this.type === "edit") {
           // 查询所有项目及关联的版本
         getList.push({
-          url: "vdev/product/findAllProductVersion",
+          url: "api/pjc/product/findAllProductVersion",
           method: "post"
         }) 
           // 查询回显数据
