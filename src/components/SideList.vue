@@ -14,8 +14,11 @@
                         <span>产品管理</span>
                     </template>
                     <el-menu-item index="1-1"
-                        :route = "{path:'product'}"
+                        :route = "{name:'product'}"
                     >产品列表</el-menu-item>
+                    <el-menu-item index="1-2"
+                        :route = "{name:'product/addproduct'}"
+                    >产品新增</el-menu-item>
                 </el-submenu>
                 <el-submenu index="2">
                      <template slot="title">
@@ -23,8 +26,11 @@
                          <span>项目管理</span>
                       </template> 
                     <el-menu-item index="2-1"
-                      :route = "{path:'project'}"
-                      > 项目列表</el-menu-item>    
+                      :route = "{name:'project'}"
+                      > 项目列表</el-menu-item>
+                      <el-menu-item index="2-2"
+                      :route = "{name:'project/addproject'}"
+                      > 项目新增</el-menu-item>     
                 </el-submenu>
                 <el-submenu index="3">
                     <template slot="title">
@@ -67,7 +73,12 @@
 <script>
  const routeMap = {
      'product':'1-1',
+     'product/addproduct':'1-2',
+     'product/editversion':'1-1',
+     'product/addversion':'1-1',
      'project':'2-1',
+     'project/addproject':'2-2',
+     'project/editproject':'2-1',
      'suit':'3-1',
      'vepal':'4-2',
      'pptview':'4-3',
@@ -82,6 +93,7 @@ export default {
     watch:{
         '$route'(){
             // console.log(11)
+            this.currentRoute()
         }
     },
     created(){
@@ -89,7 +101,7 @@ export default {
        this.currentRoute()
     },
     mounted(){
-         console.log(this.$route)
+        //  console.log(this.$route)
     },
     methods: {
       handleOpen(key, keyPath) {
@@ -99,15 +111,14 @@ export default {
         // console.log(key, keyPath);
       },
       handleSelect(index,indexPath){
-          console.log(index,indexPath)
-        //   this.activeIndex = index
-        // console.log(this.activeIndex);
       },
+       // 获取当前要激活的选项
       currentRoute(){
           let path = this.$route.path;
+        //   console.log(this.$route)
           let keys = Object.keys(routeMap);
           let sign = keys.some(key=>{
-              let str = `^/home/${key}`   
+              let str = `^/home/${key}$`   
               let reg = new RegExp(str)
               if(reg.test(path)){
                   this.activeIndex = routeMap[key]
