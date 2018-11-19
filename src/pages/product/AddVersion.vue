@@ -10,8 +10,8 @@
                             <el-row type = "flex" justify = "center">
                                 <el-col :span = "10">
                                    <el-form ref="form" :model="sizeForm"  label-width="100px" :rules="rules" size="small">
-                                         <el-form-item label="产品名称" v-if = "type === 'edit'"  prop = "productName">
-                                                  <el-input v-model="sizeForm.productName"></el-input>
+                                         <el-form-item label="产品名称" prop = "productName">
+                                                  <el-input v-model="sizeForm.productName" :disabled = "type !== 'edit'"></el-input>
                                         </el-form-item>
                                         <el-form-item label="版本名称" prop = "verName">
                                                   <el-input v-model="sizeForm.verName"></el-input>
@@ -54,7 +54,7 @@
                                              placeholder="请输入内容"
                                              ></el-input>
                                         </el-form-item>
-                                        <el-form-item label="产品描述">
+                                        <el-form-item label="产品描述" prop = "verDescription">
                                             <el-input v-model="sizeForm.verDescription"
                                              type="textarea"
                                              :rows="2"
@@ -93,7 +93,8 @@ export default {
       this.$http.get(
         "api/pdc/product/findProductByName",
         {
-          productName: value
+          productName: value,
+          productId: this.$route.query.productId
         },
         res => {
           if (res.status === 200) {
@@ -107,7 +108,15 @@ export default {
         }
       );
     };
+    let checkText = (rule, value, callback) =>{
+        if(/[\u4e00-\u9fa5]/.test(value)){
+          callback(new Error('版本名称不能输入汉字'))
+        }else{
+          callback();
+        }
+    }
     const sizeForm = {
+        productName:'', // 产品名称
         verName: "", // 版本名称
         verRdperson: "", // 研发负责人
         verRemark: "", // 备注
@@ -118,22 +127,24 @@ export default {
     const rules = {
         verName: [
           { required: true, message: '请输入产品版本', trigger: 'blur' },
-          { max:20, message: '最多不超过20个字符', trigger: 'blur' }
+          { validator:checkText, trigger: 'blur' },
+          { max:10, message: '最多不超过10个字符', trigger: 'blur' }
           ],
         verRdperson: [
            { required: true, message: '请选择负责人', trigger: 'blur' }],
         // verUploadpath: [
         //    { required: true, message: '请上传文件'}],    
-        verRemark: [
-           { required: true, message: '最多不超过200个字符', trigger: 'blur' }], 
+        // verRemark: [
+        //    { required: true, message: '最多不超过200个字符', trigger: 'blur' }], 
         verDescription: [
-           { required: true, message: '最多不超过200个字符', trigger: 'blur' }], 
+           { required: true, message: '产品描述不能为空', trigger: 'blur' }], 
       }
      if(this.type === "edit"){
-       sizeForm.productName =''; // 产品名称
+      // sizeForm.productName =''; // 产品名称
        rules.productName = [
          { required: true, message: '请输入产品名称', trigger: 'blur' },
-         { validator: checkName, trigger: "blur" }];
+         { validator: checkName, trigger: "blur" },
+         { max:100, message: '最多不超过100个字符', trigger: 'blur' }];
      } 
     return {
       rdList: [],
@@ -219,6 +230,8 @@ export default {
               versionId: this.$route.query.versionId
             }
           });
+        }else {
+          this.sizeForm.productName = this.$route.query.productName
         }
          
         this.$http.all(getList, (res1, res2) => {
@@ -298,6 +311,8 @@ export default {
                   } else {
                     this.$message.error(res.data.msg);
                   }
+                }else{
+                  this.$message.error(res.status);
                 }
               });
          }else{

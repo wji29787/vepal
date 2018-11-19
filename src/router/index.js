@@ -7,12 +7,12 @@ import vepalMain from '@/vepal/main'
 import Home from '@/home/Home'
 // project
 import Project from '@/pages/project/Project'
-import ProjectEdit from '@/pages/project/ProjectEdit'
+// import ProjectEdit from '@/pages/project/ProjectEdit'
 import AddProject from '@/pages/project/AddProject'
 
 // product
 import Product from '@/pages/product/Product'
-import ProductEdit from '@/pages/product/ProductEdit'
+// import ProductEdit from '@/pages/product/ProductEdit'
 import AddProduct from '@/pages/product/AddProduct'
 import AddVersion from '@/pages/product/AddVersion'
 
@@ -82,7 +82,7 @@ export default new Router({
         // 项目管理
         {
           path: 'project',
-          name: 'Project',
+          name: 'project',
           component: Project,
           meta:{
             title:'项目管理'
@@ -116,7 +116,7 @@ export default new Router({
         // 产品管理
         {
           path: 'product',
-          name: 'Product',
+          name: 'product',
           component: Product,
           meta:{
             title:'产品管理'
@@ -198,10 +198,10 @@ export default new Router({
       path:'/404',
       component:()=>import('@/components/404')
     },
-    {
-      path:'*',
-      redirect: '404'
-    }
+    // {
+    //   path:'*',
+    //   redirect: '404'
+    // }
 
   ]
 })

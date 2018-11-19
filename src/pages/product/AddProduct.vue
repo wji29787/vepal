@@ -90,7 +90,7 @@ export default {
   },
   data() {
     let checkName = (rule, value, callback) => {
-     
+          
       this.$http.get(
         "/api/pdc/product/findProductByName",
         {
@@ -108,6 +108,13 @@ export default {
         }
       );
     };
+    let checkText = (rule, value, callback) =>{
+        if(/[\u4e00-\u9fa5]/.test(value)){
+          callback(new Error('版本名称不能输入汉字'))
+        }else{
+          callback();
+        }
+    }
     // let checkVerUploadpath = (rule, value, callback)=>{
     //     if(!value){
 
@@ -127,20 +134,21 @@ export default {
         productName: [
           { required: true, message: '请输入产品名称', trigger: 'blur' },
           { validator: checkName, trigger: "blur" },
-          { max:20, message: '最多不超过20个字符', trigger: 'blur' }],
+          { max:100, message: '最多不超过100个字符', trigger: 'blur' }],
         verName: [
           { required: true, message: '请输入产品版本', trigger: 'blur' },
-          { max:20, message: '最多不超过20个字符', trigger: 'blur' }],
+          { validator:checkText, trigger: 'blur' },
+          { max:10, message: '最多不超过10个字符', trigger: 'blur' }],
         verRdperson: [
            { required: true, message: '请选择负责人', trigger: 'change' },
            { required: true, message: '请选择负责人', trigger: 'blur' },
            ],
         // verUploadpath: [
         //    { required: true, message: '请上传文件'}],   
-        verRemark: [
-           { max:200, message: '最多不超过200个字符', trigger: 'blur' }], 
+        // verRemark: [
+        //    { max:200, message: '最多不超过200个字符', trigger: 'blur' }], 
         verDescription: [
-           { max:200, message: '最多不超过200个字符', trigger: 'blur' }],    
+           { required: true, message: '产品描述不能为空', trigger: 'blur' }],    
       },
       uploadUrl: "api/file/upload",
       isSuccess: false, // 是否禁用
@@ -248,6 +256,8 @@ export default {
                     } else {
                       this.$message.error(res.data.msg);
                     }
+                  }else{
+                    this.$message.error(res.status);
                   }
                 });
          }else{

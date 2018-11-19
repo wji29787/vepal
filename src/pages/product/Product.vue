@@ -37,18 +37,18 @@
 
                                  <el-col :span = "6"  class="fr">
                                    <el-button class = "fr" @click = "addProduct">新增产品</el-button>
-                                   <!-- <el-popover
+                                   <el-popover
                                       placement="left"
                                       width="160"
                                       v-model = "visible"
                                     >
-                                      <p>确定删除所有选中项目吗？</p>
+                                      <p>确定删除所有选中产品(产品删除时版本也会删除)吗？</p>
                                       <div style="text-align: right; margin: 0">
                                         <el-button size="mini" type="text" @click = "delcancle('all')">取消</el-button>
                                         <el-button type="primary" size="mini" @click = "delsure('all')">确定</el-button>
                                       </div>
-                                      <el-button slot="reference" type="primary"  class = "fr" @click= "deletebtn('all')">批量删除</el-button>
-                                  </el-popover> -->
+                                      <el-button slot="reference" type="primary"  class = "" @click= "deletebtn('all')">批量删除</el-button>
+                                  </el-popover>
                                    
                                    </el-col>
 
@@ -63,15 +63,16 @@
                                         :data="list"
                                         :span-method="objectSpanMethod"
                                         border
+                                        ref="multipleTable"
                                         height = "98%"
                                         header-cell-class-name = ""
                                         v-scroll = "{el:'.el-table__body-wrapper',scrollfn:scrollfn}"
                                         :header-cell-style = "setHeaderStyle"
                                         style="width: 100%; margin-top: 20px">
-                                        <!-- <el-table-column
+                                        <el-table-column
                                             type = "selection"
                                             width="50"
-                                        ></el-table-column> -->
+                                        ></el-table-column>
                                         <el-table-column
                                             v-for = "(item, index) in renderTableList"
                                             :key = "index"
@@ -148,7 +149,7 @@ export default {
       lastPage: false, //最后一页
       moveY: 0, // 滚动元素的总告诉
       scrollctx: null, // 滚动元素的上下文
-      visible:false,  // 批量删除弹框显隐
+      visible: false, // 批量删除弹框显隐
       multipleSelection: [], // 批量删除的数据
       searchObj: {
         productName: "", // 优先级
@@ -176,7 +177,12 @@ export default {
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {},
 
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-      if (columnIndex === 0 || columnIndex === 1 ||columnIndex === 2 || columnIndex === 5) {
+      if (
+        columnIndex === 0 ||
+        columnIndex === 1 ||
+        columnIndex === 2 ||
+        columnIndex === 6
+      ) {
         let _col = 0,
           _row = 0;
         this.arrname.forEach(t => {
@@ -215,7 +221,7 @@ export default {
             let data = res.data.data;
             let list = data.list;
             // 最后一页
-            if (list && (list.length < this.pageSize||data.isLastPage)) {
+            if (list && (list.length < this.pageSize || data.isLastPage)) {
               this.lastPage = true;
             }
             // 添加 删除按钮属性
@@ -249,11 +255,11 @@ export default {
               this.arrname = arrname;
             } else {
               this.list = this.list.concat(arr);
-                let obj = this.arrname[this.arrname.length-1]
-                let num =  obj.index+obj.listLen
-                arrname.forEach(t =>{
-                  t.index  +=num
-                })  
+              let obj = this.arrname[this.arrname.length - 1];
+              let num = obj.index + obj.listLen;
+              arrname.forEach(t => {
+                t.index += num;
+              });
               this.arrname = this.arrname.concat(arrname);
             }
           }
@@ -301,66 +307,65 @@ export default {
     },
     // 删除按钮
     deletebtn(value) {
-        if(value === 'all'){
-          this.visible = true
-        }else{
-          value.row.visible = true;
-        }
+      if (value === "all") {
+        this.visible = true;
+      } else {
+        value.row.visible = true;
+      }
     },
     delcancle(value) {
-       if(value === 'all'){
-        this.visible = false
-      }else{
+      if (value === "all") {
+        this.visible = false;
+        this.multipleSelection = [];
+        this.$refs.multipleTable.clearSelection();
+      } else {
         value.row.visible = false;
       }
       // value.row.visible = false;
     },
     delsure(value) {
-        let obj ={};
-      if(value === 'all'){
-          if(this.multipleSelection.length===0){
-            this.$message.error('请选择至少一项')
-            return;
-          }else{
-            obj.productId =this.multipleSelection.join(',');
-           
-          }
-        }else{
-          obj.productId = value.row.productId
-          obj.versionId = value.row.versionId
-        } 
-      //  console.log(obj) 
-      this.$http.post(
-        "/api/pdc/version/delVersionById",
-        obj,
-        res => {
-          if (res.status === 200) {
-            if (res.data.code === 200) {
-              this.searchData();
-              this.$message({
-                message: "删除成功",
-                type: "success"
-              });
-              if(value === 'all'){
-                  this.visible = false;
-              }else{
-                value.row.visible = false;
-              }
-             
+      let obj = {},
+        url;
+      if (value === "all") {
+        url = "/api/pdc/product/delProduct";
+        if (this.multipleSelection.length === 0) {
+          this.$message.error("请选择至少一项");
+          return;
+        } else {
+          obj.productId = this.multipleSelection.join(",");
+        }
+      } else {
+        url = "/api/pdc/version/delVersionById";
+        obj.productId = value.row.productId;
+        obj.versionId = value.row.versionId;
+      }
+      //  console.log(obj)
+      this.$http.post(url, obj, res => {
+        if (res.status === 200) {
+          if (res.data.code === 200) {
+            this.searchData();
+            this.$message({
+              message: "删除成功",
+              type: "success"
+            });
+            if (value === "all") {
+              this.visible = false;
             } else {
-              this.$message.error(res.data.msg);
+              value.row.visible = false;
             }
+          } else {
+            this.$message.error(res.data.msg);
           }
         }
-      );
+      });
     },
-      // 选择change 时的回调
-    elSelectionChange(selection){
-      //  console.log(selection) 
+    // 选择change 时的回调
+    elSelectionChange(selection) {
+      //  console.log(selection)
       let arr = [];
-      selection.forEach(t =>{
-         arr.push(t.productId)
-      })
+      selection.forEach(t => {
+        arr.push(t.productId);
+      });
       this.multipleSelection = arr;
     },
     /**
@@ -429,8 +434,9 @@ export default {
     addVersion(row) {
       this.$router.push({
         name: "product/addversion",
-         query: {
-          productId: row.productId
+        query: {
+          productId: row.productId,
+          productName :row.productName 
         }
       });
     },
@@ -440,7 +446,7 @@ export default {
         // params: {
         //   data: row
         // },
-         query: {
+        query: {
           versionId: row.versionId,
           productId: row.productId
         }

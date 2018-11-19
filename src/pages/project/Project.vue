@@ -85,6 +85,7 @@
                                     <el-table
                                        
                                         @selection-change = "elSelectionChange"
+                                        ref="multipleTable"
                                         :data="list"
                                         border 
                                         height = "98%"
@@ -401,6 +402,8 @@ export default {
     delcancle(value) {
       if(value === 'all'){
         this.visible = false
+        this.multipleSelection = [];
+        this.$refs.multipleTable.clearSelection();
       }else{
         value.row.visible = false;
       }

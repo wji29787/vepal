@@ -77,8 +77,10 @@
                                                     placeholder="开始时间"
                                                     value-format = "yyyy-MM-dd"
                                                     v-model = "sizeForm.starttime"
+                                                    
                                                     >
                                                    </el-date-picker>
+                                                   <!-- :picker-options="pickerStart" -->
                                         </el-form-item>
                                         <el-form-item label="计划完成时间" prop = "finshtime">
                                                     <el-date-picker
@@ -176,6 +178,9 @@ export default {
     //     }
     //   );
     // };
+     let checkDeyDate = (rule, value, callback) =>{
+          
+     }
     /**
      * 
      * projectId	否	string	项目ID
@@ -196,7 +201,7 @@ export default {
      const rules = {
         name: [
           { required: true, message: '请输入项目名称', trigger: 'blur' },
-          { max:20, message: '最多不超过20个字符', trigger: 'blur' }
+          { max:100, message: '最多不超过100个字符', trigger: 'blur' }
           ],
         typeId: [
            { required: true, message: '请选择类型', trigger: 'change' }],
@@ -204,24 +209,27 @@ export default {
            { required: true, message: '请上优先级',trigger: 'change' }],    
         needperson: [
            { required: true, message: '请选择项目需求人', trigger: 'change'}], 
-        chargeperson: [
-           { required: true, message: '请选择项目负责人', trigger: 'change'}], 
+        // chargeperson: [
+        //    { required: true, message: '请选择项目负责人', trigger: 'change'}], 
         var3: [
            { max:200, message: '最多不超过200个字符', trigger: 'blur' }], 
         delaydays: [
-           { required: true, type: 'number',message: '必须为数字', trigger: 'blur' }]  
+           {type: 'number', message: '推迟天数不能为空', trigger: 'blur' },
+          //  {type: 'number', message: '必须为数字', trigger: 'blur' },
+           { type: 'number',message: '必须为数字', trigger: 'blur',transform (value){
+              if(value){
+                return value
+              } 
+           } },
+           
+           ]  
       }
-    const allprotype ={}
-    if(this.type === 'edit'){
-        allprotype.value = 'value';
-        allprotype.label = 'label';
-        allprotype.children = 'products';
-    }else{
-        allprotype.value = 'value';
-        allprotype.label = 'label';
-        allprotype.children = 'versionList';
+     // 级联显示的属性 
+    const allprotype ={
+      value :'value',
+      label :'label',
+      children :'versionList'
     }
-
     return {
       rdList: [],
       typeList: [],
@@ -230,6 +238,11 @@ export default {
       allPudPjc: [], // 说有关联版本
       proverList: [], // 选中的多版本项目
       selectedOptions: [], // 选中的值
+      pickerStart:{
+        disabledDate(time){
+          // console.log(time)
+        }
+      },
       sizeForm: {
         name: "",
         priorityId: "",
@@ -237,7 +250,7 @@ export default {
         needperson: "", //needperson
         starttime: "",
         finshtime: "",
-        delaydays: "", // 版本名称
+        delaydays: 0, // 版本名称
         chargeperson: "", // 研发负责人
         productVer: "", // 多个产品版本
         var2: "", //  文档上传路径
@@ -254,6 +267,17 @@ export default {
     this.getTypeAndPriority();
   },
   methods: {
+    /**
+     * 时间校验
+     * 
+     */
+    // pickerStart(){
+    //   return {
+    //     disabledDate(time){
+    //       //  console.log(time)
+    //     }
+    //   }
+    // },
     handleClose(index) {
       this.proverList.splice(index, 1);
       if (this.proverList.length === 0) {
@@ -266,16 +290,11 @@ export default {
       }
       let obj = {};
       let label = this.$refs.cascaderInput.currentLabels;
-      let flag = true;
-      for (let i = 0, len = this.proverList.length; i < len; i++) {
-        let item = this.proverList[i];
-        let itemvalue = JSON.stringify(item.value);
-        if (itemvalue === JSON.stringify(value)) {
-          flag = false;
-          break;
-        }
-      }
-      if (flag) {
+      let checkRepeat = (t)=>{
+         let itemvalue = JSON.stringify(t.value);
+         return itemvalue === JSON.stringify(value)
+      }   
+      if (!this.proverList.some(checkRepeat)) {
         obj.value = value;
         obj.label = label[label.length - 1];
         this.proverList.push(obj);
@@ -304,14 +323,13 @@ export default {
           url: "api/umc/user/findUserByUser",
           method: "get"
         },
-      ];
-      if (this.type === "edit") {
-          // 查询所有项目及关联的版本
-        getList.push({
-          url: "api/pjc/project/findAllProjectProductVer",
-          // url: "api/pdc/product/findAllProductVersion",
+         // 查询所有项目及关联的版本
+        {
+          url: "api/pdc/product/findAllProductVersion",
           method: "post"
-        }) 
+        }
+      ];
+      if (this.type === "edit") {   
           // 查询回显数据
         getList.push({
           url: "api/pjc/project/findProject",
@@ -320,13 +338,6 @@ export default {
             projectId: this.$route.query.projectId
           }
         });
-      }else{
-          // 查询所有项目及关联的版本
-        getList.push({
-          url: "api/pdc/product/findAllProductVersion",
-          // url: "api/pjc/project/findAllProjectProductVer",
-          method: "post"
-        }) 
       }
 
       this.$http.all(getList, (res1, res2, res3, res4, res5) => {
@@ -345,14 +356,15 @@ export default {
             this.rdList = res3.data.data;
           }
         }
-       
+        if (res4.status&&res4.status === 200) {
+          if (res4.data.code === 200) {
+            let list = res4.data.data.list;
+            this.allPudPjc = list;
+          }
+        }
+        // 是 编辑时
         if (this.type === "edit" ) {
-          if (res4.status&&res4.status === 200) {
-            if (res4.data.code === 200) {
-              let list = res4.data.data.list;
-              this.allPudPjc = list;
-            }
-          } 
+          // 回显的数据
           if (res5.status&&res5.status === 200) {
             if (res5.data.code === 200) {
               let data = res5.data.data;
@@ -383,13 +395,6 @@ export default {
                 });
                 this.proverList = arr;
               }
-            }
-          }
-        }else{
-           if (res4.status&&res4.status === 200) {
-            if (res4.data.code === 200) {
-              let list = res4.data.data.list;
-              this.allPudPjc = list;
             }
           }
         }
@@ -464,7 +469,6 @@ export default {
                   });
           }else{
             return false
-              // console.log(result)
           }
       })  
       
