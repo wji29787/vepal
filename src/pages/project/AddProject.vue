@@ -87,6 +87,7 @@
                                                     placeholder="开始时间"
                                                     value-format = "yyyy-MM-dd"
                                                     v-model = "sizeForm.finshtime"
+                                                    :picker-options="datePickerOptions"
                                                     >
                                                    </el-date-picker>
                                         </el-form-item>
@@ -225,7 +226,12 @@ export default {
         // productName: [{ validator: checkName, trigger: "blur" }]
       },
       uploadUrl: "/dev/file/upload",
-      isSuccess: false // 是否禁用
+      isSuccess: false, // 是否禁用
+      datePickerOptions: {
+        disabledDate(time) {
+          return time.getTime() < new Date('2000/01/01 00:00:00').getTime();
+        }
+      }
     };
   },
   watch: {},

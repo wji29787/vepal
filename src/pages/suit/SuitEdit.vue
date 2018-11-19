@@ -129,7 +129,7 @@ export default {
   },
   methods: {
     // 获取用户类列表
-    _getUserList() {
+    _getUserList () {
       return new Promise((resolve, reject) => {
         let _data = {
           userId: '',
@@ -164,7 +164,7 @@ export default {
       });
     },
     // 获取项目及产品及版本的列表
-    _getPorjectList() {
+    _getPorjectList () {
       return new Promise((resolve, reject) => {
         this.$http.post(PROJECT_LIST, {}, res => {
           this.projectList = [];
@@ -186,11 +186,11 @@ export default {
       });
     },
     // 删除已有数据事件
-    handleItemDeleteBtnClick(item, index) {
+    handleItemDeleteBtnClick (item, index) {
       this.infoTreeData.splice(index, 1);
     },
     // 向projectList合并已删除的数据
-    concatFromData(item) {
+    concatFromData (item) {
       if (this.form.toData.length) {
         this.form.toData.forEach(element => {
           if (element.projectId === item.projectId) {
@@ -247,7 +247,7 @@ export default {
       }
     },
     // 用于合并formData的version方法
-    versionDataConcat(element, item) {
+    versionDataConcat (element, item) {
       element.versions.forEach(productItem => {
         if (productItem.versions.length) {
           if (item.verId) {
@@ -267,7 +267,7 @@ export default {
       });
     },
     // 点击提交表单
-    handleSubmitSave() {
+    handleSubmitSave () {
       if (this.$route.query.suitId) {
         this.handleEditSuit();
       } else {
@@ -281,7 +281,7 @@ export default {
       });
     },
     // 新建套装点击事件
-    handleAddSuit() {
+    handleAddSuit () {
       this.$refs['form'].validate(valid => {
         if (valid) {
           let selectTest = this.testUserList.filter(element => {
@@ -316,7 +316,7 @@ export default {
       });
     },
     // 合并数据用于编辑中
-    concatData() {
+    concatData () {
       if (this.form.toData.length) {
         this.form.toData.forEach(element => {
           if (this.infoTreeData.length) {
@@ -387,7 +387,7 @@ export default {
       }
     },
     // 去重toData中数据
-    removalToData() {
+    removalToData () {
       if (this.infoTreeData.length && this.projectList.length) {
         let delProjectArr = [];
         this.projectList.forEach((element, index) => {
@@ -433,7 +433,7 @@ export default {
       }
     },
     // 编辑套装事件
-    handleEditSuit() {
+    handleEditSuit () {
       this.concatData();
       this.$refs['form'].validate(valid => {
         if (valid) {
@@ -470,7 +470,7 @@ export default {
       });
     },
     // 已关联的数据拼接成字符串
-    setCheckedData() {
+    setCheckedData () {
       if (this.form.toData.length) {
         let arr = [];
         for(let i = 0; i < this.form.toData.length; i++) {
@@ -499,7 +499,7 @@ export default {
       }
     },
     // 获取套装详情用于编辑时展示数据
-    suitInfo() {
+    suitInfo () {
       let _data = {
         suitId: this.$route.query.suitId
       };
@@ -525,7 +525,7 @@ export default {
       });
     },
     // 重置表单数据
-    resetData() {
+    resetData () {
       for (const key in this.form) {
         if (Array.isArray(this.form[key])) {
           this.form[key] = [];
@@ -535,7 +535,7 @@ export default {
       }
     },
       // 切换模式 现有树形穿梭框模式transfer 和通讯录模式addressList
-    changeMode() {
+    changeMode () {
       if (this.mode == "transfer") {
         this.mode = "addressList";
       } else {
@@ -543,7 +543,7 @@ export default {
       }
     },
     // 将后端给的数据添加一些必要key
-    setDataForTree(data) {
+    setDataForTree (data) {
       data.forEach((element, index) => {
         element.key = index;
         element.pid = 0;
@@ -573,13 +573,13 @@ export default {
       return data;
     },
     // 监听穿梭框组件添加
-    handleTransferAdd(fromData, toData, obj) {
+    handleTransferAdd (fromData, toData, obj) {
       this.form.toData = toData;
       // 树形穿梭框模式transfer时，返回参数为左侧树移动后数据、右侧树移动后数据、移动的        {keys,nodes,halfKeys,halfNodes}对象
       // 通讯录模式addressList时，返回参数为右侧收件人列表、右侧抄送人列表、右侧密送人列表
     },
     // 监听穿梭框组件移除
-    handleTransferRemove(fromData, toData, obj) {
+    handleTransferRemove (fromData, toData, obj) {
       this.form.toData = toData;
       // 树形穿梭框模式transfer时，返回参数为左侧树移动后数据、右侧树移动后数据、移动的{keys,nodes,halfKeys,halfNodes}对象
       // 通讯录模式addressList时，返回参数为右侧收件人列表、右侧抄送人列表、右侧密送人列表

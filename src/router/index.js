@@ -25,10 +25,11 @@ import addsuit from '@/pages/suit/SuitEdit'
 import testVepal from '@/pages/vepal/testVepal'
 
 //视图
+import productIndexView from '@/pages/report/productIndex';
 import pptview from '@/pages/report/pptview'
-import suitproductview from '@/pages/report/suitproductview'
-
-
+import suitProjectView from '@/pages/report/suitProject';
+import suitProductView from '@/pages/report/suitProduct';
+import projectProductView from '@/pages/report/projectProduct';
 Vue.use(Router)
 
 export default new Router({
@@ -60,7 +61,7 @@ export default new Router({
     //主页面
     {
       path:'/',
-      redirect: 'home'
+      redirect: 'Home'
     },
     {
       path:'/home',
@@ -185,19 +186,27 @@ export default new Router({
             title:'图标展示'
           }
         },{
-          path:'pptview',
-          name:'pptview',
-          component:pptview,
-          meta:{
-            title:'视图2'
+          path: 'productindexview',
+          name: 'productIndexView',
+          component: productIndexView,
+          meta: {
+            title: '套装产品首页'
           }
         },{
-            path:'suitproductview',
-            name:'suitproductview',
-            component:suitproductview,
-            meta:{
-              title:'套装产品报表'
-            }
+          path:'suitprojectview',
+          name: 'suitProjectView',
+          component: suitProjectView,
+          meta: {
+            title: '套装项目报表'
+          }
+        },
+        {
+          path: 'projectproductview',
+          name: 'projectProductView',
+          component: projectProductView,
+          meta: {
+            title: '项目产品报表'
+          }
         }
       ]
     },

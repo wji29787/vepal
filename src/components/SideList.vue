@@ -47,19 +47,18 @@
                         <i class="el-icon-location"></i>
                         <span>报表管理</span>
                     </template>
-                    <!-- <el-menu-item index="4-1"
-                     :route="{path:'suitproductview'}"
-                    >套装产品报表</el-menu-item> -->
+                    <el-menu-item index="4-1"
+                    :route="{path: 'suitprojectview'}">
+                    套装项目报表
+                    </el-menu-item>
                     <el-menu-item index="4-2"
-                    :route = "{path:'vepal'}"
-                    >套装产品竖图</el-menu-item>
-                     <el-menu-item index="4-3"
-                     :route = "{path:'pptview'}"
-                    >套装产品横图</el-menu-item>
-                        <!-- <el-menu-item index="4-4"
-                    >套装项目报表</el-menu-item>
-                        <el-menu-item index="4-5"
-                    >项目产品报表</el-menu-item> -->
+                    :route="{path: 'productindexview'}">
+                    套装产品报表
+                    </el-menu-item>
+                    <el-menu-item index="4-3"
+                    :route="{path: 'projectproductview'}">
+                    项目产品报表
+                    </el-menu-item>
                 </el-submenu>
                  <!-- <el-submenu index="5">
                     <template slot="title">
