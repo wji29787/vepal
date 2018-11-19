@@ -385,10 +385,7 @@ export default {
       }
     };
   },
-  created() {
- 
-   
-  },
+  created() {},
   watch: {
     // offset
   },
