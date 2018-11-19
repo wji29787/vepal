@@ -18,7 +18,6 @@
                          <el-col :lg = "16"   :md= "3">
                              <el-button  icon="el-icon-search" @click="getlist()" circle></el-button>
                              <el-button class="fr" @click="deleteAllRow()">批量删除</el-button>
-                            <el-button  class="fr" @click="handleAddSuitBtnClick">新增套装</el-button>
                          </el-col>
                    </el-row>
                    <br/>
@@ -187,11 +186,6 @@
                         suitId: suitId
                     }
                 })
-            },
-            handleAddSuitBtnClick() {
-                this.$router.push({
-                    name: 'addsuit'
-                });
             }
         }
     }

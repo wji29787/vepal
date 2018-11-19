@@ -6,7 +6,7 @@
           <el-row :gutter="24">
             <el-col :span="7" style="padding-top:13px;">套装名称</el-col>
             <el-col :span="17">
-              <el-select v-model="searchParams.suitName" filterable>
+              <el-select v-model="searchParams.suitName" filterable clearable>
                 <el-option v-for="(item, index) in selectSuitNameList"
                           :key="index"
                           :label="item.suitName"
@@ -20,7 +20,7 @@
           <el-row :gutter="24">
             <el-col :span="7" style="padding-top:13px;">项目名称</el-col>
             <el-col :span="17">
-              <el-select v-model="searchParams.projectName">
+              <el-select v-model="searchParams.projectName" filterable clearable>
                 <el-option v-for="(item, index) in selectProjectNameList"
                           :key="index"
                           :label="item.name"
@@ -109,11 +109,6 @@ export default {
             if (res.data.code === RESPONSE_SUCCESS_CODE) {
               let listData = res.data.data.list;
               if (listData && Array.isArray(listData) && listData.length) {
-                let obj = {
-                  suitName: '全部',
-                  suitId: ''
-                };
-                listData.unshift(obj);
                 this.selectSuitNameList = listData;
               }
             }
@@ -130,11 +125,6 @@ export default {
             if (res.data.code === RESPONSE_SUCCESS_CODE) {
               let listData = res.data.data.list;
               if (listData && Array.isArray(listData) && listData) {
-                let obj = {
-                  name: '全部',
-                  projectId: ''
-                };
-                listData.unshift(obj);
                 this.selectProjectNameList = listData;
               }
             }

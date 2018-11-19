@@ -6,7 +6,9 @@
           <el-row :gutter="24">
             <el-col :span="7" style="padding-top:13px;">套装名称</el-col>
             <el-col :span="17">
-              <el-select v-model="searchParams.suitName"></el-select>
+              <el-select v-model="searchParams.suitName" filterable clearable>
+
+              </el-select>
             </el-col>
           </el-row>
         </el-col>
@@ -14,7 +16,13 @@
           <el-row :gutter="24">
             <el-col :span="7" style="padding-top:13px;">项目名称</el-col>
             <el-col :span="17">
-              <el-select v-model="searchParams.projectName"></el-select>
+              <el-select v-model="searchParams.projectName" filterable clearable>
+                <el-option v-for="(item, index) in selectProjectNameList"
+                          :key="index"
+                          :label="item.name"
+                          :value="item.projectId">
+                </el-option>
+              </el-select>
             </el-col>
           </el-row>
         </el-col>
@@ -22,7 +30,13 @@
           <el-row :gutter="24">
             <el-col :span="7" style="padding-top:13px;">产品名称</el-col>
             <el-col :span="17">
-              <el-select v-model="searchParams.productName"></el-select>
+              <el-select v-model="searchParams.productName" filterable clearable>
+                <el-option v-for="(item, index) in productNameSelectList"
+                          :key="index"
+                          :label="'22'"
+                          :value="1">
+                </el-option>
+              </el-select>
             </el-col>
           </el-row>
         </el-col>
@@ -51,7 +65,8 @@
 </template>
 <script>
 const GET_SUIT_PRODUCT = '/api/report/findSuitAndProductList';
-const PROJECT_NAME_SELECT = '/project/findAllProjectName';
+const PRODUCT_NAME_SELECT = '/api/pdc/product/findAllProduct';
+const PROJECT_NAME_SELECT = '/api/pjc/project/findAllProjectName';
 const RESPONSE_SUCCESS_CODE = 200;
 export default {
   name: 'suitProduct',
@@ -65,7 +80,7 @@ export default {
         currentPage: 0,
         limit: 30
       },
-      projectNameSelectList: [],
+      selectProjectNameList: [],
       productNameSelectList: [],
       dataSource: [{
         date: '2016-05-02',
@@ -89,12 +104,41 @@ export default {
   },
   mounted () {
     this.getProductList();
+    Promise.all([this.getSuitNameList(), this.getPorjectNameListf()]).then(res => {}).catch(err => {});
   },
   methods: {
-    getProjectNameSelectList () {
-      let _data = {
-
-      };
+    getSuitNameList () {
+      return new Promise((resovle, reject) => {
+        let _data = {};
+        this.$http.post(PRODUCT_NAME_SELECT, _data, res => {
+          this.$nextTick(() => {
+            this.productNameSelectList = [];
+            if (res.data.code === RESPONSE_SUCCESS_CODE) {
+              let listData = res.data.data;
+              if (listData && Array.isArray(listData) && listData.length) {
+                this.productNameSelectList = listData;
+                console.log(listData, 'listData');
+              }
+            }
+          });
+        });
+      });
+    },
+    getPorjectNameList () {
+      return new Promise((resovle, reject) => {
+        let _data = {};
+        this.$http.post(PROJECT_NAME_SELECT, _data, res => {
+          this.$nextTick(() => {
+            this.selectProjectNameList = [];
+            if (res.data.code === RESPONSE_SUCCESS_CODE) {
+              let listData = res.data.data.list;
+              if (listData && Array.isArray(listData) && listData) {
+                this.selectProjectNameList = listData;
+              }
+            }
+          });
+        });
+      });
     },
     getProductList () {
       let _data = {
