@@ -77,10 +77,10 @@
                                                     placeholder="开始时间"
                                                     value-format = "yyyy-MM-dd"
                                                     v-model = "sizeForm.starttime"
-                                                    
+                                                    :picker-options = "pickerStart()"
                                                     >
                                                    </el-date-picker>
-                                                   <!-- :picker-options="pickerStart" -->
+                                                   
                                         </el-form-item>
                                         <el-form-item label="计划完成时间" prop = "finshtime">
                                                     <el-date-picker
@@ -89,7 +89,7 @@
                                                     placeholder="开始时间"
                                                     value-format = "yyyy-MM-dd"
                                                     v-model = "sizeForm.finshtime"
-                                                    :picker-options="datePickerOptions"
+                                                    :picker-options = "pickerFinished()"
                                                     >
                                                    </el-date-picker>
                                         </el-form-item>
@@ -179,9 +179,9 @@ export default {
     //     }
     //   );
     // };
-     let checkDeyDate = (rule, value, callback) =>{
+    //  let checkDeyDate = (rule, value, callback) =>{
           
-     }
+    //  }
     /**
      * 
      * projectId	否	string	项目ID
@@ -199,6 +199,7 @@ export default {
      * 
      * 
      */
+    let _this = this
      const rules = {
         name: [
           { required: true, message: '请输入项目名称', trigger: 'blur' },
@@ -215,11 +216,12 @@ export default {
         var3: [
            { max:200, message: '最多不超过200个字符', trigger: 'blur' }], 
         delaydays: [
-           {type: 'number', message: '推迟天数不能为空', trigger: 'blur' },
-          //  {type: 'number', message: '必须为数字', trigger: 'blur' },
            { type: 'number',message: '必须为数字', trigger: 'blur',transform (value){
               if(value){
                 return value
+              }else{
+                _this.sizeForm.delaydays = 0;
+                return 0
               } 
            } },
            
@@ -239,11 +241,6 @@ export default {
       allPudPjc: [], // 说有关联版本
       proverList: [], // 选中的多版本项目
       selectedOptions: [], // 选中的值
-      pickerStart:{
-        disabledDate(time){
-          // console.log(time)
-        }
-      },
       sizeForm: {
         name: "",
         priorityId: "",
@@ -260,14 +257,14 @@ export default {
       rules: rules,
       uploadUrl: "/dev/file/upload",
       isSuccess: false, // 是否禁用
-      datePickerOptions: {
-        disabledDate(time) {
-          return time.getTime() < new Date('2000/01/01 00:00:00').getTime();
-        }
-      }
     };
   },
-  watch: {},
+  watch: {
+    'sizeForm.starttime'(){
+      console.log(this.sizeForm.starttime)
+      console.log(new Date(this.sizeForm.starttime))
+    }
+  },
 
   mounted() {
     this.getTypeAndPriority();
@@ -277,13 +274,33 @@ export default {
      * 时间校验
      * 
      */
-    // pickerStart(){
-    //   return {
-    //     disabledDate(time){
-    //       //  console.log(time)
-    //     }
-    //   }
-    // },
+    pickerStart(){
+      let _this =this;
+      return {
+        disabledDate(time){
+          //  console.log(time)
+           if(_this.sizeForm.finshtime){
+             let finshtime = new Date(_this.sizeForm.finshtime)
+             return time.getTime()> finshtime.getTime() || time.getTime() < new Date('2000/01/01 00:00:00').getTime()
+           }else{
+             return time.getTime() < new Date('2000/01/01 00:00:00').getTime();
+           }
+           
+        }
+      }
+    },
+    pickerFinished(){
+       let _this =this;
+      return {
+        disabledDate(time){
+           if(_this.sizeForm.starttime){
+             let starttime = new Date(_this.sizeForm.starttime)
+             return time.getTime()< starttime.getTime() || time.getTime() < new Date('2000/01/01 00:00:00').getTime()
+           }
+           return time.getTime() < new Date('2000/01/01 00:00:00').getTime();
+        }
+      }
+    },
     handleClose(index) {
       this.proverList.splice(index, 1);
       if (this.proverList.length === 0) {

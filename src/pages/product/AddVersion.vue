@@ -150,7 +150,7 @@ export default {
       rdList: [],
       sizeForm:sizeForm,
       rules:rules,
-      uploadUrl: "/api/file/upload",
+      uploadUrl: "/api/fmc/file/upload",
       isSuccess: false // 是否禁用
     };
   },

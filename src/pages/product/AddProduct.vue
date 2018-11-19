@@ -150,7 +150,7 @@ export default {
         verDescription: [
            { required: true, message: '产品描述不能为空', trigger: 'blur' }],    
       },
-      uploadUrl: "api/file/upload",
+      uploadUrl: "api/fmc/file/upload",
       isSuccess: false, // 是否禁用
       userId: 11
     };
