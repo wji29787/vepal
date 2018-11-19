@@ -19,7 +19,7 @@ import AddVersion from '@/pages/product/AddVersion'
 // suit
 import Suit from '@/pages/suit/SuitList'
 import Login from '@/login/login'
-import addsuit from '@/pages/suit/SuitEdit'
+import addSuit from '@/pages/suit/SuitEdit'
 
 // vepal
 import testVepal from '@/pages/vepal/testVepal'
@@ -164,8 +164,8 @@ export default new Router({
         },
         {
           path: 'addsuit',
-          name: 'addsuit',
-          component: addsuit,
+          name: 'addSuit',
+          component: addSuit,
           meta:{
             title:'套装管理'
           }  

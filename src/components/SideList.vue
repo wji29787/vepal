@@ -38,10 +38,10 @@
                         <span>套装管理</span>
                     </template>         
                     <el-menu-item index="3-1"
-                     :route = "{path:'suit'}"
+                     :route = "{name:'Suit'}"
                     >套装列表</el-menu-item>
                     <el-menu-item index="3-2"
-                     :route = "{path:'addsuit'}"
+                     :route = "{name:'addSuit'}"
                     >套装新增</el-menu-item>
                 </el-submenu>
                 <el-submenu index="4">
