@@ -170,7 +170,7 @@ export default {
   methods: {
     addProduct() {
       this.$router.push({
-        path: "addproduct"
+        path: "product/addproduct"
       });
     },
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {},
@@ -428,7 +428,7 @@ export default {
     setHeaderStyle({ row, column, rowIndex, columnIndex }) {},
     addVersion(row) {
       this.$router.push({
-        name: "addversion",
+        name: "product/addversion",
          query: {
           productId: row.productId
         }
@@ -436,7 +436,7 @@ export default {
     },
     editVersion(row) {
       this.$router.push({
-        name: "editversion",
+        name: "product/editversion",
         // params: {
         //   data: row
         // },

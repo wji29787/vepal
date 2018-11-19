@@ -2,7 +2,7 @@
     <div  class="extend-h-w">
                <el-container class="extend-h-w minc-height" direction = "vertical">
                    <el-row>
-                     <router-link to = "project">返回</router-link>
+                     <router-link to = "../project">返回</router-link>
                    </el-row>
                    
                    <el-row class ="sl-item-h100" type = "flex" justify = "center" align ="middle">
@@ -215,11 +215,11 @@ export default {
     if(this.type === 'edit'){
         allprotype.value = 'value';
         allprotype.label = 'label';
-        allprotype.children = 'versionList';
+        allprotype.children = 'products';
     }else{
         allprotype.value = 'value';
         allprotype.label = 'label';
-        allprotype.children = 'products';
+        allprotype.children = 'versionList';
     }
 
     return {
@@ -308,7 +308,8 @@ export default {
       if (this.type === "edit") {
           // 查询所有项目及关联的版本
         getList.push({
-          url: "api/pjc/product/findAllProductVersion",
+          url: "api/pjc/project/findAllProjectProductVer",
+          // url: "api/pdc/product/findAllProductVersion",
           method: "post"
         }) 
           // 查询回显数据
@@ -322,7 +323,8 @@ export default {
       }else{
           // 查询所有项目及关联的版本
         getList.push({
-          url: "api/pjc/project/findAllProjectProductVer",
+          url: "api/pdc/product/findAllProductVersion",
+          // url: "api/pjc/project/findAllProjectProductVer",
           method: "post"
         }) 
       }
@@ -386,7 +388,7 @@ export default {
         }else{
            if (res4.status&&res4.status === 200) {
             if (res4.data.code === 200) {
-              let list = res4.data.data;
+              let list = res4.data.data.list;
               this.allPudPjc = list;
             }
           }

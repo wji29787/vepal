@@ -189,13 +189,13 @@ export default {
     // 项目新增
     addProject() {
       this.$router.push({
-        path: "addproject"
+        path: "project/addproject"
       });
     },
     // 项目编辑
     editProject(row) {
       this.$router.push({
-        name: "editproject",
+        name: "project/editproject",
         // params: {
         //   projectId: row.projectId
         // },

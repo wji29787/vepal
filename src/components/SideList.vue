@@ -1,9 +1,11 @@
 <template>
     <div class="extend-h-w">
          <el-menu
-            default-active ="2-1"
+            ref = "elMenu" 
+            :default-active  = "activeIndex"
             class = "extend-h-w"
             router
+            @select = "handleSelect"
             @open = "handleOpen"
             @close = "handleClose">
                 <el-submenu index="1">
@@ -14,12 +16,6 @@
                     <el-menu-item index="1-1"
                         :route = "{path:'product'}"
                     >产品列表</el-menu-item>
-                    <!-- <el-menu-item index="1-2"
-                        :route = "{path:'addproduct'}"
-                    >产品新增</el-menu-item> -->
-                     <!-- <el-menu-item index="1-3"
-                        :route = "{path:'productEdit'}"
-                    >版本新增</el-menu-item> -->
                 </el-submenu>
                 <el-submenu index="2">
                      <template slot="title">
@@ -29,9 +25,6 @@
                     <el-menu-item index="2-1"
                       :route = "{path:'project'}"
                       > 项目列表</el-menu-item>    
-                    <!-- <el-menu-item index="2-2"
-                        :route = "{path:'projectedit'}"
-                    > 项目新增</el-menu-item> -->
                 </el-submenu>
                 <el-submenu index="3">
                     <template slot="title">
@@ -73,14 +66,58 @@
     </div>
 </template>
 <script>
+ const routeMap = {
+     'product':'1-1',
+     'project':'2-1',
+     'suit':'3-1',
+     'vepal':'4-2',
+     'pptview':'4-3',
+ }
 export default {
     name:'sl-sides',
+    data(){
+        return {
+            activeIndex:'2-1'
+        }
+    },
+    watch:{
+        '$route'(){
+            // console.log(11)
+        }
+    },
+    created(){
+        //获取当前路由
+       this.currentRoute()
+    },
+    mounted(){
+         console.log(this.$route)
+    },
     methods: {
       handleOpen(key, keyPath) {
         // console.log(key, keyPath);
       },
       handleClose(key, keyPath) {
         // console.log(key, keyPath);
+      },
+      handleSelect(index,indexPath){
+          console.log(index,indexPath)
+        //   this.activeIndex = index
+        // console.log(this.activeIndex);
+      },
+      currentRoute(){
+          let path = this.$route.path;
+          let keys = Object.keys(routeMap);
+          let sign = keys.some(key=>{
+              let str = `^/home/${key}`   
+              let reg = new RegExp(str)
+              if(reg.test(path)){
+                  this.activeIndex = routeMap[key]
+                  return true
+              }else{
+                  return false
+              }
+          })
+
       }
     }
 }

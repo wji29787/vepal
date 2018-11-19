@@ -1,7 +1,7 @@
 <template>
     <div  class="extend-h-w">
                <el-container class="extend-h-w  minc-height" direction = "vertical">
-                 <router-link to = "product">返回</router-link>
+                 <router-link to = "../product">返回</router-link>
                    <el-row class ="sl-item-h100" type = "flex" justify = "center" align ="middle">
                              <h2 class = "sl-title">产品新增</h2>
                     </el-row>
