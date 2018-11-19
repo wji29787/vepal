@@ -42,7 +42,7 @@
     <el-footer class="r-suit-product__footer">
       <el-pagination background
         layout="prev, pager, next"
-        :total="pageParams.totalNumer"
+        :total="totalNumer"
         :page-size="pageParams.pageSize"
         @current-change="handleCurrentPageChange">
       </el-pagination>
@@ -51,6 +51,7 @@
 </template>
 <script>
 const GET_SUIT_PRODUCT = '/api/report/findSuitAndProductList';
+const PROJECT_NAME_SELECT = '/project/findAllProjectName';
 const RESPONSE_SUCCESS_CODE = 200;
 export default {
   name: 'suitProduct',
@@ -64,6 +65,8 @@ export default {
         currentPage: 0,
         limit: 30
       },
+      projectNameSelectList: [],
+      productNameSelectList: [],
       dataSource: [{
         date: '2016-05-02',
         name: '王小虎',
@@ -81,16 +84,18 @@ export default {
           name: '王小虎',
           address: '上海市普陀区金沙江路 1516 弄'
       }],
-      pageParams: {
-        pageSize: 30,
-        totalNumer: 0
-      }
+      totalNumer: 0
     };
   },
   mounted () {
     this.getProductList();
   },
   methods: {
+    getProjectNameSelectList () {
+      let _data = {
+
+      };
+    },
     getProductList () {
       let _data = {
         pageNo: this.searchParams.currentPage,
@@ -109,9 +114,20 @@ export default {
       };
       this.$http.get(GET_SUIT_PRODUCT, _data, res => {
         this.$nextTick(() => {
-          console.log(res, 'ress');
+          this.totalNumer = 0;
+          if (res.data.code === RESPONSE_SUCCESS_CODE) {
+            let listData = res.data.data;
+            console.log(res, 'res');
+            if (listData && Array.isArray(listData) && listData.length) {
+              this.totalNumer = res.data.data.total;
+            }
+          }
         });
       });
+    },
+    setData (list) {
+      let arr = [];
+      list.forEach((element, index) => {});
     },
     handleSearchBtnClick () {},
     handleCurrentPageChange () {}

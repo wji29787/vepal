@@ -12,7 +12,7 @@
                         :picker-options="datePickerOptions">
         </el-date-picker>
       </el-form-item>
-      <el-form-item label="测试负责人">
+      <el-form-item label="测试负责人" prop="testPerson">
         <el-select v-model="form.testPerson" placeholder="请选择测试负责人">
           <el-option v-for="item in testUserList"
                       :key="item.userId"
@@ -21,7 +21,7 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="联调负责人">
+      <el-form-item label="联调负责人" prop="adjustPerson">
           <el-select v-model="form.adjustPerson" placeholder="请选择测试负责人">
           <el-option v-for="item in debuggingUserList"
                     :key="item.userId"
@@ -54,7 +54,7 @@
             </div>
           </template>
       </el-form-item>
-      <el-form-item label="详细描述">
+      <el-form-item label="详细描述" prop="suitDesc">
         <el-input type="textarea" v-model="form.suitDesc" :maxlength="240"></el-input>
       </el-form-item>
       <el-form-item label="备注">
@@ -96,6 +96,15 @@ export default {
         ],
         suitDate: [
           {required: true, message: '请选择时间', trigger: 'blur'}
+        ],
+        testPerson: [
+          {required: true, message: '请选择测试负责人', trigger: 'blur'}
+        ],
+        adjustPerson: [
+          {required: true, message: '请选择联调负责人', trigger: 'blur'}
+        ],
+        suitDesc: [
+          {required: true, message: '请填写描述', trigger: 'blur'}
         ]
       }, // 表单验证
       form: {
@@ -282,6 +291,13 @@ export default {
     },
     // 新建套装点击事件
     handleAddSuit () {
+      if (!this.form.toData.length) {
+        this.$message({
+          message: '请选择要关联的数据',
+          type: 'warning'
+        });
+        return false;
+      }
       this.$refs['form'].validate(valid => {
         if (valid) {
           let selectTest = this.testUserList.filter(element => {
@@ -434,6 +450,13 @@ export default {
     },
     // 编辑套装事件
     handleEditSuit () {
+      if (!this.infoTreeData.length && !this.form.toData.length) {
+        this.$message({
+          message: '请选择要关联的数据',
+          type: 'warning'
+        });
+        return false;
+      }
       this.concatData();
       this.$refs['form'].validate(valid => {
         if (valid) {
