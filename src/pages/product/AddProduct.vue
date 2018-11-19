@@ -1,7 +1,7 @@
 <template>
     <div  class="extend-h-w">
                <el-container class="extend-h-w  minc-height" direction = "vertical">
-                 <router-link to = "product">返回</router-link>
+                 <router-link to = "../product">返回</router-link>
                    <el-row class ="sl-item-h100" type = "flex" justify = "center" align ="middle">
                              <h2 class = "sl-title">产品新增</h2>
                     </el-row>
@@ -63,7 +63,7 @@
                                         </el-form-item>
                                         <el-form-item size="large">
                                             <el-button type="primary" @click="onSubmit('form')">保存</el-button>
-                                            <el-button @click = "resetForm('form')">重置</el-button>
+                                            <el-button @click = "cancleBtn('form')">取消</el-button>
                                         </el-form-item>
                                 </el-form>
                                 </el-col>
@@ -126,21 +126,23 @@ export default {
       rules: {
         productName: [
           { required: true, message: '请输入产品名称', trigger: 'blur' },
-          { validator: checkName, trigger: "blur" }],
+          { validator: checkName, trigger: "blur" },
+          { max:20, message: '最多不超过20个字符', trigger: 'blur' }],
         verName: [
-          { required: true, message: '请输入产品版本', trigger: 'blur' }],
+          { required: true, message: '请输入产品版本', trigger: 'blur' },
+          { max:20, message: '最多不超过20个字符', trigger: 'blur' }],
         verRdperson: [
            { required: true, message: '请选择负责人', trigger: 'change' },
            { required: true, message: '请选择负责人', trigger: 'blur' },
            ],
-        verUploadpath: [
-           { required: true, message: '请上传文件'}],   
+        // verUploadpath: [
+        //    { required: true, message: '请上传文件'}],   
         verRemark: [
-           { max:200, message: '请输入产品备注', trigger: 'blur' }], 
+           { max:200, message: '最多不超过200个字符', trigger: 'blur' }], 
         verDescription: [
-           { max:200, message: '请输入产品描述', trigger: 'blur' }],    
+           { max:200, message: '最多不超过200个字符', trigger: 'blur' }],    
       },
-      uploadUrl: "/dev/file/upload",
+      uploadUrl: "api/file/upload",
       isSuccess: false, // 是否禁用
       userId: 11
     };
@@ -226,26 +228,33 @@ export default {
      */
     onSubmit(formName) {
       let obj = this.sizeForm;
-
-      this.$http.post("api/pdc/product/addProduct", obj, res => {
-        if (res.status === 200) {
-          if (res.data.code === 200) {
-            this.$message({
-              message: "添加成功",
-              type: "success"
-            });
-            this.$refs[formName].resetFields();
-            for (let k in obj) {
-              if (Object.prototype.hasOwnProperty.call(obj, k)) {
-                obj[k] = "";
-              }
-            }
-            this.sizeForm = obj;
-          } else {
-            this.$message.error("添加失败");
-          }
-        }
-      });
+       this.$refs[formName].validate((valid,result)=>{
+         if(valid){
+               this.$http.post("api/pdc/product/addProduct", obj, res => {
+                  if (res.status === 200) {
+                    if (res.data.code === 200) {
+                      this.$message({
+                        message: "添加成功",
+                        type: "success"
+                      });
+                      this.$router.back(); 
+                      // this.$refs[formName].resetFields();
+                      // for (let k in obj) {
+                      //   if (Object.prototype.hasOwnProperty.call(obj, k)) {
+                      //     obj[k] = "";
+                      //   }
+                      // }
+                      // this.sizeForm = obj;
+                    } else {
+                      this.$message.error(res.data.msg);
+                    }
+                  }
+                });
+         }else{
+           return false
+         }
+      })  
+     
     },
     /**
      * 重置
@@ -259,6 +268,13 @@ export default {
         }
       }
       this.sizeForm = obj;
+    },
+    /**
+     * 取消 离开
+     * 
+     */
+    cancleBtn(){
+      this.$router.back();
     }
   }
 };

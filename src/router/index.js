@@ -87,12 +87,13 @@ export default new Router({
           component: Project,
           meta:{
             title:'项目管理'
-          }  
+          },
+
         },
-        // 项目管理
+        // 项目新增
         {
-          path: 'addproject',
-          name: 'addproject',
+          path: 'project/addproject',
+          name: 'project/addproject',
           component: AddProject,
           meta:{
             title:'新增项目'
@@ -101,9 +102,10 @@ export default new Router({
             type:'add'
           }  
         },
+         // 项目编辑
         {
-          path: 'editproject',
-          name: 'editproject',
+          path: 'project/editproject',
+          name: 'project/editproject',
           component: AddProject,
           meta:{
             title:'编辑项目'
@@ -111,11 +113,6 @@ export default new Router({
           props:{
             type:'edit'
           }  
-        },
-        {
-          path: 'projectedit',
-          name: 'ProjectEdit',
-          component: ProjectEdit
         },
         // 产品管理
         {
@@ -127,16 +124,16 @@ export default new Router({
           }  
         },
         {
-          path:'addproduct',
-          name:'addproduct',
+          path:'product/addproduct',
+          name:'product/addproduct',
           component:AddProduct,
           meta:{
             title:'产品新增'
           }
         },
         {
-          path:'addversion',
-          name:'addversion',
+          path:'product/addversion',
+          name:'product/addversion',
           component:AddVersion,
           meta:{
             title:'版本新增'
@@ -146,8 +143,8 @@ export default new Router({
           }
         },
         {
-          path:'editversion',
-          name:'editversion',
+          path:'product/editversion',
+          name:'product/editversion',
           component:AddVersion,
           meta:{
             title:'版本编辑'
@@ -155,11 +152,6 @@ export default new Router({
           props:{
             type:'edit'
           }
-        },
-        {
-          path: 'productEdit',
-          name: 'productEdit',
-          component: ProductEdit
         },
         // 套装管理
         {
