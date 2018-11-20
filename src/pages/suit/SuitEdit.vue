@@ -50,7 +50,7 @@
                           :defaultProps="{label:'label'}"
                           @addBtn="handleTransferAdd"
                           @removeBtn="handleTransferRemove"
-                          :mode="mode" height="380px" filter openAll>
+                          :mode="mode" height="380px" openAll>
               </treetransfer>
             </div>
           </template>
