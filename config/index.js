@@ -11,6 +11,14 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
+      '/fmc': {
+        target: 'http://192.168.112.168:8087',
+        changeOrigin: true,
+        // ws: true,
+        pathRewrite: {
+          '^/fmc' : '',     // rewrite path
+        },
+      },
       '/api/pjc': {
         target: 'http://192.168.112.168:8096',
         changeOrigin: true,
