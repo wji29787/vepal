@@ -82,6 +82,7 @@ export default {
     Promise.all([this.getProductNameList(), this.getPorjectNameList()]).then(res => {
        
     }).catch(err => {});
+    this.getProjectProductList();
   },
   methods: {
     getProductNameList () {
