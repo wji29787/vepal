@@ -1,12 +1,12 @@
 <template>
-  <el-container class="r-suit-product">
+  <el-container class="r-suit-product extend-h-w">
     <el-header class="r-suit-product__header">
       <el-row :gutter="24">
         <el-col :span="6">
           <el-row :gutter="24">
             <el-col :span="7" style="padding-top:13px;">套装名称</el-col>
             <el-col :span="17">
-              <el-select v-model="searchParams.suitName" filterable clearable>
+              <el-select v-model="searchObj.suitId" filterable clearable>
                 <el-option v-for="(item, index) in suitSelectList"
                             :key="index"
                             :label="item.suitName"
@@ -20,7 +20,7 @@
           <el-row :gutter="24">
             <el-col :span="7" style="padding-top:13px;">项目名称</el-col>
             <el-col :span="17">
-              <el-select v-model="searchParams.projectName" filterable clearable>
+              <el-select v-model="searchObj.projectId" filterable clearable>
                 <el-option v-for="(item, index) in selectProjectNameList"
                           :key="index"
                           :label="item.name"
@@ -34,167 +34,338 @@
           <el-row :gutter="24">
             <el-col :span="7" style="padding-top:13px;">产品名称</el-col>
             <el-col :span="17">
-              <el-select v-model="searchParams.productName" filterable clearable>
+              <el-select v-model="searchObj.productId" filterable clearable>
                 <el-option v-for="(item, index) in productNameSelectList"
                           :key="index"
-                          :label="'22'"
-                          :value="1">
+                          :label="item.productName"
+                          :value="item.productId">
                 </el-option>
               </el-select>
             </el-col>
           </el-row>
         </el-col>
         <el-col :span="6">
-            <el-button type="primary" @click="handleSearchBtnClick">搜索</el-button>
+            <el-button type="primary" @click="searchData">搜索</el-button>
             <el-button type="primary">导出</el-button>
         </el-col>
       </el-row>
     </el-header>
-    <el-main class="r-suit-product__main">
-      <el-table :data="dataSource" :border="true" style="width: 100%">
-        <el-table-column prop="date" label="日期" width="180"></el-table-column>
-        <el-table-column prop="name" label="姓名" width="180"></el-table-column>
-        <el-table-column prop="address" label="地址"></el-table-column>
-      </el-table>
-    </el-main>
-    <el-footer class="r-suit-product__footer">
+
+    <el-container class="r-suit-product__main extend-h-w" >
+         <el-table
+                 
+                  :data="list"
+                  :span-method="objectSpanMethod"
+                  border
+                  ref="multipleTable"
+                  height = "98%"
+                  v-scroll = "{el:'.el-table__body-wrapper',scrollfn:scrollfn}"
+                  style="width: 100%;">
+                  <el-table-column
+                      v-for = "(item, index) in renderTableList"
+                      :key = "index"
+                      :width = "item.width"
+                      :render-header="customRenderH(item,index)"
+                      >
+                      <template slot-scope="scope1">
+                         
+                            <template v-if = "index === 0">
+                              {{scope1['$index']+1}}
+                            </template>
+                            <!-- <template v-else-if = "index === 3">
+                            
+                                <el-popover
+                                    placement="top-start"
+                                    width="260"
+                                    trigger="hover"
+                                    >
+                                    <p class="eloverflow">{{scope1['row'][item['prop']]}}</p>
+                                    <p slot="reference" class = "mousecur">{{formatter(item,index,scope1)}}</p>
+                                </el-popover>
+
+
+                            </template> -->
+                            <template v-else>
+                              <!-- scope1['row'][item['prop']] -->
+                                {{formatter(item,index,scope1)}}
+                            </template>
+                        </template>
+
+
+                  </el-table-column>
+              </el-table>
+    </el-container>
+    <!-- <el-footer class="r-suit-product__footer">
       <el-pagination background
         layout="prev, pager, next"
         :total="totalNumer"
         @current-change="handleCurrentPageChange">
       </el-pagination>
-    </el-footer>
+    </el-footer> -->
   </el-container>
 </template>
 <script>
-const GET_SUIT_PRODUCT = '/api/suit/report/findSuitAndProductList';
-const PRODUCT_NAME_SELECT = '/api/pdc/product/findAllProduct';
-const PROJECT_NAME_SELECT = '/api/pjc/project/findAllProjectName';
-const SUIT_NAME_SELECT = '/api/suit/suit/findAllSuitName';
+import tableList from "./suitAndPjcAndPdcTable.js";
+const GET_SUIT_PRODUCT = "/api/suit/report/findSuitAndProductList";
+// const GET_SUIT_PRODUCT = "/vdev/report/findSuitAndProductList";
+const PRODUCT_NAME_SELECT = "/api/pdc/product/findAllProduct";
+const PROJECT_NAME_SELECT = "/api/pjc/project/findAllProjectName";
+const SUIT_NAME_SELECT = "/api/suit/suit/findAllSuitName";
 const RESPONSE_SUCCESS_CODE = 200;
 export default {
-  name: 'suitProduct',
-  data () {
+  name: "suitProduct",
+  data() {
     return {
-      tabPosition: '',
-      searchParams: {
-        suitName: '',
-        projectName: '',
-        productName: '',
-        currentPage: 0,
-        limit: 30
+      bscroll: true, // 是否加载
+      pageNo: 1, // 初始加载页数
+      pageSize: 10, // 初始每页数据数
+      lastPage: false, //最后一页
+      moveY: 0, // 滚动元素的总告诉
+      scrollctx: null, // 滚动元素的上下文
+      concatArr:{}, // 合并项
+      list: [],
+      searchObj: {
+        suitId: "",
+        projectId: "",
+        productId: ""
       },
+      renderTableList: tableList,
       suitSelectList: [],
       selectProjectNameList: [],
-      productNameSelectList: [],
-      dataSource: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1517 弄'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1519 弄'
-        }, {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1516 弄'
-      }],
-      totalNumer: 0
+      productNameSelectList: []
     };
   },
-  mounted () {
-    // this.getProductList();
-    Promise.all([this.getProductNameList(), this.getPorjectNameList(), this.getSuitNameList()]).then(res => {}).catch(err => {});
+  mounted() {
+    this.getAllNameList();
+    this.getData();
   },
   methods: {
-    getProductNameList () {
-      return new Promise((resovle, reject) => {
-        let _data = {};
-        this.$http.post(PRODUCT_NAME_SELECT, _data, res => {
-          this.$nextTick(() => {
-            this.productNameSelectList = [];
-            if (res.data.code === RESPONSE_SUCCESS_CODE) {
-              let listData = res.data.data.list;
-              if (listData && Array.isArray(listData) && listData.length) {
-                this.productNameSelectList = listData;
-              }
-            }
-          });
-        });
+    getAllNameList() {
+      let list = [
+        { url: SUIT_NAME_SELECT },
+        { url: PROJECT_NAME_SELECT },
+        { url: PRODUCT_NAME_SELECT }
+      ];
+      this.$http.all(list, (res1, res2, res3) => {
+        if (res1.status && res1.status === 200) {
+          // 套装
+          if (res1.data.code === 200) {
+            this.suitSelectList = res1.data.data.list;
+          } else {
+            this.$message.error(res1.data.msg);
+          }
+          // 项目
+          if (res2.data.code === 200) {
+            this.selectProjectNameList = res2.data.data.list;
+          } else {
+            this.$message.error(res2.data.msg);
+          }
+          // 产品
+          if (res3.data.code === 200) {
+            this.productNameSelectList = res3.data.data.list;
+          } else {
+            this.$message.error(res3.data.msg);
+          }
+        } else {
+        }
       });
     },
-    getPorjectNameList () {
-      return new Promise((resovle, reject) => {
-        let _data = {};
-        this.$http.post(PROJECT_NAME_SELECT, _data, res => {
-          this.$nextTick(() => {
-            this.selectProjectNameList = [];
-            if (res.data.code === RESPONSE_SUCCESS_CODE) {
-              let listData = res.data.data.list;
-              if (listData && Array.isArray(listData) && listData) {
-                this.selectProjectNameList = listData;
-              }
-            }
-          });
-        });
-      });
-    },
-    getSuitNameList () {
-      return new Promise((resovle, reject) => {
-        let _data = {};
-        this.$http.post(SUIT_NAME_SELECT, _data, res => {
-          this.$nextTick(() => {
-            this.suitSelectList = [];
-            if (res.data.code === RESPONSE_SUCCESS_CODE) {
-              let listData = res.data.data.list;
-              if (listData && Array.isArray(listData) && listData.length) {
-                this.suitSelectList = listData;
-              }
-            }
-          });
-        });
-      });
-    },
-    getProductList () {
-      let _data = {
-        pageNo: this.searchParams.currentPage,
-        pageSize: this.searchParams.limit,
-        suitId: '',
-        suitName: '',
-        suitDates: '',
-        adjustPerson: '',
-        createTime: '',
-        modifyTime: '',
-        status: '',
-        var1: '',
-        var2: '',
-        var3: '',
-        suitDesc: ''        
+    // 获取列表数据
+    getData(pageNo) {
+      if (!this.bscroll) {
+        return;
+      }
+      this.bscroll = false;
+      let searchObj = this.searchObj;
+      let obj = {
+        pageNo: pageNo ? pageNo : 1,
+        pageSize: this.pageSize,
+        ...searchObj
       };
-      this.$http.get(GET_SUIT_PRODUCT, _data, res => {
-        this.$nextTick(() => {
-          this.totalNumer = 0;
-          if (res.data.code === RESPONSE_SUCCESS_CODE) {
-            let listData = res.data.data;
-            console.log(res, 'res');
-            if (listData && Array.isArray(listData) && listData.length) {
-              this.totalNumer = res.data.data.total;
+
+      this.$http.get(GET_SUIT_PRODUCT, obj, res => {
+        // 使可以加载
+        setTimeout(() => {
+          this.bscroll = true;
+        }, 350);
+
+        if (res.status === 200) {
+          if (res.data.code === 200) {
+            let data = res.data.data;
+            let list = data.list;
+            // 最后一页
+            if (list && (list.length < this.pageSize || data.isLastPage)) {
+              this.lastPage = true;
+            }
+
+            let arr = [];
+              
+            if (list.length > 0) {
+              arr = this.formaterData(list);
+            }
+            if (this.list.length === 0) {
+              this.list = arr;
+            } else {
+              this.list = this.list.concat(arr);
+            }
+             this.concatArr = this.setData(this.list);
+          }
+        }
+      });
+    },
+    searchData() {
+      this.list = [];
+      this.moveY = 0;
+      this.pageNo = 1;
+      this.lastPage = false;
+      this.getData();
+    },
+    scrollfn(ctx, val) {
+      if (this.lastPage) return;
+      if (!this.bscroll) return;
+      this.ctx = ctx;
+      if (this.moveY < val) {
+        this.moveY = val;
+        this.pageNo += 1;
+        this.getData(this.pageNo);
+      }
+    },
+    /**
+     * 展开嵌套的数据
+     * 
+     */
+    formaterData(data) {
+
+      function  _serialize(data,opt){
+           let arr = [];
+           let name = opt.name;
+          //  let type = opt.type;
+           let list = opt.list
+          //  let reg = new RegExp(`^${type}`)
+          for(let i = 0,len = data.length;i<data.length,i<len ;i++){
+              let  item = data[i]
+              let  obj = {};  
+              list.forEach(t=>{
+                obj[t] = item[t]
+              })  
+              if((item !=null) && (item[name] !=null)&& Array.isArray(item[name])&& item[name].length>0){
+                  let value = item[name];
+                   value = value.map( t =>{
+                    if(t != null|| t !='null' ){
+                      return Object.assign({},t,obj)
+                    }
+                  })
+                  arr = arr.concat(value)
+              } 
+          }
+          return arr;
+      }
+  
+      let list  = ['suitName','suitId','suitDate'];
+      let _data = _serialize(data,{name:'projectVos',list:list,type:'suit'}) ; // 项目集合
+       list = ['name','projectId','priorityName','priorityId','projectdesc',...list]
+      _data = _serialize(_data,{name:'productVos',list:list,type:'project'})  // 产品集合
+      list = ['productName','productId',...list]
+      _data = _serialize(_data,{name:'versionVos',list:list,type:'product'})  // 版本集合
+      return _data;
+    },
+    /**
+     * 过滤合并项
+     * 
+     */
+    setData(data){
+      if(data.length===0) return
+      let suit = [],project=[],product=[];
+      let suitId = data[0].suitId, projectId = data[0]['projectId'], productId = data[0]['productId'] ;
+      let suitIndex = 0,projectIndex = 0,productIndex = 0;
+      data.forEach((t,i) =>{
+          if(i ===0){
+            suit[suitIndex] =1;
+            project[projectIndex] =1;
+            product[productIndex] =1;
+          }else{
+           // suit
+            if(t.suitId === suitId){
+                 suit[suitIndex] =suit[suitIndex]+=1; 
+                 suit[i] = 0
+            }else{
+               suitIndex = i;
+               suit[suitIndex] = 1
+               suitId = t.suitId
+            }
+            // project
+            if(t.projectId === projectId){
+                 project[projectIndex] =project[projectIndex]+=1; 
+                 project[i] = 0
+            }else{
+               projectIndex = i;
+               project[projectIndex] = 1
+               projectId = t.projectId
+            }
+            // product
+            if(t.productId === productId){
+                 product[productIndex] =product[productIndex]+=1; 
+                 product[i] = 0
+            }else{
+               productIndex = i;
+               product[productIndex] = 1
+               productId = t.productId
             }
           }
-        });
-      });
+
+      })
+      return {suit,project,product}
     },
-    setData (list) {
-      let arr = [];
-      list.forEach((element, index) => {});
+    /**
+     * 合并回调
+     */
+    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+       
+       if (columnIndex === 0 || columnIndex === 1||columnIndex ===2 ) {
+        const _row = this.concatArr['suit'][rowIndex];
+        const _col = _row > 0 ? 1 : 0;
+        return {
+          rowspan: _row,
+          colspan: _col
+        }
+      }
+      if(columnIndex ===3||columnIndex ===4||columnIndex ===5){
+         const _row = this.concatArr['project'][rowIndex];
+        const _col = _row > 0 ? 1 : 0;
+        return {
+          rowspan: _row,
+          colspan: _col
+        }
+      }
+      if(columnIndex ===6){
+         const _row = this.concatArr['product'][rowIndex];
+        const _col = _row > 0 ? 1 : 0;
+        return {
+          rowspan: _row,
+          colspan: _col
+        }
+      }
     },
-    handleSearchBtnClick () {},
-    handleCurrentPageChange (val) {}
+    /**
+     * 格式化text
+     * 
+     */
+    formatter(item, k, scoped) {
+       let _this = this;
+        let text ;
+       if(k !==0){
+          text = scoped["row"][item["prop"]];
+          return text 
+       } 
+     
+    },
+    customRenderH(item, index) {
+      let _this = this;
+      return (h, { column, $index }) => {
+        let header = h("span", item["label"]);
+        return header;
+      };
+    }
   }
 };
 </script>
