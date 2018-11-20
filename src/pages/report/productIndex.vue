@@ -2,7 +2,7 @@
   <el-container class="report">
     <el-header class="report__header">
       <div style="float:right;">
-        <el-radio-group v-model="tabPosition">
+        <el-radio-group v-model="tabPosition" size="small">
           <el-radio-button label="suitProduct">列表</el-radio-button>
           <el-radio-button label="Vepal">视图1</el-radio-button>
           <el-radio-button label="pptView">视图2</el-radio-button>

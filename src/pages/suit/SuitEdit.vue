@@ -2,13 +2,14 @@
   <div class="extend-h-w">
     <el-form ref="form" :model="form" :rules="rules" label-width="160px">
       <el-form-item label="套装名称" prop="suitName">
-          <el-input v-model="form.suitName" :maxlength="60"></el-input>
+          <el-input v-model="form.suitName" :maxlength="60" size="small"></el-input>
       </el-form-item>
       <el-form-item label="套装时间" prop="suitDate">
         <el-date-picker type="date"
                         placeholder="选择日期"
                         v-model="form.suitDate"
                         style="width: 100%;"
+                        size="small"
                         :picker-options="datePickerOptions">
         </el-date-picker>
       </el-form-item>
@@ -22,7 +23,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="联调负责人" prop="adjustPerson">
-          <el-select v-model="form.adjustPerson" placeholder="请选择测试负责人">
+          <el-select v-model="form.adjustPerson" placeholder="请选择测试负责人" filterable size="small">
           <el-option v-for="item in debuggingUserList"
                     :key="item.userId"
                     :label="item.userName"
@@ -55,14 +56,14 @@
           </template>
       </el-form-item>
       <el-form-item label="详细描述" prop="suitDesc">
-        <el-input type="textarea" v-model="form.suitDesc" :maxlength="240"></el-input>
+        <el-input type="textarea" v-model="form.suitDesc" :maxlength="240" size="small"></el-input>
       </el-form-item>
       <el-form-item label="备注">
-        <el-input type="textarea" v-model="form.remark" :maxlength="240"></el-input>
+        <el-input type="textarea" v-model="form.remark" :maxlength="240" size="small"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="handleSubmitSave">保存</el-button>
-        <el-button @click="handleCancelBtnClick">取消</el-button>
+        <el-button type="primary" @click="handleSubmitSave" size="small">保存</el-button>
+        <el-button @click="handleCancelBtnClick" size="small">取消</el-button>
       </el-form-item>
     </el-form>
   </div>

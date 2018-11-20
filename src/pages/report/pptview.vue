@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <h3 class="title">
+    <div class="ppt-view">
+        <h3 class="title search-title">
             产品计划升级套装情况
             <div class="fr">
                <el-date-picker
@@ -78,6 +78,7 @@
 </script>
 
 <style scoped>
+.ppt-view {}
  /*滚动条样式*/
 .viewbar::-webkit-scrollbar {/*滚动条整体样式*/
     width: 4px;     /*高宽分别对应横竖滚动条的尺寸*/
@@ -93,22 +94,27 @@
     border-radius: 0;
     background: rgba(32,62,92,0.2);
 }
-.view{
-    margin: 1rem;
-    height: 5.8rem;
+.view {
+    position: relative;
+    margin: 70px;
+    height: calc(100% - 180px);
     width:auto;
 }
-.title{
+.title {
     font-size: 0.3rem;
     margin:0 0 0 0.8rem;
     font-family: 微软雅黑;
+}
+.search-title {
+    height: 45px;
+    line-height: 45px;
 }
 .title div.fr{
     margin-right: 3rem;
 }
 .zhou{
     position: absolute;
-    height: 6.8rem;
+    height: 100%;
     border-left: 1px solid #b5d2ec;
     width:1rem;
 }
@@ -134,7 +140,7 @@
     font-weight: 600;
 }
 .viewbar{
-   height: 6.8rem;
+   height: 100%;
    width:auto;
    overflow:hidden;
   white-space: nowrap;
@@ -144,7 +150,7 @@
 
 }
 .viewbar > li{
-    width:3.5rem;
+    width: 3.5rem;
     height: 6.8rem;
     display: inline-block;
     overflow: hidden;

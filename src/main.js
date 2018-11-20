@@ -26,7 +26,7 @@ Vue.config.productionTip = false
 // 引入axios
 
 /* eslint-disable no-new */
-new Vue({
+window.Vue = new Vue({
   el: '#app',
   store,
   router,
@@ -34,4 +34,4 @@ new Vue({
     App
   },
   template: '<App/>'
-})
+});

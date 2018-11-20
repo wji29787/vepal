@@ -1,4 +1,4 @@
-const storage ={
+const storage = {
     getItem(key){
         let val = localStorage.getItem(key)
         return JSON.parse(val)
@@ -9,8 +9,7 @@ const storage ={
     setItem(key,value){
         let val = JSON.stringify(value)
         localStorage.setItem(key,val)
-    },
-
+    }
 }
 
 export default storage

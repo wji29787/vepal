@@ -1,12 +1,12 @@
 <template>
   <el-container class="r-suit-project">
-    <el-header class="r-suit-project__header">
+    <el-header class="r-suit-project__header" height="40px">
       <el-row :gutter="24">
         <el-col :span="6">
           <el-row :gutter="24">
             <el-col :span="7" style="padding-top:13px;">套装名称</el-col>
             <el-col :span="17">
-              <el-select v-model="searchParams.suitName" filterable clearable>
+              <el-select v-model="searchParams.suitName" filterable clearable size="small">
                 <el-option v-for="(item, index) in selectSuitNameList"
                           :key="index"
                           :label="item.suitName"
@@ -20,7 +20,7 @@
           <el-row :gutter="24">
             <el-col :span="7" style="padding-top:13px;">项目名称</el-col>
             <el-col :span="17">
-              <el-select v-model="searchParams.projectName" filterable clearable>
+              <el-select v-model="searchParams.projectName" filterable clearable size="small">
                 <el-option v-for="(item, index) in selectProjectNameList"
                           :key="index"
                           :label="item.name"
@@ -44,22 +44,12 @@
       :span-method="objectSpanMethod"
       border
       style="width: 100%; margin-top: 20px">
-      <el-table-column
-        prop="index"
-        label="序号"
-        width="180">
-      </el-table-column>
-      <el-table-column
-        prop="suitName"
-        label="套装名称">
-      </el-table-column>
-      <el-table-column
-        prop="projectName"
-        label="项目名称">
-      </el-table-column>
+      <el-table-column prop="number" label="序号" width="180"></el-table-column>
+      <el-table-column prop="suitName" label="套装名称"></el-table-column>
+      <el-table-column prop="projectName" label="项目名称"></el-table-column>
     </el-table>
     </el-main>
-    <el-footer class="r-suit-project__footer">
+    <el-footer class="r-suit-project__footer" height="40px">
       <el-pagination background
         layout="prev, pager, next"
         :total="totalNumber"
@@ -175,7 +165,7 @@ export default {
         }
       });
       arr.forEach((element, index) => {
-        element.index = index + 1;
+        element.number = index + 1;
       });
       this.dataSource = arr;
       this.reSetData(arr);
@@ -197,6 +187,7 @@ export default {
           }
         }
       });
+      console.log(this.concatArr, 'condat');
     },
     handleCurrentPageChange (val) {
       this.searchParams.currentPage = val;
@@ -221,5 +212,11 @@ export default {
 <style>
 .r-suit-project {
   height: 100%;
+}
+.r-suit-project__main {
+  padding: 0px;
+}
+.r-suit-project__footer {
+  padding-top: 4px;
 }
 </style>

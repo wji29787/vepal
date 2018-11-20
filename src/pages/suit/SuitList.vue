@@ -1,27 +1,30 @@
 <template>
-    <div  class="extend-h-w">
+    <div  class="extend-h-w suit-list">
          <el-container class="extend-h-w" direction = "vertical">
               <el-row class ="sl-item-h100" type = "flex" justify = "center" align ="middle">
-                     <h2 class = "sl-title">套装列表</h2>
+                    <h2 class = "sl-title">套装列表</h2>
                </el-row>
                <el-container class="extend-h-w" direction = "vertical">
                    <el-row :gutter="10">
-                         <el-col :lg ="4"  :md="6"><el-input v-model="suitName" placeholder="请输入套装名称"></el-input></el-col>  
-                         <el-col :lg ="4"  :md="5">
+                        <el-col :lg ="4"  :md="6">
+                            <el-input v-model="suitName" placeholder="请输入套装名称" size="small"></el-input>
+                        </el-col>  
+                        <el-col :lg ="4"  :md="5">
                              <el-date-picker class = "extend-w"
                                             type="date"
+                                            size="small"
                                             placeholder="套装时间"
                                             v-model="suitDate"
                                             value-format = "yyyy-MM-dd">
                             </el-date-picker>
                          </el-col> 
-                         <el-col :lg = "16"   :md= "3">
-                             <el-button  icon="el-icon-search" @click="getlist()" circle></el-button>
-                             <el-button class="fr" @click="deleteAllRow()">批量删除</el-button>
+                         <el-col :lg="16" :md="3">
+                             <el-button  icon="el-icon-search" size="small" @click="getlist()" circle></el-button>
+                             <el-button class="fr" size="small" @click="deleteAllRow()">批量删除</el-button>
                          </el-col>
                    </el-row>
                    <br/>
-                   <el-row type = "flex" class="extend-h-w">
+                   <el-row type="flex" class="extend-h-w">
                        <el-table
                             :data="list"
                             scope="scope"
@@ -94,7 +97,7 @@
                 this.multipleSelection = val;
              },
              getlist(){
-                var _this=this;
+                let _this = this;
                 this.$http.post(
                     "api/suit/suit/findAllProjectPage",
                     {
@@ -102,28 +105,28 @@
                         suitDate:_this.suitDate
                     },
                     res => {
-                        if(res.data.code==200){
-                            _this.list=res.data.data.list;
+                        if(res.data.code === 200){
+                            _this.list = res.data.data.list;
                         }
                     }
                 );
             },
             /*单个删除*/
-            deleteRow(obj){
-                var _this=this;
+            deleteRow (obj) {
+                var _this = this;
                 this.$confirm('此操作将永久删除该套装, 是否继续?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
                 }).then(() => {
-                    var suitId=obj.row.suitId;
+                    var suitId = obj.row.suitId;
                     this.$http.post(
                         "api/suit/suit/delSuit",
                         {
                             suitId:suitId
                         },
                         res => {
-                            if(res.data.code==200){
+                            if(res.data.code === 200){
                                 this.$message({
                                     type: 'success',
                                     message: '删除成功!'
@@ -141,27 +144,26 @@
                 });
             },
              /*批量删除*/
-            deleteAllRow(obj){
-                var _this=this;
-                 if(_this.multipleSelection.length>0){
+            deleteAllRow (obj) {
+                var _this = this;
+                 if(_this.multipleSelection.length > 0){
                     this.$confirm('此操作将永久删除该套装, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    var suitId='';
-                    for(var i=0;i<_this.multipleSelection.length;i++){
-                        suitId+=_this.multipleSelection[i].suitId+',';
+                    var suitId = '';
+                    for(var i = 0; i < _this.multipleSelection.length; i++){
+                        suitId += _this.multipleSelection[i].suitId + ',';
                     }
-                    suitId=suitId.substring(0,suitId.length-1);
+                    suitId = suitId.substring(0,suitId.length-1);
                     this.$http.post(
                         "api/suit/suit/delSuit",
                         {
                             suitId:suitId
                         },
                         res => {
-                            if(res.data.code==200){
-                                alert("删除成功");
+                            if(res.data.code === 200){
                                 _this.getlist();
                             }
                         }
@@ -174,14 +176,16 @@
                     });          
                 });
                  }else{
-                    alert("请选择删除的套装")
+                    this.$message({
+                        message: '请选择删除的套装',
+                        type: 'warning'
+                    });
                 }
-               
             },
             editRow(obj){
-                var suitId=obj.row.suitId;
+                var suitId = obj.row.suitId;
                 this.$router.push({
-                    name: 'addsuit',
+                    name: 'addSuit',
                     query: {
                         suitId: suitId
                     }
@@ -192,6 +196,10 @@
 </script>
 
 <style scoped>
+.suit-list {}
+.suit-list .el-table::before {
+    height: 0px;        
+}
 .sl-title {
   font-size: 20px;
   font-family: "PingFang SC", "微软雅黑";
