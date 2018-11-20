@@ -11,6 +11,14 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
+      '/fmc': {
+        target: 'http://192.168.112.168:8087',
+        changeOrigin: true,
+        // ws: true,
+        pathRewrite: {
+          '^/fmc' : '',     // rewrite path
+        },
+      },
       '/api/pjc': {
         target: 'http://192.168.112.168:8096',
         changeOrigin: true,
@@ -63,7 +71,7 @@ module.exports = {
     },
 
     // Various Dev Server settings
-    host: '192.168.95.143', // can be overwritten by process.env.HOST
+    host: 'localhost', // can be overwritten by process.env.HOST
     port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,

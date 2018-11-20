@@ -17,10 +17,10 @@
                                                   <el-input v-model="sizeForm.verName"></el-input>
                                         </el-form-item>
                                         <el-form-item label="研发负责人" prop = "verRdperson">
-                                           <el-select v-model="sizeForm.verRdperson"  
+                                           <el-select v-model="sizeForm.verRdperson"
                                                filterable
-                                               clearable 
-                                               placeholder="请选择" 
+                                               clearable
+                                               placeholder="请选择"
                                                class="extend-w">
                                               <el-option
                                                 v-for = "(item) in rdList"
@@ -90,7 +90,7 @@ export default {
   },
   data() {
     let checkName = (rule, value, callback) => {
-          
+
       this.$http.get(
         "/api/pdc/product/findProductByName",
         {
@@ -144,13 +144,13 @@ export default {
            { required: true, message: '请选择负责人', trigger: 'blur' },
            ],
         // verUploadpath: [
-        //    { required: true, message: '请上传文件'}],   
+        //    { required: true, message: '请上传文件'}],
         // verRemark: [
-        //    { max:200, message: '最多不超过200个字符', trigger: 'blur' }], 
+        //    { max:200, message: '最多不超过200个字符', trigger: 'blur' }],
         verDescription: [
-           { required: true, message: '产品描述不能为空', trigger: 'blur' }],    
+           { required: true, message: '产品描述不能为空', trigger: 'blur' }],
       },
-      uploadUrl: "api/fmc/file/upload",
+      uploadUrl: "fmc/file/upload",
       isSuccess: false, // 是否禁用
       userId: 11
     };
@@ -182,7 +182,7 @@ export default {
      * 上传成功
      */
     uploadSuccess(res) {
-  
+
       if (res.code === 200) {
         this.sizeForm.verUploadpath = res.data;
         this.$message({
@@ -191,7 +191,7 @@ export default {
         });
       }
       this.isSuccess = false;
-     
+
     },
     /**
      * 上传进度
@@ -245,7 +245,7 @@ export default {
                         message: "添加成功",
                         type: "success"
                       });
-                      this.$router.back(); 
+                      this.$router.back();
                       // this.$refs[formName].resetFields();
                       // for (let k in obj) {
                       //   if (Object.prototype.hasOwnProperty.call(obj, k)) {
@@ -263,8 +263,8 @@ export default {
          }else{
            return false
          }
-      })  
-     
+      })
+
     },
     /**
      * 重置
@@ -281,7 +281,7 @@ export default {
     },
     /**
      * 取消 离开
-     * 
+     *
      */
     cancleBtn(){
       this.$router.back();
