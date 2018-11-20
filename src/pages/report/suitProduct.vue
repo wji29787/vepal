@@ -7,7 +7,11 @@
             <el-col :span="7" style="padding-top:13px;">套装名称</el-col>
             <el-col :span="17">
               <el-select v-model="searchParams.suitName" filterable clearable>
-
+                <el-option v-for="(item, index) in suitSelectList"
+                            :key="index"
+                            :label="item.suitName"
+                            :value="item.suitId">
+                </el-option>
               </el-select>
             </el-col>
           </el-row>
@@ -57,16 +61,16 @@
       <el-pagination background
         layout="prev, pager, next"
         :total="totalNumer"
-        :page-size="pageParams.pageSize"
         @current-change="handleCurrentPageChange">
       </el-pagination>
     </el-footer>
   </el-container>
 </template>
 <script>
-const GET_SUIT_PRODUCT = '/api/report/findSuitAndProductList';
+const GET_SUIT_PRODUCT = '/api/suit/report/findSuitAndProductList';
 const PRODUCT_NAME_SELECT = '/api/pdc/product/findAllProduct';
 const PROJECT_NAME_SELECT = '/api/pjc/project/findAllProjectName';
+const SUIT_NAME_SELECT = '/api/suit/suit/findAllSuitName';
 const RESPONSE_SUCCESS_CODE = 200;
 export default {
   name: 'suitProduct',
@@ -80,6 +84,7 @@ export default {
         currentPage: 0,
         limit: 30
       },
+      suitSelectList: [],
       selectProjectNameList: [],
       productNameSelectList: [],
       dataSource: [{
@@ -103,21 +108,20 @@ export default {
     };
   },
   mounted () {
-    this.getProductList();
-    Promise.all([this.getSuitNameList(), this.getPorjectNameListf()]).then(res => {}).catch(err => {});
+    // this.getProductList();
+    Promise.all([this.getProductNameList(), this.getPorjectNameList(), this.getSuitNameList()]).then(res => {}).catch(err => {});
   },
   methods: {
-    getSuitNameList () {
+    getProductNameList () {
       return new Promise((resovle, reject) => {
         let _data = {};
         this.$http.post(PRODUCT_NAME_SELECT, _data, res => {
           this.$nextTick(() => {
             this.productNameSelectList = [];
             if (res.data.code === RESPONSE_SUCCESS_CODE) {
-              let listData = res.data.data;
+              let listData = res.data.data.list;
               if (listData && Array.isArray(listData) && listData.length) {
                 this.productNameSelectList = listData;
-                console.log(listData, 'listData');
               }
             }
           });
@@ -134,6 +138,22 @@ export default {
               let listData = res.data.data.list;
               if (listData && Array.isArray(listData) && listData) {
                 this.selectProjectNameList = listData;
+              }
+            }
+          });
+        });
+      });
+    },
+    getSuitNameList () {
+      return new Promise((resovle, reject) => {
+        let _data = {};
+        this.$http.post(SUIT_NAME_SELECT, _data, res => {
+          this.$nextTick(() => {
+            this.suitSelectList = [];
+            if (res.data.code === RESPONSE_SUCCESS_CODE) {
+              let listData = res.data.data.list;
+              if (listData && Array.isArray(listData) && listData.length) {
+                this.suitSelectList = listData;
               }
             }
           });
@@ -174,7 +194,7 @@ export default {
       list.forEach((element, index) => {});
     },
     handleSearchBtnClick () {},
-    handleCurrentPageChange () {}
+    handleCurrentPageChange (val) {}
   }
 };
 </script>

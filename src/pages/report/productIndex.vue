@@ -36,7 +36,7 @@ export default {
   data () {
     return {
       VIEW_TYPE,
-      tabPosition: 'suitProduct'
+      tabPosition: VIEW_TYPE.SUIT_PRODUCT
     };
   },
   methods: {}
