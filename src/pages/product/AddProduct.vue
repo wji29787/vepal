@@ -138,7 +138,7 @@ export default {
         verName: [
           { required: true, message: '请输入产品版本', trigger: 'blur' },
           { validator:checkText, trigger: 'blur' },
-          { max:10, message: '最多不超过10个字符', trigger: 'blur' }],
+          { max:30, message: '最多不超过30个字符', trigger: 'blur' }],
         verRdperson: [
            { required: true, message: '请选择负责人', trigger: 'change' },
            { required: true, message: '请选择负责人', trigger: 'blur' },

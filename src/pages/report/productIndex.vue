@@ -1,5 +1,5 @@
 <template>
-  <el-container class="report">
+  <el-container class="report extend-h-w">
     <el-header class="report__header">
       <div style="float:right;">
         <el-radio-group v-model="tabPosition">
@@ -9,12 +9,12 @@
         </el-radio-group>
       </div>
     </el-header>
-    <el-main class="report__main">
+    <el-container class="report__main extend-h-w">
       <suit-product v-if="tabPosition === VIEW_TYPE.SUIT_PRODUCT"></suit-product>
       <vepal v-if="tabPosition === VIEW_TYPE.VEPAL"></vepal>
       <ppt-view v-if="tabPosition === VIEW_TYPE.PPT_VIEW"></ppt-view>
-      <router-view></router-view>
-    </el-main>
+      <!-- <router-view></router-view> -->
+    </el-container>
   </el-container>
 </template>
 <script>
