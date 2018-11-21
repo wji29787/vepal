@@ -54,6 +54,7 @@
   </el-container>
 </template>
 <script>
+const EXPORT_PROJECT_PRODUCT = '/suit/report';
 const GET_PROJECT_PRODUCT = '/api/pjc/report/findProjectAndProductList';
 const PRODUCT_NAME_SELECT = '/api/pdc/product/findAllProduct';
 const PROJECT_NAME_SELECT = '/api/pjc/project/findAllProjectName';
@@ -79,9 +80,7 @@ export default {
     };
   },
   mounted () {
-    Promise.all([this.getProductNameList(), this.getPorjectNameList()]).then(res => {
-       
-    }).catch(err => {});
+    Promise.all([this.getProductNameList(), this.getPorjectNameList()]).then(res => {}).catch(err => {});
     this.getProjectProductList();
   },
   methods: {
@@ -107,7 +106,6 @@ export default {
       return new Promise((resovle, reject) => {
         let _data = {};
         this.$http.post(PROJECT_NAME_SELECT, _data, res => {
-    
           this.$nextTick(() => {
             this.selectProjectNameList = [];
             if (res.data.code === RESPONSE_SUCCESS_CODE) {
