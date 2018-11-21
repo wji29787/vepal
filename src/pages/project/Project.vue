@@ -7,8 +7,27 @@
 
                           <el-container class="extend-h-w" direction = "vertical">
                             <el-row :gutter = "10">
-                                <el-col :lg = "4"  :md= "6"><el-input placeholder="请输入项目名称" v-model = "searchObj.name" ></el-input></el-col>
-                                <el-col :lg = "4"  :md= "5"><el-input placeholder="请输入需求提出人" v-model = "searchObj.needPerson"></el-input></el-col>
+                                <el-col :lg = "4"  :md= "6">
+                                  <!-- <el-input placeholder="请输入项目名称" v-model = "searchObj.name" ></el-input> -->
+                                  <el-select clearable filterable v-model = "searchObj.name" placeholder="请选择项目名称">
+                                      <el-option v-for = "item in selectProjectNameList"
+                                                :key = "item.projectId"
+                                                :label = "item.name"
+                                                :value = "item.projectId">
+                                      </el-option>
+                                    </el-select>
+                                </el-col>
+                                <el-col :lg = "4"  :md= "5">
+                                  <!-- <el-input placeholder="请输入需求提出人" v-model = "searchObj.needPerson"></el-input> -->
+                                  <el-select clearable filterable v-model = "searchObj.needPerson" placeholder="请选择需求提出人">
+                                      <el-option
+                                          v-for = "item in rdList"
+                                          :key = "item.userId"
+                                          :label = "item.userName" 
+                                          :value = "item.userId">
+                                      </el-option>
+                                    </el-select>
+                                </el-col>
                                 <el-col :lg = "3"  :md= "4" >
                                   <el-select clearable v-model = "searchObj.typeId" placeholder="项目类型">
                                       <el-option
@@ -32,8 +51,8 @@
                                    
                                    </el-col>  
                                   
-                                 <el-col :span = "1.5"><el-button @click = "searchData()">搜索</el-button></el-col>    
-                                 <el-col :span = "1.5" ><el-button>导出</el-button></el-col>    
+                                 <el-col :span = "1.5"><el-button @click = "searchData">搜索</el-button></el-col>    
+                                 <el-col :span = "1.5" ><el-button @click = "tableExport">导出</el-button></el-col>    
                                  <el-col :span = "2"  class="fr"><el-button class="fr" @click="addProject">新增项目</el-button></el-col>    
                                  
                             </el-row>
@@ -104,7 +123,7 @@
                                              
                                             >
                                             <template slot-scope="scope1">
-                                                  <template v-if = "index === 9">
+                                                  <template v-if = "index === 8">
                                                       <el-button type="text" @click="editProject(scope1.row)" icon = "el-icon-tickets" ></el-button>
                                                       <el-popover
                                                           placement="left"
@@ -142,6 +161,8 @@
 </template>
 <script>
 import tableList from "./projectTableList.js";
+import {StandardPost} from '../../assets/js/util.js'
+// const PROJECT_NAME_SELECT = "/api/pjc/project/findAllProjectName";
 export default {
   data() {
     return {
@@ -166,9 +187,11 @@ export default {
         startTimeSort: true, // 开始时间排序
         finishTimeSort: true // 结束时间排序
       },
+      selectProjectNameList: [], // 项目名称
+      rdList :[],                // 用户表
       renderTableList: tableList,
-      typeList: [],
-      priorityList: [],
+      typeList: [],    //所属类型
+      priorityList: [], // 优先级
       options: [
         { name: "MVP1", value: "value1" },
         { name: "MVP2", value: "value2" },
@@ -181,6 +204,9 @@ export default {
         }
       }
     };
+  },
+  computed:{
+
   },
   mounted() {
     this.getTypeAndPriority();
@@ -364,29 +390,46 @@ export default {
      *
      */
     getTypeAndPriority() {
-      let getList = [
-        {
-          url: "api/pjc/project/findAllProjectType",
-          method: "get"
-        },
-        {
-          url: "api/pjc/project/findAllPriority",
-          method: "get"
-        }
+      let getList = [ 
+        // 所属类型
+        { url: "api/pjc/project/findAllProjectType", },
+        // 优先级
+        {url: "api/pjc/project/findAllPriority", },
+        // 项目名称
+        {url: "api/pjc/project/findAllProjectName", },
+        // 需求人列表
+        {url: "api/umc/user/findUserByUser", }
       ];
-      this.$http.all(getList, (res1, res2) => {
-        if (res1.status === 200) {
-          if (res1.data.code === 200) {
-            this.typeList = res1.data.data;
-          }
-        }
-        try {
-          if (res2.status === 200) {
+      this.$http.all(getList, (res1, res2,res3,res4) => {
+        if(res1.status && res1.status === 200){
+            if (res1.data.code === 200) {
+                this.typeList = res1.data.data;
+            }else{
+              this.$message.error(res1.data.msg);
+            }
+
             if (res2.data.code === 200) {
               this.priorityList = res2.data.data;
+            }else{
+              this.$message.error(res2.data.msg);
             }
-          }
-        } catch (error) {
+            if (res3.data.code === 200) {
+               this.selectProjectNameList = res3.data.data.list;
+            }else{
+              this.$message.error(res3.data.msg);
+            }
+            if (res4.data.code === 200) {
+              this.rdList = res4.data.data;
+            }else{
+              this.$message.error(res4.data.msg);
+            }
+            
+        }else{
+            if(res1.status){
+             this.$message.error(res1.status);
+           }else{
+             this.$message.error(res1);
+           }
         }
       });
     },
@@ -407,7 +450,6 @@ export default {
       }else{
         value.row.visible = false;
       }
-      // value.row.visible = false;
     },
     delsure(value) {
       let projectIds ;
@@ -488,7 +530,7 @@ export default {
         case 3:
         case 4:
         case 7:
-        case 8:
+        // case 8:
           // return (row, column, cellValue, index) => {
           //   return row[item.prop];
           // };
@@ -535,7 +577,22 @@ export default {
         return header;
       };
     },
- 
+    /**
+     * 
+     *  导出表格
+     */
+    tableExport(){
+         let url = 'api/pjc/project/exportExcelProject';
+         let searchObj = this.searchObj;
+         let obj ={};
+          searchObj.typeId && (obj.typeId = searchObj.typeId); // 类型
+          searchObj.priorityId && (obj.priorityId = searchObj.priorityId);
+          searchObj.needPerson && (obj.needPerson = searchObj.needPerson); // 需求人
+          searchObj.name && (obj.name = searchObj.name); // 项目名
+          searchObj.startTime && (obj.startTime = searchObj.startTime); // 开始时间
+          searchObj.finshTime && (obj.finshTime = searchObj.finshTime); // 结束时间
+        StandardPost(url,obj)
+    }
   }
 };
 </script>

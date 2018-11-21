@@ -46,7 +46,7 @@
         </el-col>
         <el-col :span="6">
             <el-button type="primary" @click="searchData">搜索</el-button>
-            <el-button type="primary">导出</el-button>
+            <el-button type="primary" @click= "tableExport">导出</el-button>
         </el-col>
       </el-row>
     </el-header>
@@ -70,7 +70,7 @@
                       <template slot-scope="scope1">
                          
                             <template v-if = "index === 0">
-                              {{scope1['$index']+1}}
+                              {{setTableIndex(scope1['$index'])}}
                             </template>
                             <!-- <template v-else-if = "index === 3">
                             
@@ -106,6 +106,9 @@
 </template>
 <script>
 import tableList from "./suitAndPjcAndPdcTable.js";
+import {StandardPost} from '../../assets/js/util.js'
+// 表格导出
+const TABLE_EXPORT = "/api/suit/report/exportSuitAndProject"
 const GET_SUIT_PRODUCT = "/api/suit/report/findSuitAndProductList";
 // const GET_SUIT_PRODUCT = "/vdev/report/findSuitAndProductList";
 const PRODUCT_NAME_SELECT = "/api/pdc/product/findAllProduct";
@@ -167,6 +170,11 @@ export default {
             this.$message.error(res3.data.msg);
           }
         } else {
+           if(res1.status){
+             this.$message.error(res1.status);
+           }else{
+             this.$message.error(res1);
+           }
         }
       });
     },
@@ -209,6 +217,14 @@ export default {
               this.list = this.list.concat(arr);
             }
              this.concatArr = this.setData(this.list);
+            //  this.$nextTick(()=>{
+            //    let tablediv = this.$refs.multipleTable.$el
+            //    let table = tablediv.querySelector('.el-table__body')
+               
+            //    console.dir(table.rows[2].cells)
+            //   //  document.querySelector 
+            //  })
+            // console.log() 
           }
         }
       });
@@ -347,6 +363,23 @@ export default {
       }
     },
     /**
+     * 自定义索引
+     * 
+     */
+    setTableIndex(index){
+      let text=0
+        let suitList = this.concatArr['suit']
+        for(let i = 0,len =suitList.length;i<len;i++){
+          if(suitList[i]!==0){
+            text+=1
+          }
+          if(index===i){
+            break;
+          }
+        }
+        return text
+    },
+    /**
      * 格式化text
      * 
      */
@@ -365,6 +398,21 @@ export default {
         let header = h("span", item["label"]);
         return header;
       };
+    },
+    /**
+     * 
+     *  导出表格
+     */
+    tableExport(){
+        //  let searchObj = this.searchObj;
+         let obj ={};
+          // searchObj.typeId && (obj.typeId = searchObj.typeId); // 类型
+          // searchObj.priorityId && (obj.priorityId = searchObj.priorityId);
+          // searchObj.needPerson && (obj.needPerson = searchObj.needPerson); // 需求人
+          // searchObj.name && (obj.name = searchObj.name); // 项目名
+          // searchObj.startTime && (obj.startTime = searchObj.startTime); // 开始时间
+          // searchObj.finshTime && (obj.finshTime = searchObj.finshTime); // 结束时间
+        StandardPost(TABLE_EXPORT,obj)
     }
   }
 };

@@ -92,6 +92,7 @@ let http = axios.create({
   headers: {
     'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
   },
+  // 后执行request2
   transformRequest: [function (data) {
     // let newData = ''
     // for (let k in data) {
@@ -99,15 +100,27 @@ let http = axios.create({
     //     newData += encodeURIComponent(k) + '=' + encodeURIComponent(data[k]) + '&';
     //   }
     // }
-  
+    //  console.log(qs.stringify(data))
     return qs.stringify(data)
   }],
+  // 先执行response1
+  // transformResponse:[(data)=>{
+  //     console.log(JSON.parse(data))
+  //     return JSON.parse(data)
+  // }]
 })
-
-let http2 = axios.create({
-  headers: {
-    'Content-Type': 'application/json'
-  }
+// 先执行request1
+http.interceptors.request.use((config)=>{
+  // console.log(config)
+  return config
+},(err)=>{
+  console.log(err)
+})
+// 后执行response2
+http.interceptors.response.use((data)=>{
+  // console.log('inter2')
+  // console.log(data)
+  return data
 })
 
 function apiAxios (method, url, params, response) {
@@ -124,19 +137,12 @@ function apiAxios (method, url, params, response) {
   return http(config)
     .then(function (res) {
       response(res)
-      // return res
     }).catch(function (err) {
       response(err)
     })
 }
 
-// http.interceptors.request.use((config)=>{
-//   console.log('inter1')
-//   return config
-// })
-// http.interceptors.response.use((config)=>{
-//   console.log('inter2')
-// })
+
 export default {
   get: function (url, params, response) {
     return apiAxios('GET', url, params, response)
@@ -154,7 +160,7 @@ export default {
         let getApi=[]
         list.forEach(api => {
           let config = {
-            method :'GET',
+            method :'GET'
           }
           config = Object.assign({},config,api)
           let method = config.method.toUpperCase() 
@@ -167,5 +173,5 @@ export default {
         });
         axios.all(getApi).then(axios.spread(response)).catch(response)
   },
-  jsonAxios:http2
+  instance:http
 }

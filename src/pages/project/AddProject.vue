@@ -93,9 +93,9 @@
                                                     >
                                                    </el-date-picker>
                                         </el-form-item>
-                                        <el-form-item label="项目推迟天数" prop = "delaydays">
+                                        <!-- <el-form-item label="项目推迟天数" prop = "delaydays">
                                                   <el-input v-model.number="sizeForm.delaydays"></el-input>
-                                        </el-form-item>
+                                        </el-form-item> -->
                                         <el-form-item label="关联产品">
                                          
                                            <el-cascader
@@ -215,17 +215,17 @@ export default {
            { required: true, message: '请选择项目负责人', trigger: 'change'}], 
         var3: [
            { max:200, message: '最多不超过200个字符', trigger: 'blur' }], 
-        delaydays: [
-           { type: 'number',message: '必须为数字', trigger: 'blur',transform (value){
-              if(value){
-                return value
-              }else{
-                _this.sizeForm.delaydays = 0;
-                return 0
-              } 
-           } },
+        // delaydays: [
+        //    { type: 'number',message: '必须为数字', trigger: 'blur',transform (value){
+        //       if(value){
+        //         return value
+        //       }else{
+        //         _this.sizeForm.delaydays = 0;
+        //         return 0
+        //       } 
+        //    } },
            
-           ]  
+        //    ]  
       }
      // 级联显示的属性 
     const allprotype ={
