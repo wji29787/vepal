@@ -44,7 +44,7 @@ module.exports = {
         },
       },
       '/vdev': {
-        target: 'http://192.168.95.93:8089',
+        target: 'http://192.168.95.100:8085',
         changeOrigin: true,
         // ws: true,
         pathRewrite: {

@@ -165,9 +165,7 @@ export default {
           } 
           getApi.push(http(config))
         });
-        axios.all(getApi).then(axios.spread(response)).catch((err)=>{
-          response(err)
-        })
+        axios.all(getApi).then(axios.spread(response)).catch(response)
   },
   jsonAxios:http2
 }

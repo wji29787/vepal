@@ -79,20 +79,24 @@ export default {
     };
   },
   mounted () {
+    Promise.all([this.getProductNameList(), this.getPorjectNameList()]).then(res => {
+       
+    }).catch(err => {});
     this.getProjectProductList();
-    Promise.all([this.getProductNameList(), this.getPorjectNameList()]).then(res => {}).catch(err => {});
   },
   methods: {
     getProductNameList () {
       return new Promise((resovle, reject) => {
         let _data = {};
         this.$http.post(PRODUCT_NAME_SELECT, _data, res => {
+       
           this.$nextTick(() => {
             this.productNameSelectList = [];
             if (res.data.code === RESPONSE_SUCCESS_CODE) {
               let listData = res.data.data.list;
               if (listData && Array.isArray(listData) && listData.length) {
                 this.productNameSelectList = listData;
+                // console.log(listData, 'productList');
               }
             }
           });
@@ -103,12 +107,14 @@ export default {
       return new Promise((resovle, reject) => {
         let _data = {};
         this.$http.post(PROJECT_NAME_SELECT, _data, res => {
+    
           this.$nextTick(() => {
             this.selectProjectNameList = [];
             if (res.data.code === RESPONSE_SUCCESS_CODE) {
               let listData = res.data.data.list;
               if (listData && Array.isArray(listData) && listData) {
                 this.selectProjectNameList = listData;
+                // console.log(listData, 'projectList');
               }
             }
           });

@@ -211,8 +211,8 @@ export default {
            { required: true, message: '请上优先级',trigger: 'change' }],    
         needperson: [
            { required: true, message: '请选择项目需求人', trigger: 'change'}], 
-        // chargeperson: [
-        //    { required: true, message: '请选择项目负责人', trigger: 'change'}], 
+        chargeperson: [
+           { required: true, message: '请选择项目负责人', trigger: 'change'}], 
         var3: [
            { max:200, message: '最多不超过200个字符', trigger: 'blur' }], 
         delaydays: [
