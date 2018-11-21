@@ -584,7 +584,6 @@ export default {
     productDown(row) {
       // util.StandardPost(url1);
       // window.open(url)
-
       let url;
       // 下载文件
       if (util.toType(row) === "string" || util.toType(row) === "number") {

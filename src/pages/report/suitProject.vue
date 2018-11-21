@@ -31,10 +31,8 @@
           </el-row>
         </el-col>
         <el-col :span="12">
-          <div style="width:128px;float:right;">
-            <el-button type="primary" size="small" @click="handleSearchBtnClick">搜索</el-button>
-            <el-button type="primary" size="small" :disabled="true">导出</el-button>
-          </div>
+          <el-button type="primary" size="small" @click="handleSearchBtnClick">搜索</el-button>
+          <el-button type="primary" size="small" @click="handleExportBtnClick">导出</el-button>
         </el-col>
       </el-row>
     </el-header>
@@ -59,6 +57,8 @@
   </el-container>
 </template>
 <script>
+import { StandardPost } from '@/assets/js/util.js';
+const EXPORT_SUIT = '/suit/report/exportSuitAndProject';
 const SUIT_NAME_SELECT = '/api/suit/suit/findAllSuitName';
 const PROJECT_NAME_SELECT = '/api/pjc/project/findAllProjectName';
 const GET_SUIT_PROJECT = '/api/suit/report/findSuitAndProjectList';
@@ -205,6 +205,9 @@ export default {
     },
     handleSearchBtnClick () {
       this.getSuitProjectList();
+    },
+    handleExportBtnClick () {
+      StandardPost(EXPORT_SUIT, {suitName: this.searchParams.suitName, projectName: this.searchParams.projectName}, 'get');
     }
   }
 }

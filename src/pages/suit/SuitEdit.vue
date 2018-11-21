@@ -14,7 +14,7 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item label="测试负责人" prop="testPerson">
-        <el-select v-model="form.testPerson" placeholder="请选择测试负责人" filterable size="small">
+        <el-select v-model="form.testPerson" placeholder="请选择测试负责人" filterable clearable size="small">
           <el-option v-for="item in testUserList"
                       :key="item.userId"
                       :label="item.userName"
@@ -23,7 +23,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="联调负责人" prop="adjustPerson">
-          <el-select v-model="form.adjustPerson" placeholder="请选择测试负责人" filterable size="small">
+          <el-select v-model="form.adjustPerson" placeholder="请选择测试负责人" filterable clearable size="small">
           <el-option v-for="item in debuggingUserList"
                     :key="item.userId"
                     :label="item.userName"
@@ -45,12 +45,13 @@
         <template>
           <div>
             <treetransfer :from_data="projectList"
+                          node_key="id"
                           :title="title"
                           :to_data="toData"
                           :defaultProps="{label:'label'}"
                           @addBtn="handleTransferAdd"
                           @removeBtn="handleTransferRemove"
-                          :mode="mode" height="380px" openAll>
+                          :mode="mode" height="380px" filter openAll>
               </treetransfer>
             </div>
           </template>
@@ -569,20 +570,21 @@ export default {
     // 将后端给的数据添加一些必要key
     setDataForTree (data) {
       data.forEach((element, index) => {
-        element.key = index;
         element.pid = 0;
         element.id = (index + 1).toString();
-        element.label = element.name;
-        if (Array.isArray(element.products) && element.products.length) {
-          element.children = element.products;
+        element.label = element.name === null ? '' : element.name;
+        element.children = element.products;
+        delete element.products;
+        if (Array.isArray(element.children) && element.children.length) {
           element.children.forEach((item, itemIndex) => {
-            item.label = item.productName;
+            item.label = item.productName === null ? '' : item.productName;
             item.id = `${element.id}-${itemIndex + 1}`;
             item.pid = element.id;
             item.children = item.versions;
-            if (Array.isArray(item.versions) && item.versions.length) {
+            delete item.versions;
+            if (Array.isArray(item.children) && item.children.length) {
               item.children.forEach((verItem, verIndex) => {
-                verItem.label = verItem.verName;
+                verItem.label = verItem.verName === null ? '' : verItem.verName;
                 verItem.id = `${item.id}-${verIndex + 1}`;
                 verItem.pid = item.id;
               });
@@ -596,6 +598,19 @@ export default {
       });
       return data;
     },
+    compareData (params) {
+      return function (obj1, obj2) {
+        let val1 = obj1[params];
+        let val2 = obj2[params]; 
+        if (val1 < val2 ) { //正序
+          return 1;
+        } else if (val1 > val2 ) { 
+          return -1; 
+        } else { 
+          return 0; 
+        }
+      }
+    },
     // 监听穿梭框组件添加
     handleTransferAdd (fromData, toData, obj) {
       this.form.toData = toData;
@@ -605,6 +620,7 @@ export default {
     // 监听穿梭框组件移除
     handleTransferRemove (fromData, toData, obj) {
       this.form.toData = toData;
+      this.projectList = fromData.sort(this.compareData('id'));
       // 树形穿梭框模式transfer时，返回参数为左侧树移动后数据、右侧树移动后数据、移动的{keys,nodes,halfKeys,halfNodes}对象
       // 通讯录模式addressList时，返回参数为右侧收件人列表、右侧抄送人列表、右侧密送人列表
     }

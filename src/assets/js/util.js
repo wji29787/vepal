@@ -235,18 +235,20 @@ function setScrollTop(el, scrollTop) {
   }
   el.scrollTop = scrollTop
 }
-let StandardPost = (url, args) => {
-  let form = document.createElement("form"),
-    input = document.createElement('input');
-  form.method = 'post';
+let StandardPost = (url, args, type = 'post') => {
+  let form = document.createElement("form");
+  form.method = type;
   form.action = url;
   for (let key in args) {
+    let input = document.createElement('input');
     input.setAttribute('type', 'hidden')
     input.setAttribute('name', key)
     input.setAttribute('value', args[key])
     form.appendChild(input)
   }
   document.body.appendChild(form)
+  console.log(form, 'form');
+  debugger;
   form.submit();
   form.parentNode.removeChild(form)
 }

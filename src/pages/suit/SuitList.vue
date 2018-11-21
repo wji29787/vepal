@@ -1,13 +1,19 @@
 <template>
     <div  class="extend-h-w suit-list">
          <el-container class="extend-h-w" direction = "vertical">
-              <el-row class ="sl-item-h100" type = "flex" justify = "center" align ="middle">
+              <el-row class="sl-item-h100" type="flex" justify="center" align="middle">
                     <h2 class = "sl-title">套装列表</h2>
                </el-row>
-               <el-container class="extend-h-w" direction = "vertical">
+               <el-container class="extend-h-w" direction="vertical">
                    <el-row :gutter="10">
                         <el-col :lg ="4"  :md="6">
-                            <el-input v-model="suitName" placeholder="请输入套装名称" size="small"></el-input>
+                            <el-select v-model="suitName" filterable clearable size="small">
+                                <el-option v-for="(item, index) in selectSuitNameList"
+                                        :key="index"
+                                        :label="item.suitName"
+                                        :value="item.suitName">
+                                </el-option>
+                            </el-select>
                         </el-col>  
                         <el-col :lg ="4"  :md="5">
                              <el-date-picker class = "extend-w"
@@ -19,8 +25,8 @@
                             </el-date-picker>
                          </el-col> 
                          <el-col :lg="16" :md="3">
-                             <el-button  icon="el-icon-search" size="small" @click="getlist()" circle></el-button>
-                             <el-button class="fr" size="small" @click="deleteAllRow()">批量删除</el-button>
+                             <el-button type="primary" size="small" @click="getlist()">搜索</el-button>
+                             <el-button type="primary" size="small" @click="deleteAllRow()">批量删除</el-button>
                          </el-col>
                    </el-row>
                    <br/>
@@ -81,17 +87,34 @@
 </template>
 
 <script>
+const SUIT_NAME_SELECT = '/api/suit/suit/findAllSuitName';
     export default {
         data() {
             return {
                 list:[],
                 suitName:'',
                 suitDate:'',
-                multipleSelection:[]
+                multipleSelection:[],
+                selectSuitNameList: []
             }
         },mounted() {
+            this.getSuitNameList();
             this.getlist();
         },methods:{
+            getSuitNameList () {
+                let _data = {};
+                this.$http.post(SUIT_NAME_SELECT, _data, res => {
+                    this.$nextTick(() => {
+                        this.selectSuitNameList = [];
+                        if (res.data.code === 200) {
+                            let listData = res.data.data.list;
+                            if (listData && Array.isArray(listData) && listData.length) {
+                                this.selectSuitNameList = listData;
+                            }
+                        }
+                    });
+                });
+            },
             //批量选择
              handleSelectionChange(val) {
                 this.multipleSelection = val;
