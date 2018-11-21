@@ -14,7 +14,7 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item label="测试负责人" prop="testPerson">
-        <el-select v-model="form.testPerson" placeholder="请选择测试负责人">
+        <el-select v-model="form.testPerson" placeholder="请选择测试负责人" filterable size="small">
           <el-option v-for="item in testUserList"
                       :key="item.userId"
                       :label="item.userName"
