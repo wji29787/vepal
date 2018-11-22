@@ -325,7 +325,7 @@ export default {
         obj.label = label[label.length - 1];
         this.proverList.push(obj);
       }
-      console.log(this.proverList)
+      // console.log(this.proverList)
     },
     /**
      * 优先级列表
