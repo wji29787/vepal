@@ -39,9 +39,30 @@
     <el-main class="r-project-product__main">
       <el-table :data="dataSource" :border="true" style="width: 100%" :span-method="objectSpanMethod">
         <el-table-column prop="number" label="序号" width="180"></el-table-column>
-        <el-table-column prop="projectName" label="项目名称" width="180"></el-table-column>
-        <el-table-column prop="productName" label="产品名称"></el-table-column>
-        <el-table-column prop="version" label="版本号"></el-table-column>
+        <el-table-column prop="projectName" label="项目名称" width="180">
+          <template slot-scope="scope">
+            <el-popover el-popover trigger="hover" placement="top">
+              项目名称 : {{scope.row.projectName}}
+              <span slot="reference">{{scope.row.projectName}}</span>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column prop="productName" label="产品名称">
+          <template slot-scope="scope">
+            <el-popover el-popover trigger="hover" placement="left">
+              产品名称 : {{scope.row.productName}}
+              <span slot="reference">{{scope.row.productName}}</span>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column prop="version" label="版本号">
+          <template slot-scope="scope">
+            <el-popover el-popover trigger="hover" placement="left">
+              版本号 : {{scope.row.version}}
+              <span slot="reference">{{scope.row.version}}</span>
+            </el-popover>
+          </template>
+        </el-table-column>
       </el-table>
     </el-main>
     <el-footer class="r-project-product__footer" height="40px">

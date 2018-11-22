@@ -25,8 +25,7 @@ import addSuit from '@/pages/suit/SuitEdit'
 import testVepal from '@/pages/vepal/testVepal'
 
 //视图
-import productIndexView from '@/pages/report/productIndex';
-import pptview from '@/pages/report/pptview'
+import pptView from '@/pages/report/pptview'
 import suitProjectView from '@/pages/report/suitProject';
 import suitProductView from '@/pages/report/suitProduct';
 import projectProductView from '@/pages/report/projectProduct';
@@ -178,11 +177,11 @@ export default new Router({
             title:'图标展示'
           }
         },{
-          path: 'productindexview',
-          name: 'productIndexView',
-          component: productIndexView,
-          meta: {
-            title: '套装产品首页'
+          path:'pptView',
+          name:'pptView',
+          component:pptView,
+          meta:{
+            title:'ppt横图'
           }
         },{
           path:'suitprojectview',
@@ -191,8 +190,14 @@ export default new Router({
           meta: {
             title: '套装项目报表'
           }
-        },
-        {
+        },{
+          path: 'suitProductView',
+          name: 'suitProductView',
+          component: suitProductView,
+          meta: {
+            title: '套装产品报表'
+          }
+        },{
           path: 'projectproductview',
           name: 'projectProductView',
           component: projectProductView,

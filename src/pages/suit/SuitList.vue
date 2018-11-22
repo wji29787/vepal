@@ -2,7 +2,7 @@
     <div  class="extend-h-w suit-list">
          <el-container class="extend-h-w" direction = "vertical">
               <el-row class="sl-item-h100" type="flex" justify="center" align="middle">
-                    <h2 class = "sl-title">套装列表</h2>
+                    <h2 class="suit-title">套装列表</h2>
                </el-row>
                <el-container class="extend-h-w" direction="vertical">
                    <el-row :gutter="10">
@@ -35,6 +35,8 @@
                             :data="list"
                             scope="scope"
                             border
+                            class="table-view"
+                            :row-style="tableRowStyle"
                             ref="multipleTable"
                             @selection-change="handleSelectionChange"
                             style="width: 100%">
@@ -51,15 +53,33 @@
                             prop="suitName"
                             label="套装名称"
                             width="380">
+                            <template slot-scope="scope">
+                                <el-popover el-popover trigger="hover" placement="top">
+                                    套装名称 : {{scope.row.suitName}}
+                                <span slot="reference">{{scope.row.suitName}}</span>
+                                </el-popover>
+                            </template>
                             </el-table-column>
                             <el-table-column
                             prop="suitDate"
                             label="套装日期"
                             width="180">
+                            <template slot-scope="scope">
+                                <el-popover el-popover trigger="hover" placement="top">
+                                    套装名称 : {{scope.row.suitDate}}
+                                <span slot="reference">{{scope.row.suitDate}}</span>
+                                </el-popover>
+                            </template>
                             </el-table-column>
                             <el-table-column
                             prop="suitDesc"
                             label="套装描述">
+                            <template slot-scope="scope">
+                                <el-popover el-popover trigger="hover" placement="top">
+                                    套装名称 : {{scope.row.suitDesc}}
+                                <span slot="reference">{{scope.row.suitDesc}}</span>
+                                </el-popover>
+                            </template>
                             </el-table-column>
                             <el-table-column
                             label="操作"
@@ -213,6 +233,9 @@ const SUIT_NAME_SELECT = '/api/suit/suit/findAllSuitName';
                         suitId: suitId
                     }
                 })
+            },
+            tableRowStyle (row, rowIndex) {
+                console.log(row, 'rowsss');
             }
         }
     }
@@ -220,6 +243,13 @@ const SUIT_NAME_SELECT = '/api/suit/suit/findAllSuitName';
 
 <style scoped>
 .suit-list {}
+.suit-list .suit-title {
+    position: fixed;
+    font-size: 16px;
+    color: white;
+    right: 20px;
+    top: 21px;
+}
 .suit-list .el-table::before {
     height: 0px;        
 }

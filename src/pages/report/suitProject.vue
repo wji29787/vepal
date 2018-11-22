@@ -38,14 +38,28 @@
     </el-header>
     <el-main class="r-suit-project__main">
       <el-table
-      :data="dataSource"
-      :span-method="objectSpanMethod"
-      border
-      style="width: 100%; margin-top: 20px">
-      <el-table-column prop="number" label="序号" width="180"></el-table-column>
-      <el-table-column prop="suitName" label="套装名称"></el-table-column>
-      <el-table-column prop="projectName" label="项目名称"></el-table-column>
-    </el-table>
+        :data="dataSource"
+        :span-method="objectSpanMethod"
+        border
+        style="width: 100%; margin-top: 20px">
+        <el-table-column prop="number" label="序号" width="180"></el-table-column>
+        <el-table-column prop="suitName" label="套装名称">
+          <template slot-scope="scope">
+            <el-popover el-popover trigger="hover" placement="top">
+              套装名称 : {{scope.row.suitName}}
+              <span slot="reference">{{scope.row.suitName}}</span>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column prop="projectName" label="项目名称">
+          <template slot-scope="scope">
+            <el-popover el-popover trigger="hover" placement="top">
+              项目名称 : {{scope.row.projectName}}
+              <span slot="reference">{{scope.row.projectName}}</span>
+            </el-popover>
+          </template>
+        </el-table-column>
+      </el-table>
     </el-main>
     <el-footer class="r-suit-project__footer" height="40px">
       <el-pagination background
