@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Vepal from '@/vepal/vepal'
-import AddVepal from '@/vepal/addvepal'
-import vepalMain from '@/vepal/main'
+// import Vepal from '@/vepal/vepal'
+// import AddVepal from '@/vepal/addvepal'
+// import vepalMain from '@/vepal/main'
 
 import Home from '@/home/Home'
 // project
@@ -22,7 +22,7 @@ import Login from '@/login/login'
 import addSuit from '@/pages/suit/SuitEdit'
 
 // vepal
-import testVepal from '@/pages/vepal/testVepal'
+import Vepal from '@/pages/vepal/vepal'
 
 //视图
 import pptView from '@/pages/report/pptview'
@@ -33,21 +33,6 @@ Vue.use(Router)
 
 export default new Router({
   routes: [
-    {
-      path: '/vepal',
-      name: 'Vepal',
-      component: Vepal
-    },
-    {
-      path: '/addvepal',
-      name: 'AddVepal',
-      component: AddVepal
-    },
-    {
-      path :'/main',
-      name:'vepalMain',
-      component:vepalMain
-    },
     //登陆页面
     {
       path: '/login',
@@ -70,14 +55,6 @@ export default new Router({
         {
           path:'/',
           redirect: 'project'
-        },
-        {
-          path: 'vepal',
-          name: 'Vepal',
-          component: Vepal,
-          meta:{
-            title:'图表展示'
-          }
         },
         // 项目管理
         {
@@ -170,11 +147,11 @@ export default new Router({
           }  
         },
         {
-          path:'testVepal',
-          name:'testVepal',
-          component:testVepal,
+          path:'vepal',
+          name:'vepal',
+          component:Vepal,
           meta:{
-            title:'图标展示'
+            title:'图表展示'
           }
         },{
           path:'pptView',
@@ -212,10 +189,10 @@ export default new Router({
       path:'/404',
       component:()=>import('@/components/404')
     },
-    // {
-    //   path:'*',
-    //   redirect: '404'
-    // }
+    {
+      path:'*',
+      redirect: '404'
+    }
 
   ]
 })

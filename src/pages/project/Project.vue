@@ -145,7 +145,11 @@
 
 
                                         </el-table-column>
-                                     
+                                       <div slot = "append" class="table-loading"
+                          
+                                         v-show = "loading" v-loading = "loading">
+                                         <!-- sdfsf  element-loading-spinner="el-icon-loading"-->
+                                       </div>
                                     </el-table>
 
                             </el-row>
@@ -164,6 +168,7 @@ import {StandardPost} from '../../assets/js/util.js'
 export default {
   data() {
     return {
+      loading:false,
       visible2: -1,
       bscroll: true, // 是否加载
       pageNo: 1, // 初始加载页数
@@ -275,13 +280,14 @@ export default {
       searchObj.name && (obj.name = searchObj.name); // 项目名
       searchObj.startTime && (obj.startTime = searchObj.startTime); // 开始时间
       searchObj.finshTime && (obj.finshTime = searchObj.finshTime); // 结束时间
-
+      // 滚动加载loading
+      this.loading = true  
       this.$http.post("/api/pjc/project/findAllProject", obj, res => {
         // 使可以加载
         setTimeout(() => {
           this.bscroll = true;
         }, 350);
-
+         this.loading = false
         if (res.status === 200) {
           if (res.data.code === 200) {
             let data = res.data.data;

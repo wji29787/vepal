@@ -110,7 +110,8 @@ import{CHANGE_TITLE} from '../../model/store/storetypes.js'
 import tableList from "./suitAndPjcAndPdcTable.js";
 import {StandardPost} from '../../assets/js/util.js'
 // 表格导出
-const TABLE_EXPORT = "/api/suit/report/exportSuitAndProject"
+// const TABLE_EXPORT = "/api/suit/report/exportSuitAndProductList"
+const TABLE_EXPORT = "/vdev/report/exportSuitAndProductList"
 const GET_SUIT_PRODUCT = "/api/suit/report/findSuitAndProductList";
 // const GET_SUIT_PRODUCT = "/vdev/report/findSuitAndProductList";
 const PRODUCT_NAME_SELECT = "/api/pdc/product/findAllProduct";
@@ -408,14 +409,16 @@ export default {
      *  导出表格
      */
     tableExport(){
-        //  let searchObj = this.searchObj;
+         if(this.list.length===0){
+           this.$message.error('没有要导出的数据，请重新搜索')
+           return
+         }
+         let searchObj = this.searchObj;
          let obj ={};
-          // searchObj.typeId && (obj.typeId = searchObj.typeId); // 类型
-          // searchObj.priorityId && (obj.priorityId = searchObj.priorityId);
-          // searchObj.needPerson && (obj.needPerson = searchObj.needPerson); // 需求人
-          // searchObj.name && (obj.name = searchObj.name); // 项目名
-          // searchObj.startTime && (obj.startTime = searchObj.startTime); // 开始时间
-          // searchObj.finshTime && (obj.finshTime = searchObj.finshTime); // 结束时间
+          searchObj.suitId && (obj.suitId = searchObj.suitId); 
+          searchObj.projectId && (obj.projectId = searchObj.projectId);
+          searchObj.productId && (obj.productId = searchObj.productId); 
+         
         StandardPost(TABLE_EXPORT,obj)
     }
   }
