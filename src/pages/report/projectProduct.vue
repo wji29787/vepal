@@ -76,8 +76,8 @@
 </template>
 <script>
 import { StandardPost } from '@/assets/js/util.js';
-import { mapMutations } from 'vuex'
-import{ CHANGE_TITLE } from '../../model/store/storetypes.js'
+import { mapMutations } from 'vuex';
+import { CHANGE_TITLE } from '../../model/store/storetypes.js'
 const EXPORT_PROJECT_PRODUCT = '/pjc/report/exportProjectAndProduct';
 const GET_PROJECT_PRODUCT = '/api/pjc/report/findProjectAndProductList';
 const PRODUCT_NAME_SELECT = '/api/pdc/product/findAllProduct';
@@ -114,14 +114,12 @@ export default {
       return new Promise((resovle, reject) => {
         let _data = {};
         this.$http.post(PRODUCT_NAME_SELECT, _data, res => {
-       
           this.$nextTick(() => {
             this.productNameSelectList = [];
             if (res.data.code === RESPONSE_SUCCESS_CODE) {
               let listData = res.data.data.list;
               if (listData && Array.isArray(listData) && listData.length) {
                 this.productNameSelectList = listData;
-                // console.log(listData, 'productList');
               }
             }
           });
@@ -138,7 +136,6 @@ export default {
               let listData = res.data.data.list;
               if (listData && Array.isArray(listData) && listData) {
                 this.selectProjectNameList = listData;
-                // console.log(listData, 'projectList');
               }
             }
           });
@@ -157,10 +154,8 @@ export default {
           this.totalNumber = 0;
           if (res.data.code === RESPONSE_SUCCESS_CODE) {
             let listData = res.data.data.list;
-            if (listData && Array.isArray(listData) && listData.length) {
-              this.totalNumber = res.data.data.total;
-              this.setData(listData);
-            }
+            this.totalNumber = res.data.data.total;
+            this.setData(listData);
           }
         });
       });
@@ -175,9 +170,10 @@ export default {
                 let obj = {
                   projectName: element.name,
                   productName: proItem.productName,
+                  projectId: element.projectId,
                   version: verItem.verName,
-                  index: proIndex,
-                  subIndex: verIndex
+                  index: index,
+                  subIndex: proIndex
                 };
                 arr.push(obj);
              });
@@ -185,8 +181,9 @@ export default {
              let obj = {
                projectName: element.name,
                productName: proItem.productName,
+               projectId: element.projectId,
                version: '',
-               index: proIndex,
+               index: index,
                subIndex: ''
              };
              arr.push(arr);
@@ -196,6 +193,7 @@ export default {
           let obj = {
             projectName: element.name,
             productName: '',
+            projectId: element.projectId,
             version: '',
             index: '',
             subIndex: ''
@@ -204,7 +202,15 @@ export default {
         }
       });
       arr.forEach((element, index) => {
-        element.number = index + 1;
+        if (index === 0) {
+          element.number = index + 1;
+        } else {
+          if (element.projectId !== arr[index - 1].projectId) {
+            element.number = arr[index - 1].number + 1;
+          } else {
+            element.number = arr[index - 1].number;
+          }
+        }
       });
       this.dataSource = arr;
       this.reSetData(arr);
@@ -216,7 +222,7 @@ export default {
       this.subCurrentIndex = 0;
       data.forEach((element, index) => {
         if (index === 0) {
-          this.concatRowArr.push(1); 
+          this.concatRowArr.push(1);
         } else {
           if (element.index !== '' && data[index - 1].index !=='') {
             if (element.index === data[index - 1].index) {
@@ -253,14 +259,14 @@ export default {
     },
     objectSpanMethod ({ row, column, rowIndex, columnIndex }) {
       if (columnIndex === 0 || columnIndex === 1) {
-        const _row = this.subConcatRowArr[rowIndex];
+        const _row = this.concatRowArr[rowIndex];
         const _col = _row > 0 ? 1 : 0;
         return {
           rowspan: _row,
           colspan: _col
         }
       } else if (columnIndex === 2) {
-        const _row = this.concatRowArr[rowIndex];
+        const _row = this.subConcatRowArr[rowIndex];
         const _col = _row > 0 ? 1 : 0;
         return {
           rowspan: _row,
@@ -272,7 +278,7 @@ export default {
       this.getProjectProductList();
     },
     handleExportBtnClick () {
-      StandardPost(EXPORT_PROJECT_PRODUCT, {projectName: this.searchParams.projectName, productName: this.searchParams.productName}, 'get');
+      StandardPost(EXPORT_PROJECT_PRODUCT, {projectId: this.searchParams.projectName, productId: this.searchParams.productName}, 'get');
     },
     handleCurrentPageChange (val) {
       this.searchParams.currentPage = val;
