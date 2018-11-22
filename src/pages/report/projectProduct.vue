@@ -104,7 +104,7 @@ export default {
     };
   },
   mounted () {
-    this[CHANGE_TITLE]('套装项目报表');
+    this[CHANGE_TITLE]('项目产品报表');
     Promise.all([this.getProductNameList(), this.getPorjectNameList()]).then(res => {}).catch(err => {});
     this.getProjectProductList();
   },
