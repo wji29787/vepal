@@ -71,8 +71,11 @@
 </template>
 
 <script>
+
 import treetransfer from "el-tree-transfer";
 import moment from 'moment';
+import { mapMutations } from 'vuex'
+import{ CHANGE_TITLE } from '../../model/store/storetypes.js'
 
 const GET_USER_LIST = '/api/umc/user/findUserByUser';
 const PROJECT_LIST = '/api/pjc/project/findAllProjectProductVer';
@@ -130,6 +133,7 @@ export default {
     };
   },
   mounted () {
+    this[CHANGE_TITLE]('套装新增');
     Promise.all([this._getUserList(), this._getPorjectList()]).then(res => {
       if (this.$route.query.suitId) {
         this.suitInfo();
@@ -139,6 +143,7 @@ export default {
     });
   },
   methods: {
+    ...mapMutations([CHANGE_TITLE]),
     // 获取用户类列表
     _getUserList () {
       return new Promise((resolve, reject) => {
