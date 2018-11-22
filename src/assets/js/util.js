@@ -226,12 +226,11 @@ function getScrollTop() {
 function getScrollHeight() {
   return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight)
 }
-// 文档滚动到指定高度 
+// 文档滚动到指定高度
 function setScrollTop(el, scrollTop) {
   if (!scrollTop) {
     scrollTop = el
     el = document.documentElement || document.body
-
   }
   el.scrollTop = scrollTop
 }

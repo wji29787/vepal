@@ -76,6 +76,8 @@
 </template>
 <script>
 import { StandardPost } from '@/assets/js/util.js';
+import { mapMutations } from 'vuex'
+import{ CHANGE_TITLE } from '../../model/store/storetypes.js'
 const EXPORT_PROJECT_PRODUCT = '/pjc/report/exportProjectAndProduct';
 const GET_PROJECT_PRODUCT = '/api/pjc/report/findProjectAndProductList';
 const PRODUCT_NAME_SELECT = '/api/pdc/product/findAllProduct';
@@ -102,10 +104,12 @@ export default {
     };
   },
   mounted () {
+    this[CHANGE_TITLE]('项目产品报表');
     Promise.all([this.getProductNameList(), this.getPorjectNameList()]).then(res => {}).catch(err => {});
     this.getProjectProductList();
   },
   methods: {
+    ...mapMutations([CHANGE_TITLE]),
     getProductNameList () {
       return new Promise((resovle, reject) => {
         let _data = {};

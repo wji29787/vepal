@@ -2,7 +2,7 @@
     <div>
         
         <el-row tag = "div" class = "el-nav">
-          <el-button type="primary"  class = "elbutton" icon = "el-icon-setting" @click="customSet" size = "small">设置</el-button>
+          <!-- <el-button type="primary"  class = "elbutton" icon = "el-icon-setting" @click="customSet" size = "small">设置</el-button> -->
           <!-- <el-button type="primary" class = "elbutton"  @click="getzt" size = "small">新增套装</el-button> -->
         </el-row>
         <!-- 新增套装 -->

@@ -71,8 +71,11 @@
 </template>
 
 <script>
+
 import treetransfer from "el-tree-transfer";
 import moment from 'moment';
+import { mapMutations } from 'vuex'
+import{ CHANGE_TITLE } from '../../model/store/storetypes.js'
 
 const GET_USER_LIST = '/api/umc/user/findUserByUser';
 const PROJECT_LIST = '/api/pjc/project/findAllProjectProductVer';
@@ -130,6 +133,7 @@ export default {
     };
   },
   mounted () {
+    this[CHANGE_TITLE]('套装新增');
     Promise.all([this._getUserList(), this._getPorjectList()]).then(res => {
       if (this.$route.query.suitId) {
         this.suitInfo();
@@ -139,6 +143,7 @@ export default {
     });
   },
   methods: {
+    ...mapMutations([CHANGE_TITLE]),
     // 获取用户类列表
     _getUserList () {
       return new Promise((resolve, reject) => {
@@ -572,6 +577,7 @@ export default {
       data.forEach((element, index) => {
         element.pid = 0;
         element.id = (index + 1).toString();
+        element.key = index + 1;
         element.label = element.name === null ? '' : element.name;
         element.children = element.products;
         delete element.products;
@@ -601,13 +607,13 @@ export default {
     compareData (params) {
       return function (obj1, obj2) {
         let val1 = obj1[params];
-        let val2 = obj2[params]; 
+        let val2 = obj2[params];
         if (val1 < val2 ) { //正序
+          return -1;
+        } else if (val1 > val2 ) {
           return 1;
-        } else if (val1 > val2 ) { 
-          return -1; 
-        } else { 
-          return 0; 
+        } else {
+          return 0;
         }
       }
     },
@@ -620,7 +626,7 @@ export default {
     // 监听穿梭框组件移除
     handleTransferRemove (fromData, toData, obj) {
       this.form.toData = toData;
-      this.projectList = fromData.sort(this.compareData('id'));
+      this.projectList = fromData.sort(this.compareData('key'));
       // 树形穿梭框模式transfer时，返回参数为左侧树移动后数据、右侧树移动后数据、移动的{keys,nodes,halfKeys,halfNodes}对象
       // 通讯录模式addressList时，返回参数为右侧收件人列表、右侧抄送人列表、右侧密送人列表
     }

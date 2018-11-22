@@ -71,6 +71,8 @@
   </el-container>
 </template>
 <script>
+import { mapMutations } from 'vuex';
+import{ CHANGE_TITLE } from '../../model/store/storetypes.js';
 import { StandardPost } from '@/assets/js/util.js';
 const EXPORT_SUIT = '/suit/report/exportSuitAndProject';
 const SUIT_NAME_SELECT = '/api/suit/suit/findAllSuitName';
@@ -100,10 +102,12 @@ export default {
     };
   },
   mounted () {
+    this[CHANGE_TITLE]('套装项目报表');
     this.getSuitProjectList();
     Promise.all([this.getSuitNameSelectList(), this.getPorjectNameList()]).then(res => {}).catch(err => {});
   },
   methods: {
+    ...mapMutations([CHANGE_TITLE]),
     getSuitNameSelectList () {
       return new Promise((resovle, reject) => {
         let _data = {};

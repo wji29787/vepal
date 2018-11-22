@@ -2,7 +2,6 @@
     <div  class="extend-h-w suit-list">
          <el-container class="extend-h-w" direction = "vertical">
               <el-row class="sl-item-h100" type="flex" justify="center" align="middle">
-                    <h2 class="suit-title">套装列表</h2>
                </el-row>
                <el-container class="extend-h-w" direction="vertical">
                    <el-row :gutter="10">
@@ -107,6 +106,8 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
+import{ CHANGE_TITLE } from '../../model/store/storetypes.js'
 const SUIT_NAME_SELECT = '/api/suit/suit/findAllSuitName';
     export default {
         data() {
@@ -118,9 +119,11 @@ const SUIT_NAME_SELECT = '/api/suit/suit/findAllSuitName';
                 selectSuitNameList: []
             }
         },mounted() {
+            this[CHANGE_TITLE]('套装列表');
             this.getSuitNameList();
             this.getlist();
         },methods:{
+            ...mapMutations([CHANGE_TITLE]),
             getSuitNameList () {
                 let _data = {};
                 this.$http.post(SUIT_NAME_SELECT, _data, res => {
@@ -243,13 +246,6 @@ const SUIT_NAME_SELECT = '/api/suit/suit/findAllSuitName';
 
 <style scoped>
 .suit-list {}
-.suit-list .suit-title {
-    position: fixed;
-    font-size: 16px;
-    color: white;
-    right: 20px;
-    top: 21px;
-}
 .suit-list .el-table::before {
     height: 0px;        
 }
