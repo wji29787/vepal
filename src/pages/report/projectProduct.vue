@@ -32,16 +32,37 @@
         </el-col>
         <el-col :span="12">
           <el-button type="primary" size="small" @click="handleSearchBtnClick">搜索</el-button>
-          <el-button type="primary" size="small">导出</el-button>
+          <el-button type="primary" size="small" @click="handleExportBtnClick">导出</el-button>
         </el-col>
       </el-row>
     </el-header>
     <el-main class="r-project-product__main">
       <el-table :data="dataSource" :border="true" style="width: 100%" :span-method="objectSpanMethod">
         <el-table-column prop="number" label="序号" width="180"></el-table-column>
-        <el-table-column prop="projectName" label="项目名称" width="180"></el-table-column>
-        <el-table-column prop="productName" label="产品名称"></el-table-column>
-        <el-table-column prop="version" label="版本号"></el-table-column>
+        <el-table-column prop="projectName" label="项目名称" width="180">
+          <template slot-scope="scope">
+            <el-popover el-popover trigger="hover" placement="top">
+              项目名称 : {{scope.row.projectName}}
+              <span slot="reference">{{scope.row.projectName}}</span>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column prop="productName" label="产品名称">
+          <template slot-scope="scope">
+            <el-popover el-popover trigger="hover" placement="left">
+              产品名称 : {{scope.row.productName}}
+              <span slot="reference">{{scope.row.productName}}</span>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column prop="version" label="版本号">
+          <template slot-scope="scope">
+            <el-popover el-popover trigger="hover" placement="left">
+              版本号 : {{scope.row.version}}
+              <span slot="reference">{{scope.row.version}}</span>
+            </el-popover>
+          </template>
+        </el-table-column>
       </el-table>
     </el-main>
     <el-footer class="r-project-product__footer" height="40px">
@@ -54,7 +75,8 @@
   </el-container>
 </template>
 <script>
-const EXPORT_PROJECT_PRODUCT = '/suit/report';
+import { StandardPost } from '@/assets/js/util.js';
+const EXPORT_PROJECT_PRODUCT = '/pjc/report/exportProjectAndProduct';
 const GET_PROJECT_PRODUCT = '/api/pjc/report/findProjectAndProductList';
 const PRODUCT_NAME_SELECT = '/api/pdc/product/findAllProduct';
 const PROJECT_NAME_SELECT = '/api/pjc/project/findAllProjectName';
@@ -244,6 +266,9 @@ export default {
     },
     handleSearchBtnClick () {
       this.getProjectProductList();
+    },
+    handleExportBtnClick () {
+      StandardPost(EXPORT_PROJECT_PRODUCT, {projectName: this.searchParams.projectName, productName: this.searchParams.productName}, 'get');
     },
     handleCurrentPageChange (val) {
       this.searchParams.currentPage = val;

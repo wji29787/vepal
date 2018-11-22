@@ -1,19 +1,21 @@
 <template>
     <div class="ppt-view">
         <h3 class="title search-title">
-            产品计划升级套装情况
-            <div class="fr">
+            <span class="product-title">产品计划升级套装情况</span>
+            <div>
                <el-date-picker
                 v-model="startTime"
+                size="small"
                 type="date"
                 placeholder="开始时间">
                 </el-date-picker>
                 <el-date-picker
                 v-model="endTime"
                 type="date"
+                size="small"
                 placeholder="结束时间">
                 </el-date-picker>
-                 <el-button icon="el-icon-search" circle @click="getlist"></el-button>
+                 <el-button icon="el-icon-search" size="small" circle @click="getlist"></el-button>
             </div>
         </h3>
         <div class="view">
@@ -78,6 +80,13 @@
 </script>
 
 <style scoped>
+.product-title {
+    position: fixed;
+    font-size: 16px;
+    color: white;
+    right: 20px;
+    top: 5px;
+}
 .ppt-view {}
  /*滚动条样式*/
 .viewbar::-webkit-scrollbar {/*滚动条整体样式*/

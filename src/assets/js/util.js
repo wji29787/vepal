@@ -247,8 +247,6 @@ let StandardPost = (url, args, type = 'post') => {
     form.appendChild(input)
   }
   document.body.appendChild(form)
-  console.log(form, 'form');
-  debugger;
   form.submit();
   form.parentNode.removeChild(form)
 }

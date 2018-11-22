@@ -50,15 +50,23 @@
                         <span>报表管理</span>
                     </template>
                     <el-menu-item index="4-1"
-                    :route="{path: 'suitprojectview'}">
+                    :route="{name: 'suitProjectView'}">
                     套装项目报表
                     </el-menu-item>
                     <el-menu-item index="4-2"
-                    :route="{path: 'productindexview'}">
+                    :route="{name: 'suitProductView'}">
                     套装产品报表
                     </el-menu-item>
                     <el-menu-item index="4-3"
-                    :route="{path: 'projectproductview'}">
+                    :route="{name: 'testVepal'}">
+                    套装展示
+                    </el-menu-item>
+                    <el-menu-item index="4-4"
+                    :route="{name: 'pptView'}">
+                    横图
+                    </el-menu-item>
+                    <el-menu-item index="4-5"
+                    :route="{name: 'projectProductView'}">
                     项目产品报表
                     </el-menu-item>
                 </el-submenu>

@@ -1,7 +1,7 @@
 <template>
   <div style="height:100%;width:100%;">
     <add-vepal @saveComplete = "reRender"  @customstyleChange = "customSetstyle" @customResetStyle = "customResetStyle"/>
-    <span class="version">套装展示<strong>v1.0.1</strong></span>
+    <!-- <span class="version">套装展示<strong>v1.0.1</strong></span> -->
       <el-scrollbar 
          ref = "scroll-elem" 
          style="height:100%;" 
