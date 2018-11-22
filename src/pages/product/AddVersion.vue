@@ -2,9 +2,9 @@
     <div  class="extend-h-w">
                <el-container class="extend-h-w  minc-height" direction = "vertical">
                    <router-link to = "../product">返回</router-link>
-                   <el-row class ="sl-item-h100" type = "flex" justify = "center" align ="middle">
+                   <!-- <el-row class ="sl-item-h100" type = "flex" justify = "center" align ="middle">
                              <h2 class = "sl-title">{{$route.meta.title}}</h2>
-                    </el-row>
+                    </el-row> -->
 
                           <el-container class="extend-h-w" direction = "vertical">
                             <el-row type = "flex" justify = "center">

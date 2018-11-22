@@ -5,9 +5,9 @@
                      <router-link to = "../project">返回</router-link>
                    </el-row>
                    
-                   <el-row class ="sl-item-h100" type = "flex" justify = "center" align ="middle">
+                   <!-- <el-row class ="sl-item-h100" type = "flex" justify = "center" align ="middle">
                              <h2 class = "sl-title">{{$route.meta.title}}</h2>
-                    </el-row>
+                    </el-row> -->
                      
                           <el-container class="extend-h-w" direction = "vertical">
                             <el-row type = "flex" justify = "center">
@@ -151,7 +151,8 @@
     </div>
 </template>
 <script>
-
+import { mapMutations } from 'vuex'
+import{CHANGE_TITLE} from '../../model/store/storetypes.js'
 import Slfoot from "../../components/Foot";
 // import options from "./optionList.js";
 export default {
@@ -261,15 +262,17 @@ export default {
   },
   watch: {
     'sizeForm.starttime'(){
-      console.log(this.sizeForm.starttime)
-      console.log(new Date(this.sizeForm.starttime))
+      // console.log(this.sizeForm.starttime)
+      // console.log(new Date(this.sizeForm.starttime))
     }
   },
 
   mounted() {
+     this[CHANGE_TITLE](this.$route['meta']['title']);
     this.getTypeAndPriority();
   },
   methods: {
+    ...mapMutations([CHANGE_TITLE]),
     /**
      * 时间校验
      * 

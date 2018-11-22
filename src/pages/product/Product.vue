@@ -1,12 +1,12 @@
 <template>
     <div  class="extend-h-w">
                <el-container class="extend-h-w" direction = "vertical">
-                   <el-row class ="sl-item-h100" type = "flex" justify = "center" align ="middle">
+                   <!-- <el-row class ="sl-item-h100" type = "flex" justify = "center" align ="middle">
                              <h2 class = "sl-title">产品管理列表</h2>
-                    </el-row>
+                    </el-row> -->
 
                           <el-container class="extend-h-w" direction = "vertical">
-                            <el-row :gutter = "10">
+                            <el-row :gutter = "10" type="flex">
                              <!--  remote
                                         :remote-method="productobj.remoteMethod"
                                         :loading="productobj.loading"  -->
@@ -36,20 +36,21 @@
                                  <el-col :span = "1.5"><el-button @click = "searchData()">搜索</el-button></el-col>
 
                                  <el-col :span = "6"  class="fr">
-                                   <el-button class = "fr" @click = "addProduct">新增产品</el-button>
+                                   <!-- <div class="fr"> -->
+                                   <el-button class = "" @click = "addProduct">新增产品</el-button>
                                    <el-popover
                                       placement="left"
                                       width="160"
                                       v-model = "visible"
                                     >
-                                      <p>确定删除所有选中产品(产品删除时版本也会删除)吗？</p>
+                                      <p>{{delMsg}}</p>
                                       <div style="text-align: right; margin: 0">
                                         <el-button size="mini" type="text" @click = "delcancle('all')">取消</el-button>
                                         <el-button type="primary" size="mini" @click = "delsure('all')">确定</el-button>
                                       </div>
                                       <el-button slot="reference" type="primary"  class = "" @click= "deletebtn('all')">批量删除</el-button>
                                   </el-popover>
-                                   
+                                   <!-- </div> -->
                                    </el-col>
 
                             </el-row>
@@ -147,12 +148,13 @@ export default {
       visible2: -1,
       bscroll: true, // 是否加载
       pageNo: 1, // 初始加载页数
-      pageSize: 10, // 初始每页数据数
+      pageSize: 15, // 初始每页数据数
       lastPage: false, //最后一页
       moveY: 0, // 滚动元素的总告诉
       scrollctx: null, // 滚动元素的上下文
       visible: false, // 批量删除弹框显隐
       multipleSelection: [], // 批量删除的数据
+      delMsg:'确定删除所有选中产品(产品删除时版本也会删除)吗？',
       searchObj: {
         productName: "", // 优先级
         verName: "" // 类型
@@ -321,7 +323,16 @@ export default {
     // 删除按钮
     deletebtn(value) {
       if (value === "all") {
-        this.visible = true;
+          if(this.multipleSelection.length===0){
+          this.delMsg = '请选择至少一项'
+        }else{
+           this.delMsg = '确定删除所有选中产品(产品删除时版本也会删除)吗？'
+        }
+        this.visible = !this.visible
+        if(!this.visible){
+        this.multipleSelection = [];
+        this.$refs.multipleTable.clearSelection();
+        }
       } else {
         value.row.visible = true;
       }
@@ -342,7 +353,7 @@ export default {
       if (value === "all") {
         url = "/api/pdc/product/delProduct";
         if (this.multipleSelection.length === 0) {
-          this.$message.error("请选择至少一项");
+          // this.$message.error("请选择至少一项");
           return;
         } else {
           obj.productId = this.multipleSelection.join(",");
