@@ -5,6 +5,7 @@
             <el-header>
                 vepal.信息系统
                 <span class="version">v1.0</span>
+                <span class = "fr title">{{title}}</span>
             </el-header>  
             <!-- main -->
             
@@ -37,6 +38,11 @@ export default {
     return {
       active: "active"
     };
+  },
+  computed:{
+    title(){
+      return this.$store.state.title
+    }
   },
   created() {},
   methods: {
@@ -82,6 +88,9 @@ export default {
 }
 .version{
   font-size:0.14rem;
+}
+.title{
+   font-size:0.2rem;
 }
 </style>
 

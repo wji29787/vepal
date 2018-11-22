@@ -14,6 +14,7 @@ const list = [
   {
     label: '项目名称',
     prop: 'name',
+    width: 180,
   },
   {
     label: '优先级',
@@ -44,11 +45,11 @@ const list = [
     prop: 'var1',
     width: 100,
   },
-  {
-    label: '项目延迟天数',
-    prop: 'delaydays',
-    width: 120,
-  },
+  // {
+  //   label: '项目延迟天数',
+  //   prop: 'delaydays',
+  //   width: 120,
+  // },
   {
     label: '操作',
     width: 150,

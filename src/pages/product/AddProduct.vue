@@ -80,7 +80,8 @@
     </div>
 </template>
 <script>
-
+import { mapMutations } from 'vuex'
+import{CHANGE_TITLE} from '../../model/store/storetypes.js'
 import Slfoot from "../../components/Foot";
 import tableList from "./productTableList.js";
 export default {
@@ -162,9 +163,11 @@ export default {
   },
 
   mounted() {
+    this[CHANGE_TITLE](this.$route['meta']['title']);
     this.getRdList();
   },
   methods: {
+    ...mapMutations([CHANGE_TITLE]),
     /**
      * 上传文件
      */

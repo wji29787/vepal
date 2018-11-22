@@ -97,7 +97,7 @@
 
                                                   </template>
                                                   <template v-else-if = "index === 0">
-                                                    {{scope1['$index']+1}}
+                                                    {{setTableindex(scope1['$index'])}}
                                                   </template>
                                                   <template v-else-if = "index === 3">
                                                     <!--  popper-class = "eloverflow" -->
@@ -139,6 +139,8 @@
 </template>
 <script>
 import tableList from "./productTableList.js";
+import { mapMutations } from 'vuex'
+import{CHANGE_TITLE} from '../../model/store/storetypes.js'
 export default {
   data() {
     return {
@@ -165,10 +167,12 @@ export default {
     };
   },
   mounted() {
+    this[CHANGE_TITLE]('产品管理列表');
     this.getProductList();
     this.getData();
   },
   methods: {
+    ...mapMutations([CHANGE_TITLE]),
     addProduct() {
       this.$router.push({
         path: "product/addproduct"
@@ -196,6 +200,15 @@ export default {
           colspan: _col
         };
       }
+    },
+    setTableindex(index){
+        let text=0;
+        this.arrname.forEach((t,i)=>{
+          if(index === t.index){
+            text =i+1;
+          }
+        })
+        return text
     },
     getData(pageNo) {
       if (!this.bscroll) {
