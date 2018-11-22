@@ -68,3 +68,7 @@
 .minc-height{
     min-height: 830px   
 }
+.addbtn{
+    /* align-self:flex-end */
+    margin-right:auto;
+}

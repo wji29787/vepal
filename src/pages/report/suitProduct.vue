@@ -105,6 +105,8 @@
   </el-container>
 </template>
 <script>
+import { mapMutations } from 'vuex'
+import{CHANGE_TITLE} from '../../model/store/storetypes.js'
 import tableList from "./suitAndPjcAndPdcTable.js";
 import {StandardPost} from '../../assets/js/util.js'
 // 表格导出
@@ -139,10 +141,12 @@ export default {
     };
   },
   mounted() {
+     this[CHANGE_TITLE]('套装产品列表');
     this.getAllNameList();
     this.getData();
   },
   methods: {
+     ...mapMutations([CHANGE_TITLE]),
     getAllNameList() {
       let list = [
         { url: SUIT_NAME_SELECT },

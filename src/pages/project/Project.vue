@@ -1,34 +1,53 @@
 <template>
     <div  class="extend-h-w">
                <el-container class="extend-h-w" direction = "vertical">
-                   <el-row class ="sl-item-h100" type = "flex" justify = "center" align ="middle">
+                   <!-- <el-row class ="sl-item-h100" type = "flex" justify = "center" align ="middle">
                              <h2 class = "sl-title">项目管理列表</h2>
-                    </el-row>
+                    </el-row> -->
 
                           <el-container class="extend-h-w" direction = "vertical">
-                            <el-row :gutter = "10">
-                                <el-col :lg = "4"  :md= "6">
-                                  <!-- <el-input placeholder="请输入项目名称" v-model = "searchObj.name" ></el-input> -->
-                                  <el-select clearable filterable v-model = "searchObj.name" placeholder="请选择项目名称">
+                            <el-row :gutter = "10" type="flex">
+                                <el-col :lg = "3"  :md= "5">
+                                    <el-select clearable filterable v-model = "searchObj.name" placeholder="请选择项目名称">
                                       <el-option v-for = "item in selectProjectNameList"
                                                 :key = "item.projectId"
                                                 :label = "item.name"
-                                                :value = "item.projectId">
+                                                :value = "item.name">
                                       </el-option>
                                     </el-select>
                                 </el-col>
-                                <el-col :lg = "4"  :md= "5">
-                                  <!-- <el-input placeholder="请输入需求提出人" v-model = "searchObj.needPerson"></el-input> -->
-                                  <el-select clearable filterable v-model = "searchObj.needPerson" placeholder="请选择需求提出人">
+                               <el-col :lg = "3"  :md= "5">
+                                    <el-select clearable filterable v-model = "searchObj.needPerson" placeholder="请选择需求提出人">
                                       <el-option
                                           v-for = "item in rdList"
                                           :key = "item.userId"
                                           :label = "item.userName" 
-                                          :value = "item.userId">
+                                          :value = "item.userName">
                                       </el-option>
                                     </el-select>
+                               </el-col>                                    
+                                <el-col :lg = "3"  :md= "5">
+                                    <el-date-picker
+                                        class = "extend-w"
+                                        type="date"
+                                        placeholder="开始时间"
+                                        value-format = "yyyy-MM-dd"
+                                        v-model = "searchObj.startTime"
+                                        :picker-options="datePickerOptions">
+                                      </el-date-picker>  
+                                  
                                 </el-col>
-                                <el-col :lg = "3"  :md= "4" >
+                                <el-col :lg = "3"  :md= "5">
+                                  <el-date-picker
+                                        class = "extend-w"
+                                        type="date"
+                                        value-format = "yyyy-MM-dd"
+                                        placeholder="结束时间"
+                                        v-model = "searchObj.finshTime"
+                                        >
+                                      </el-date-picker>
+                                </el-col>
+                                <el-col :lg = "2"  :md= "4" >
                                   <el-select clearable v-model = "searchObj.typeId" placeholder="项目类型">
                                       <el-option
                                         v-for="item in typeList"
@@ -39,7 +58,7 @@
                                     </el-select>
 
                                   </el-col>
-                                 <el-col :lg = "3"  :md= "4">
+                                 <el-col :lg = "2"  :md= "4">
                                     <el-select clearable v-model = "searchObj.priorityId" placeholder="优先级">
                                         <el-option
                                           v-for="item in priorityList"
@@ -53,48 +72,25 @@
                                   
                                  <el-col :span = "1.5"><el-button @click = "searchData">搜索</el-button></el-col>    
                                  <el-col :span = "1.5" ><el-button @click = "tableExport">导出</el-button></el-col>    
-                                 <el-col :span = "2"  class="fr"><el-button class="fr" @click="addProject">新增项目</el-button></el-col>    
+                                 <!-- <el-col :span = "4"  class="fr"> -->
+                                   <div class="addbtn">
+                                      <el-button class="" @click="addProject">新增项目</el-button>
+                                      <el-popover
+                                          placement="left"
+                                          width="160"
+                                          v-model = "visible"
+                                        >
+                                          <p>{{delMsg}}</p>
+                                          <div style="text-align: right; margin: 0">
+                                            <el-button size="mini" type="text" @click = "delcancle('all')">取消</el-button>
+                                            <el-button type="primary" size="mini" @click = "delsure('all')">确定</el-button>
+                                          </div>
+                                          <el-button slot="reference" type="primary"  class = "" @click= "deletebtn('all')">批量删除</el-button>
+                                      </el-popover>
+                                   </div>
+                                  
+                                <!-- </el-col>     -->
                                  
-                            </el-row>
-                            <br>
-                            <el-row :gutter = "10">
-                               <el-col :lg = "4"  :md= "6">
-                                    <el-date-picker
-                                      class = "extend-w"
-                                      type="date"
-                                      placeholder="开始时间"
-                                      value-format = "yyyy-MM-dd"
-                                      v-model = "searchObj.startTime"
-                                      :picker-options="datePickerOptions">
-                                    </el-date-picker>
-                                </el-col>
-                                <el-col :lg = "4"  :md= "6">
-                                    <el-date-picker
-                                      class = "extend-w"
-                                      type="date"
-                                      value-format = "yyyy-MM-dd"
-                                      placeholder="结束时间"
-                                       v-model = "searchObj.finshTime"
-                                      >
-                                    </el-date-picker>
-                                </el-col>
-                                <el-col :span = "2"  class="fr">
-                                  <el-popover
-                                      placement="left"
-                                      width="160"
-                                      v-model = "visible"
-                                    >
-                                      <p>确定删除所有选中项目吗？</p>
-                                      <div style="text-align: right; margin: 0">
-                                        <el-button size="mini" type="text" @click = "delcancle('all')">取消</el-button>
-                                        <el-button type="primary" size="mini" @click = "delsure('all')">确定</el-button>
-                                      </div>
-                                      <el-button slot="reference" type="primary"  class = "fr" @click= "deletebtn('all')">批量删除</el-button>
-                                  </el-popover>
-                                  
-                                  
-                                  <!-- <el-button type = "primary" class="fr" @click="addProject">批量删除</el-button> -->
-                                  </el-col>
                             </el-row>
                             <el-row type = "flex" class="extend-h-w">
                               <!-- :formatter = "formatter(item,index)"
@@ -160,6 +156,8 @@
     </div>
 </template>
 <script>
+import { mapMutations } from 'vuex'
+import{CHANGE_TITLE} from '../../model/store/storetypes.js'
 import tableList from "./projectTableList.js";
 import {StandardPost} from '../../assets/js/util.js'
 // const PROJECT_NAME_SELECT = "/api/pjc/project/findAllProjectName";
@@ -169,12 +167,13 @@ export default {
       visible2: -1,
       bscroll: true, // 是否加载
       pageNo: 1, // 初始加载页数
-      pageSize: 10, // 初始每页数据数
+      pageSize: 15, // 初始每页数据数
       lastPage: false, //最后一页
       moveY: 0, // 滚动元素的总告诉
       scrollctx: null, // 滚动元素的上下文
       visible:false,  // 批量删除弹框显隐
       multipleSelection: [], // 批量删除的数据
+      delMsg:'确定删除所有选中项目吗？',
       searchObj: {
         priorityId: "", // 优先级
         typeId: "", // 类型
@@ -209,10 +208,12 @@ export default {
 
   },
   mounted() {
+    this[CHANGE_TITLE]('项目管理列表');
     this.getTypeAndPriority();
     this.getData();
   },
   methods: {
+     ...mapMutations([CHANGE_TITLE]),
     // 项目新增
     addProject() {
       this.$router.push({
@@ -436,7 +437,16 @@ export default {
     // 删除按钮
     deletebtn(value) {
       if(value === 'all'){
-        this.visible = true
+        if(this.multipleSelection.length===0){
+         this.delMsg = '请选择至少一项'
+        }else{
+           this.delMsg = '确定删除所有选中项目吗？'
+        }
+        this.visible = !this.visible
+        if(!this.visible){
+        this.multipleSelection = [];
+        this.$refs.multipleTable.clearSelection();
+        }
       }else{
         value.row.visible = true;
       }
@@ -455,7 +465,7 @@ export default {
       let projectIds ;
       if(value === 'all'){
         if(this.multipleSelection.length===0){
-          this.$message.error('请选择至少一项')
+          // this.$message.error('请选择至少一项')
           return;
         }else{
           projectIds = this.multipleSelection.join(',');
