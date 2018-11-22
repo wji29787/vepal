@@ -153,10 +153,8 @@ export default {
           this.totalNumber = 0;
           if (res.data.code === RESPONSE_SUCCESS_CODE) {
             let listData = res.data.data.list;
-            if (listData && Array.isArray(listData) && listData.length) {
-              this.totalNumber = res.data.data.total;
-              this.setData(listData);
-            }
+            this.totalNumber = res.data.data.total;
+            this.setData(listData);
           }
         });
       });
@@ -168,6 +166,7 @@ export default {
           element.projectVos.forEach((subEle, subIndex) => {
             let obj = {
               suitName: element.suitName,
+              suitId: element.suitId,
               projectName: subEle.name,
               pos: index
             };
@@ -176,6 +175,7 @@ export default {
         } else if (element.projectVos === null || !element.projectVos.length) {
           let obj = {
             suitName: element.suitName === null ? '空' : element.suitName,
+            suitId: element.suitId,
             projectName: '',
             pos: index
           };
@@ -183,11 +183,19 @@ export default {
         }
       });
       arr.forEach((element, index) => {
-        element.number = index + 1;
+        if (index === 0) {
+          element.number = index + 1;
+        } else {
+          if (element.suitId !== arr[index - 1].suitId) {
+            element.number = arr[index - 1].number + 1;
+          } else {
+            element.number = arr[index - 1].number;
+          }
+        }
       });
+      console.log(arr, 'arr');
       this.dataSource = arr;
       this.reSetData(arr);
-      console.log(arr, 'arr');
     },
     reSetData (data) {
       this.concatArr = [];
@@ -205,7 +213,6 @@ export default {
           }
         }
       });
-      console.log(this.concatArr, 'condat');
     },
     handleCurrentPageChange (val) {
       this.searchParams.currentPage = val;
@@ -225,7 +232,7 @@ export default {
       this.getSuitProjectList();
     },
     handleExportBtnClick () {
-      StandardPost(EXPORT_SUIT, {suitName: this.searchParams.suitName, projectName: this.searchParams.projectName}, 'get');
+      StandardPost(EXPORT_SUIT, {suitId: this.searchParams.suitName, projecId: this.searchParams.projectName}, 'get');
     }
   }
 }

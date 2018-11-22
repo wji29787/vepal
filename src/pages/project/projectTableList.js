@@ -1,7 +1,7 @@
 const list = [
   {
     label: '序号',
-    width: 80,
+    width: 50,
     prop: 'id',
     type: "index"
   },
@@ -14,7 +14,6 @@ const list = [
   {
     label: '项目名称',
     prop: 'name',
-    width: 180,
   },
   {
     label: '优先级',
@@ -32,12 +31,12 @@ const list = [
   {
     label: '开始时间',
     prop: 'starttime',
-
+    width: 120,
   },
   {
     label: '计划完成时间',
     prop: 'finshtime',
-
+    width: 120,
   },
   {
     label: '项目负责人',
@@ -52,7 +51,7 @@ const list = [
   // },
   {
     label: '操作',
-    width: 150,
+    width: 80,
   },
 
 ]

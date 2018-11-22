@@ -35,32 +35,25 @@ let DEFAULT = styleConf()
 let Vepal = function Vepal(container, options) {
   this.container = container;
   this.options = options;
+  // 图形实例
   this.zr = zrender.init(container, options);
   this.util = zrender.util
-  this.w = this.zr.getWidth();
-  this.h = this.zr.getHeight();
-//   this.resetObj = Object.assign({}, DEFAULT);
-//   this.DEFAULT = Object.assign({}, DEFAULT);
+  this.w = null;
+  this.h = null;
+  // 默认颜色
   this.DEFAULT = this.util.clone(DEFAULT);
   this.group = [];
-  this.groupH = this.DEFAULT.groupH;
-  this.data =null;
+  this.groupH = null;
+  this.data =[];
+  // 自定义颜色
   this.customStyle =null;
-  this.setScaleStyle()
-  
+  // this.setScaleStyle()
+  this.stack =[];
 }
 Vepal.prototype = {
   constructor: Vepal,
-  resetData() {
-    this.zr.clear();
-    this.zr.resize();
-    this.setScaleStyle()
-    this.groupH = this.DEFAULT.groupH;
-    this.group = []
-    this.w = this.zr.getWidth();
-    this.h = this.zr.getHeight();
-    this.groupPosition(this.data)
-  },
+
+  // 转换属性值
   setScaleStyle(){
     this.customStyle = setScaleStyle(this.DEFAULT,rem())
   },
@@ -68,19 +61,43 @@ Vepal.prototype = {
   mergeStyle(style){
       this.DEFAULT = this.util.merge(this.DEFAULT,style,true);
   },
+  // 重置颜色
   reset(){
     this.DEFAULT = this.util.clone(DEFAULT);
-    this.resetData();
+    this.renderBox();
   },
+  // 设置颜色时重新绘制
   setStyle(style){
     this.mergeStyle(style)
-    this.resetData()
+    this.renderBox();
   },
-  init(data){
-      this.data =data;
-      this.resetData()
-      
-    //   this.groupPosition(data)
+  subscribe (fn){
+    this.stack.push(fn)
+    return () => {
+      this.stack =  this.stack.filter(l => l !== fn);
+    }
+  },
+  // 绘制图形
+  renderBox(data){
+    if(data){
+      this.data = data;
+    }
+   
+    this.zr.clear();
+    
+    this.zr.resize();
+     
+    this.group = [];
+    
+    this.w = this.zr.getWidth();
+    this.h = this.zr.getHeight();
+   
+    this.setScaleStyle();
+   
+    this.groupH = this.customStyle.groupH;
+    // console.log(this.data)
+    this.groupPosition(this.data)
+    console.log(this.zr)
   },
   cteateRectL(data, positionObj, conf) {
     if (!data.length) return;
@@ -190,9 +207,9 @@ Vepal.prototype = {
       });
       g.add(rectGroup);
       g.add(lineEl);
-      let textGroup = this.createText(t, conf);
-      textGroup.position = [-((elW * 2) / 3 + elH / 2), elPosition(i).elrp];
-      g.add(textGroup);
+      // let textGroup = this.createText(t, conf);
+      // textGroup.position = [-((elW * 2) / 3 + elH / 2), elPosition(i).elrp];
+      // g.add(textGroup);
       group.add(g);
     });
     return group;
@@ -622,7 +639,7 @@ Vepal.prototype = {
     return base;
   },
   // create group
-  createGroup(data,base, conf) {
+  createGroup(data,index,base, conf) {
     //   console.log(data)
     let project = data.projectList;
     let product = data.productList;
@@ -633,12 +650,17 @@ Vepal.prototype = {
     group.add(groupL);
     group.add(groupR);
     group.add(groupM);
-
-
+    
+    if(this.stack.length>0){
+      this.stack.forEach(t=>{
+        t({data,index,groupL,groupR,groupM,group,conf})
+      })
+    }
     return group
   },
   //包围盒定位
   groupPosition(data) {
+    // console.log(14)
     let customStyle = this.customStyle  
     //元素组的总宽度
     let projectW = customStyle.project.width;
@@ -725,7 +747,7 @@ Vepal.prototype = {
     let groupH = this.groupH
     data.forEach((t, i) => {
         let base = this.getBaseposition(t, customStyle);
-        let group = this.createGroup(t,base, customStyle)
+        let group = this.createGroup(t,i,base, customStyle)
     //   console.log(group)
       group.attr({
         shape: {
@@ -743,12 +765,13 @@ Vepal.prototype = {
       });
 
     //   console.log(group) 
-      group.on('click',(e) =>{
-            console.log(e)
-      })       
+      // group.on('click',(e) =>{
+      //       // console.log(e)
+      // })       
 
     });
     this.groupH = groupH  
+    // console.log(13)
   },
 }
 

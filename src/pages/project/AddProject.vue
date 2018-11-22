@@ -325,6 +325,7 @@ export default {
         obj.label = label[label.length - 1];
         this.proverList.push(obj);
       }
+      // console.log(this.proverList)
     },
     /**
      * 优先级列表
@@ -372,6 +373,7 @@ export default {
             this.typeList = res1.data.data;
           }
         }
+        // console.log(res2)
         if (res2.status&&res2.status === 200) {
           if (res2.data.code === 200) {
             this.priorityList = res2.data.data;
@@ -454,7 +456,6 @@ export default {
         obj.var1 = userName; // 负责人名称
         obj.var4 = needName; // 需求人名称
       }
-
       // 获取项目负责人 name值
       if (this.type === "add") {
         url = "api/pjc/project/addProject";
@@ -519,6 +520,16 @@ export default {
      * 
      */
     cancleBtn(){
+      this.$refs[formName].resetFields();
+      let obj = this.sizeForm;
+      for (let k in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, k)) {
+          obj[k] = "";
+        }
+      }
+      this.sizeForm = obj;
+      this.proverList = [];
+      this.selectedOptions = [];
       this.$router.back();
     }
  

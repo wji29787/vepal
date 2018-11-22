@@ -308,10 +308,10 @@ export default {
       this.$refs['form'].validate(valid => {
         if (valid) {
           let selectTest = this.testUserList.filter(element => {
-            return element.userId === this.form.testPerson;
+            return Object.is(element.userId, this.form.testPerson);
           });
           let selectAd = this.debuggingUserList.filter(element => {
-            return element.userId === this.form.adjustPerson;
+            return Object.is(element.userId, this.form.adjustPerson);
           });
           let _data = {
             suitName: this.form.suitName,
@@ -328,7 +328,7 @@ export default {
             this.$nextTick(() => {
               this.$message({
                 message: res.data.msg,
-                type: res.data.code === RESPONSE_SUCCESS_CODE ? 'success' : 'error'
+                type: Object.is(res.data.code, RESPONSE_SUCCESS_CODE) ? 'success' : 'error'
               });
               this.$router.replace({
                 name: 'Suit'
@@ -544,6 +544,7 @@ export default {
             this.form.testPerson = responseData.testPerson;
             this.form.remark = responseData.var1;
             this.infoTreeData = responseData.projectProductVers;
+            console.log(this.infoTreeData, 'infoTreeData');
             this.removalToData();
           } else {
             this.$message({
@@ -577,19 +578,20 @@ export default {
       data.forEach((element, index) => {
         element.pid = 0;
         element.id = (index + 1).toString();
-        element.label = element.name === null ? '' : element.name;
+        element.key = index + 1;
+        element.label = Object.is(element.name, null) ? '' : element.name;
         element.children = element.products;
-        delete element.products;
+        Reflect.deleteProperty(element, 'products');
         if (Array.isArray(element.children) && element.children.length) {
           element.children.forEach((item, itemIndex) => {
-            item.label = item.productName === null ? '' : item.productName;
+            item.label = Object.is(item.productName, null) ? '' : item.productName;
             item.id = `${element.id}-${itemIndex + 1}`;
             item.pid = element.id;
             item.children = item.versions;
-            delete item.versions;
+            Reflect.deleteProperty(item, 'versions');
             if (Array.isArray(item.children) && item.children.length) {
               item.children.forEach((verItem, verIndex) => {
-                verItem.label = verItem.verName === null ? '' : verItem.verName;
+                verItem.label = Object.is(verItem.verName, null) ? '' : verItem.verName;
                 verItem.id = `${item.id}-${verIndex + 1}`;
                 verItem.pid = item.id;
               });
@@ -603,16 +605,24 @@ export default {
       });
       return data;
     },
+    arrayForTree (data) {
+      let arr = data[0];
+      data.forEach((element, index) => {
+        arr.forEach((item, subIndex) => {
+          
+        });
+      });
+    },
     compareData (params) {
       return function (obj1, obj2) {
         let val1 = obj1[params];
-        let val2 = obj2[params]; 
-        if (val1 < val2 ) { //正序
+        let val2 = obj2[params];
+        if (val1 < val2 ) {
+          return -1;
+        } else if (val1 > val2 ) {
           return 1;
-        } else if (val1 > val2 ) { 
-          return -1; 
-        } else { 
-          return 0; 
+        } else {
+          return 0;
         }
       }
     },
@@ -625,7 +635,7 @@ export default {
     // 监听穿梭框组件移除
     handleTransferRemove (fromData, toData, obj) {
       this.form.toData = toData;
-      this.projectList = fromData.sort(this.compareData('id'));
+      this.projectList = fromData.sort(this.compareData('key'));
       // 树形穿梭框模式transfer时，返回参数为左侧树移动后数据、右侧树移动后数据、移动的{keys,nodes,halfKeys,halfNodes}对象
       // 通讯录模式addressList时，返回参数为右侧收件人列表、右侧抄送人列表、右侧密送人列表
     }
