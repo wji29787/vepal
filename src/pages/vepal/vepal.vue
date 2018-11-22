@@ -1,22 +1,20 @@
 <template>
   <div style="height:100%;width:100%;">
-    <add-vepal @saveComplete = "reRender"  @customstyleChange = "customSetstyle" @customResetStyle = "customResetStyle"/>
-    <!-- <span class="version">套装展示<strong>v1.0.1</strong></span> -->
-      <el-scrollbar 
+   
+    <el-container class="extend-h-w" direction = "vertical">
+       <add-vepal @saveComplete = "reRender"  @customstyleChange = "customSetstyle" @customResetStyle = "customResetStyle"/>
+        <el-scrollbar 
          ref = "scroll-elem" 
          style="height:100%;" 
          v-scroll = "{  el:'.el-scrollbar__wrap',scrollfn:scrollfn }" >
              <div class = "dinner">
-     <div id="container">
+                  <div id="container">
             </div>
              </div>        
          
       </el-scrollbar>
-    <!-- <sl-scrollbar style="height:100%;">
-    <div id="container">
-            </div>
-
-    </sl-scrollbar> -->
+    </el-container>
+    
     <!-- editproject -->
     <el-dialog
       :visible="projectEdit.visible"
@@ -231,6 +229,8 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
+import{CHANGE_TITLE} from '../../model/store/storetypes.js'
 import Vepal from "./createVepal/Cvepal.js";
 import * as util from "../../assets/js/util.js"
 
@@ -377,7 +377,7 @@ export default {
         projectName: "",
         priorityID: "",
         projectId: "",
-        curtPriorityEl: null,
+        // curtPriorityEl: null,
         curtEl: null,
         index: -1,
         editIndex: -1,
@@ -390,6 +390,7 @@ export default {
     // offset
   },
   mounted() {
+    this[CHANGE_TITLE](this.$route['meta']['title']);
      this.render();
     //拉取 设置数据
     this.customGetStyle();
@@ -398,11 +399,12 @@ export default {
     window.addEventListener("resize", function() {
       if (timer) clearTimeout(timer);
       timer = setTimeout(function() {
-        that.zrInstance.resetData();
+        that.resetData();
       }, 300);
     });
   },
   methods: {
+     ...mapMutations([CHANGE_TITLE]),
     // 刷新
     reRender() {
       this.resetData();
@@ -410,13 +412,22 @@ export default {
       this.lastPage = false; //最后一页
       this.getData();
     },
+    // 初始化图形实例
     render() {
       let container = document.getElementById("container");
       this.zrInstance = new Vepal(container,{
            devicePixelRatio: window.devicePixelRatio
       })
       this.zr = this.zrInstance.zr;
+      this.zrInstance.subscribe(this.handleM)
+      this.zrInstance.subscribe(this.handleL)
+      this.zrInstance.subscribe(this.handleR)
     },
+    // 重绘图形
+    resetData(){
+        this.zrInstance.renderBox()
+    },
+    // 获取数据
     getData(pageNo) {
       if (!this.bscroll) {
         return;
@@ -455,10 +466,11 @@ export default {
                 listLen = this.list.length;
                 this.list = this.list.concat(res.data.data.suits);
               }
-
               // this.groupPosition(res.data.data.suits, listLen);
               // this.zrInstance.init(res.data.data.suits)
-              this.zrInstance.init(this.list)
+              // this.zrInstance.init(this.list)
+              //  console.log(14)
+              this.zrInstance.renderBox(this.list)
               // 改变滚动距离
               if (this.scrollctx) {
                 this.$nextTick(() => {
@@ -567,7 +579,7 @@ export default {
               ]["priorityName"] = priorityName;
               this.resetData();
               // this.getData();
-              this.init();
+              // this.init();
             } else {
             }
           }
@@ -673,7 +685,6 @@ export default {
             // 合并
             this.zrInstance.mergeStyle(customObj)
             // 计算
-            this.zrInstance.setScaleStyle()
             this.getData();
           }
         }
@@ -740,6 +751,272 @@ export default {
           svnPathJson: JSON.stringify(obj)
         });
       }
+    },
+    //中间盒子点击业务
+    handleM({groupM, groupL, groupR, data}){
+      groupM.eachChild((k, i) => {
+        let flag = true;
+        k.on("click", e => {
+          if (k.name == "PL") {
+            if (groupL) {
+              flag ? groupL.hide() : groupL.show();
+              flag = !flag;
+            }
+            // this.showProject=false
+          } else if (k.name == "PR") {
+            if (groupR) {
+              flag ? groupR.hide() : groupR.show();
+              flag = !flag;
+              // this.showProduct=false
+            }
+          } else if (k.name == "PM") {
+            // let position=[e.target.shape.rx,e.target.shape.ry]
+            // // 鼠标相对文档偏移
+            // let offset = [e.target.transform[4], e.target.transform[5]];
+            // //元素相对文档偏移
+            // let p = [offset[0], offset[1]];
+            // let poffset = [
+            //   `${parseInt(p[0] + DEFAULT.width)}px`,
+            //   `${parseInt(p[1] + DEFAULT.verH / 2)}px`
+            // ];
+            this.spDetil.visible = true;
+
+            // let spStrType = ['suitName','suitDate','suitAdjustingPerson','suitTestPerson','suitDescription']
+            let spData = this.spDetil.data;
+            spData.forEach(item => {
+              if (data[item.type]) {
+                item.val = data[item.type];
+              } else {
+                item.val = "";
+              }
+            });
+            this.spDetil.data = spData;
+          }
+        });
+      });
+    },
+     //左边盒子点击业务
+    handleL({groupM, groupL, groupR, data, index,conf}){
+      data =  data.projectList;
+      let customStyle = conf
+      let addHover = this.handleHover(groupM, groupL, groupR);
+      groupL.eachChild((k, i) => {
+        let hoverL = false;
+        let rectEl = k.childAt(0).childAt(0);
+        let editEl = k.childAt(0).childAt(1);
+        k.childAt(0)
+          .on("mouseover", e => {
+            hoverL = true;
+
+            let lineEl = k.childAt(1);
+            this.getproRelation("L", rectEl.projectId, res => {
+              if (res.code == 200) {
+                if (hoverL) {
+                  addHover(
+                    k,
+                    { style: { stroke: customStyle.line.lightcolor } },
+                    "L",
+                    res.data
+                  );
+                }
+              }
+            });
+            //编辑按钮
+            editEl.show();
+          })
+          .on("mouseout", e => {
+            hoverL = false;
+            addHover(
+              k,
+              {
+                style: {
+                  stroke: customStyle.line.color,
+                  fill: customStyle.line.color
+                }
+              },
+              "L"
+            );
+            //编辑按钮
+            editEl.hide();
+          });
+        rectEl.on("click", e => {
+          // let position = [e.target.shape.x, e.target.shape.y];
+          // // 鼠标相对文档偏移
+          // let offset = [e.target.transform[4], e.target.transform[5]];
+          // //元素相对文档偏移
+          // let p = [position[0] + offset[0], position[1] + offset[1]];
+          // let poffset = [
+          //   `${parseInt(p[0] + DEFAULT.width)}px`,
+          //   `${parseInt(p[1] + DEFAULT.height / 2)}px`
+          // ];
+          this.projectDetil.visible = true;
+          let projectData = this.projectDetil.data;
+          projectData.forEach(item => {
+            if (data[i][item.type]) {
+              item.val = data[i][item.type];
+            } else {
+              item.val = "";
+            }
+          });
+          this.projectDetil.data = projectData;
+          // let docAddr = data[i]['docAddr']
+          // this.relationDoc(docAddr)
+        });
+        editEl.on("click", e => {
+          //当前项目实例
+          this.projectEdit.curtEl = rectEl || null;
+          // 当前项目优先级元素实例
+          // this.projectEdit.curtPriorityEl =
+          //   k
+          //     .childAt(2)
+          //     .childAt(0)
+          //     .childAt(1) || null;
+          this.projectEdit.visible = true;
+          this.projectEdit.projectName = data[i].projectName;
+          this.projectEdit.projectId = data[i].projectId;
+          this.editProject(data[i].priorityName);
+          /**
+           * 当前编辑项的套装索引
+           * 当前编辑项索引
+           *
+           */
+          this.projectEdit.editIndex = index;
+          this.projectEdit.editProjectIndex = i;
+        });
+      });
+    },
+    //右边盒子点击事件
+    handleR({groupM, groupL, groupR, data,conf}){
+      data =  data.productList;
+      let customStyle = conf
+      let addHover = this.handleHover(groupM, groupL, groupR);
+      groupR.eachChild((k, i) => {
+        let hoverR = false;
+        let rectEl = k.childAt(0).childAt(0);
+        let editEl = k.childAt(0).childAt(1);
+        k.childAt(0)
+          .on("mouseover", e => {
+            hoverR = true;
+            // that.$slloading.show()
+            this.getproRelation("R", rectEl.productId, res => {
+              if (res.code == 200) {
+                if (hoverR) {
+                  hoverR = false;
+                  // that.$slloading.hide()
+                  addHover(
+                    k,
+                    { style: { stroke: customStyle.line.lightcolor } },
+                    "R",
+                    res.data
+                  );
+                }
+              }
+            });
+          })
+          .on("mouseout", () => {
+            hoverR = false;
+            // that.$slloading.hide()
+            addHover(
+              k,
+              {
+                style: {
+                  stroke: customStyle.line.color,
+                  fill: customStyle.line.color
+                }
+              },
+              "R"
+            );
+          });
+        rectEl.on("click", e => {
+          //打开弹层
+          this.productDetil.visible = true;
+          //下载数据的初始化
+          this.$http.post(
+            "api/suit/product/findVersionById",
+            {
+              productVersionId: data[i]["productId"] || ""
+            },
+            res => {
+              if (res.status === 200) {
+                if (res.data.code === 200) {
+                  if (!res.data.data || res.data.data === "") {
+                    this.productDetil.downBtn = false;
+                  } else {
+                    this.productDetil.downBtn = true;
+                    this.productDetil.cursp = res.data.data;
+                  }
+                } else {
+                  this.$message({
+                    message: res.data.msg,
+                    type: "warning"
+                  });
+                }
+              }
+            }
+          );
+
+          // 数据的传递
+          let productData = this.productDetil.data;
+          productData.forEach((item, index) => {
+            if (data[i][item.type]) {
+              item.val = data[i][item.type];
+            } else {
+              item.val = "";
+              if (index === 4) {
+                item.val = [];
+              }
+            }
+          });
+          this.productDetil.productId = data[i]["productId"];
+          this.productDetil.data = productData;
+          // 查询历史数据
+          this.getProductHistory(
+            data[i]["productName"],
+            data[i]["productVersion"]
+          );
+        });
+      });
+    },
+    //添加鼠标悬停效果
+    handleHover(groupM, groupL, groupR){
+       return (elGroup, styOpt, type, data) => {
+        let rectOpt = {
+          style: {
+            stroke: styOpt.style.stroke
+          }
+        };
+        let fn = null,
+          ID;
+        if (type === "L") {
+          fn = groupR;
+          ID = "productId";
+        } else {
+          fn = groupL;
+          ID = "projectId";
+        }
+        let rectEl = elGroup.childAt(0).childAt(0);
+        let lineEl = elGroup.childAt(1);
+        rectEl.attr(rectOpt);
+        lineEl.attr(styOpt);
+        groupM.childAt(0).attr(rectOpt);
+        if (data) {
+          data.forEach(t => {
+            fn.eachChild(k => {
+              let krect = k.childAt(0).childAt(0);
+              if (t[ID] == krect[ID]) {
+                krect.attr(rectOpt);
+                k.childAt(1).attr(styOpt);
+              }
+            });
+          });
+        } else {
+          fn.eachChild(k => {
+            let krect = k.childAt(0).childAt(0);
+            krect.attr(rectOpt);
+            k.childAt(1).attr(styOpt);
+          });
+        }
+      };
     }
   }
 };

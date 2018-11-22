@@ -10,7 +10,7 @@ let rem = () => {
 let DEFAUlT = {
 
   hInterval: 20, // 上下间隔
-  groupH: 50, // 初始高度
+  groupH: 20, // 初始高度
   bgColor: '#fff', //滑版背景色
   project: {
     name: "项目名称",

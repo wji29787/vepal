@@ -19,7 +19,7 @@
 </template>
 <script>
 import SuitProduct from './suitProduct';
-import Vepal from '@/vepal/vepal';
+import Vepal from '@pages/vepal';
 import PptView from './pptview';
 const VIEW_TYPE = {
   SUIT_PRODUCT: 'suitProduct',

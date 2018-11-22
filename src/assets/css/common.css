@@ -72,3 +72,6 @@
     /* align-self:flex-end */
     margin-right:auto;
 }
+.table-loading{
+    height: 1rem;
+}

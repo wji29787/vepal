@@ -58,7 +58,7 @@
                     套装产品报表
                     </el-menu-item>
                     <el-menu-item index="4-3"
-                    :route="{name: 'testVepal'}">
+                    :route="{name: 'vepal'}">
                     套装展示
                     </el-menu-item>
                     <el-menu-item index="4-4"
@@ -91,8 +91,11 @@
      'project/addproject':'2-2',
      'project/editproject':'2-1',
      'suit':'3-1',
-     'vepal':'4-2',
-     'pptview':'4-3',
+     'vepal':'4-3',
+     'pptView':'4-4',
+     'suitProductView':'4-2',
+     'suitprojectview':'4-1',
+     'projectproductview':'4-5',
  }
 export default {
     name:'sl-sides',

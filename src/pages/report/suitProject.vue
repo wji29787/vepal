@@ -183,7 +183,7 @@ export default {
       });
       this.dataSource = arr;
       this.reSetData(arr);
-      console.log(arr, 'arr');
+      // console.log(arr, 'arr');
     },
     reSetData (data) {
       this.concatArr = [];
@@ -201,7 +201,7 @@ export default {
           }
         }
       });
-      console.log(this.concatArr, 'condat');
+      // console.log(this.concatArr, 'condat');
     },
     handleCurrentPageChange (val) {
       this.searchParams.currentPage = val;
