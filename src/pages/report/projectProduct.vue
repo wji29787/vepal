@@ -32,7 +32,7 @@
         </el-col>
         <el-col :span="12">
           <el-button type="primary" size="small" @click="handleSearchBtnClick">搜索</el-button>
-          <el-button type="primary" size="small">导出</el-button>
+          <el-button type="primary" size="small" @click="handleExportBtnClick">导出</el-button>
         </el-col>
       </el-row>
     </el-header>
@@ -75,7 +75,8 @@
   </el-container>
 </template>
 <script>
-const EXPORT_PROJECT_PRODUCT = '/suit/report';
+import { StandardPost } from '@/assets/js/util.js';
+const EXPORT_PROJECT_PRODUCT = '/pjc/report/exportProjectAndProduct';
 const GET_PROJECT_PRODUCT = '/api/pjc/report/findProjectAndProductList';
 const PRODUCT_NAME_SELECT = '/api/pdc/product/findAllProduct';
 const PROJECT_NAME_SELECT = '/api/pjc/project/findAllProjectName';
@@ -265,6 +266,9 @@ export default {
     },
     handleSearchBtnClick () {
       this.getProjectProductList();
+    },
+    handleExportBtnClick () {
+      StandardPost(EXPORT_PROJECT_PRODUCT, {projectName: this.searchParams.projectName, productName: this.searchParams.productName}, 'get');
     },
     handleCurrentPageChange (val) {
       this.searchParams.currentPage = val;
