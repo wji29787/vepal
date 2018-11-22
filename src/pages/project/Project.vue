@@ -21,11 +21,11 @@
                                       <el-option
                                           v-for = "item in rdList"
                                           :key = "item.userId"
-                                          :label = "item.userName" 
-                                          :value = "item.userName">
+                                          :label = "item.userName"
+                                          :value = "item.userId">
                                       </el-option>
                                     </el-select>
-                               </el-col>                                    
+                               </el-col>
                                 <el-col :lg = "3"  :md= "5">
                                     <el-date-picker
                                         class = "extend-w"
@@ -34,8 +34,8 @@
                                         value-format = "yyyy-MM-dd"
                                         v-model = "searchObj.startTime"
                                         :picker-options="datePickerOptions">
-                                      </el-date-picker>  
-                                  
+                                      </el-date-picker>
+
                                 </el-col>
                                 <el-col :lg = "3"  :md= "5">
                                   <el-date-picker
@@ -67,11 +67,11 @@
                                           :value="item.priorityId">
                                         </el-option>
                                       </el-select>
-                                   
-                                   </el-col>  
-                                  
-                                 <el-col :span = "1.5"><el-button @click = "searchData">搜索</el-button></el-col>    
-                                 <el-col :span = "1.5" ><el-button @click = "tableExport">导出</el-button></el-col>    
+
+                                   </el-col>
+
+                                 <el-col :span = "1.5"><el-button @click = "searchData">搜索</el-button></el-col>
+                                 <el-col :span = "1.5" ><el-button @click = "tableExport">导出</el-button></el-col>
                                  <!-- <el-col :span = "4"  class="fr"> -->
                                    <div class="addbtn">
                                       <el-button class="" @click="addProject">新增项目</el-button>
@@ -88,9 +88,9 @@
                                           <el-button slot="reference" type="primary"  class = "" @click= "deletebtn('all')">批量删除</el-button>
                                       </el-popover>
                                    </div>
-                                  
+
                                 <!-- </el-col>     -->
-                                 
+
                             </el-row>
                             <el-row type = "flex" class="extend-h-w">
                               <!-- :formatter = "formatter(item,index)"
@@ -98,11 +98,11 @@
                                       :label= "item.label"
                                -->
                                     <el-table
-                                       
+
                                         @selection-change = "elSelectionChange"
                                         ref="multipleTable"
                                         :data="list"
-                                        border 
+                                        border
                                         height = "98%"
                                         header-cell-class-name = ""
                                         v-scroll = "{el:'.el-table__body-wrapper',scrollfn:scrollfn}"
@@ -116,7 +116,7 @@
                                             :key = "index"
                                             :width = "item.width"
                                             :render-header="customRenderH(item,index)"
-                                             
+
                                             >
                                             <template slot-scope="scope1">
                                                   <template v-if = "index === 8">
@@ -137,7 +137,7 @@
                                                   <template v-else-if = "index === 0">
                                                     {{scope1['$index']+1}}
                                                   </template>
-                                                
+
                                                   <template v-else>
                                                       {{formatter(item,index,scope1)}}
                                                   </template>
@@ -145,7 +145,7 @@
 
 
                                         </el-table-column>
-                                     
+
                                     </el-table>
 
                             </el-row>
@@ -391,7 +391,7 @@ export default {
      *
      */
     getTypeAndPriority() {
-      let getList = [ 
+      let getList = [
         // 所属类型
         { url: "api/pjc/project/findAllProjectType", },
         // 优先级
@@ -424,7 +424,7 @@ export default {
             }else{
               this.$message.error(res4.data.msg);
             }
-            
+
         }else{
             if(res1.status){
              this.$message.error(res1.status);
@@ -450,7 +450,7 @@ export default {
       }else{
         value.row.visible = true;
       }
-      
+
     },
     delcancle(value) {
       if(value === 'all'){
@@ -487,7 +487,7 @@ export default {
               }else{
                  value.row.visible = false;
               }
-             
+
               this.$message({
                 message: "删除成功",
                 type: "success"
@@ -501,15 +501,15 @@ export default {
     },
         // 单击选中的回调
     elSelect(selection, row){
-      //  console.log(selection) 
+      //  console.log(selection)
     },
      // 全选的回调
     elSelectAll(selection){
-      //  console.log(selection) 
+      //  console.log(selection)
     },
     // 选择change 时的回调
     elSelectionChange(selection){
-      //  console.log(selection) 
+      //  console.log(selection)
       let arr = [];
       selection.forEach(t =>{
          arr.push(t.projectId)
@@ -588,7 +588,7 @@ export default {
       };
     },
     /**
-     * 
+     *
      *  导出表格
      */
     tableExport(){
