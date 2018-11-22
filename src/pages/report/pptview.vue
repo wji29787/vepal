@@ -1,7 +1,6 @@
 <template>
     <div class="ppt-view">
         <h3 class="title search-title">
-            <span class="product-title">产品计划升级套装情况</span>
             <div>
                <el-date-picker
                 v-model="startTime"
@@ -47,6 +46,8 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
+import{ CHANGE_TITLE } from '../../model/store/storetypes.js'
     export default {
         data() {
             return {
@@ -55,8 +56,10 @@
                 endTime:''
             }
         },mounted() {
+            this[CHANGE_TITLE]('产品计划升级套装情况');
             this.getlist();
         },methods:{
+            ...mapMutations([CHANGE_TITLE]),
             getlist(){
                 var _this=this;
                 this.$http.get(
@@ -80,13 +83,6 @@
 </script>
 
 <style scoped>
-.product-title {
-    position: fixed;
-    font-size: 16px;
-    color: white;
-    right: 20px;
-    top: 5px;
-}
 .ppt-view {}
  /*滚动条样式*/
 .viewbar::-webkit-scrollbar {/*滚动条整体样式*/
