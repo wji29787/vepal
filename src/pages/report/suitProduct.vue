@@ -110,8 +110,8 @@ import{CHANGE_TITLE} from '../../model/store/storetypes.js'
 import tableList from "./suitAndPjcAndPdcTable.js";
 import {StandardPost} from '../../assets/js/util.js'
 // 表格导出
-// const TABLE_EXPORT = "/api/suit/report/exportSuitAndProductList"
-const TABLE_EXPORT = "/vdev/report/exportSuitAndProductList"
+const TABLE_EXPORT = "/api/suit/report/exportSuitAndProductList"
+// const TABLE_EXPORT = "/vdev/report/exportSuitAndProductList"
 const GET_SUIT_PRODUCT = "/api/suit/report/findSuitAndProductList";
 // const GET_SUIT_PRODUCT = "/vdev/report/findSuitAndProductList";
 const PRODUCT_NAME_SELECT = "/api/pdc/product/findAllProduct";

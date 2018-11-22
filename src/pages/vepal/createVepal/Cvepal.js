@@ -86,7 +86,7 @@ Vepal.prototype = {
     this.zr.clear();
     
     this.zr.resize();
-   
+     
     this.group = [];
     
     this.w = this.zr.getWidth();
@@ -97,6 +97,7 @@ Vepal.prototype = {
     this.groupH = this.customStyle.groupH;
     // console.log(this.data)
     this.groupPosition(this.data)
+    console.log(this.zr)
   },
   cteateRectL(data, positionObj, conf) {
     if (!data.length) return;

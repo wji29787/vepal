@@ -1,8 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-// import Vepal from '@/vepal/vepal'
-// import AddVepal from '@/vepal/addvepal'
-// import vepalMain from '@/vepal/main'
+
 
 import Home from '@/home/Home'
 // project

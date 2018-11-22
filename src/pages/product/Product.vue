@@ -129,6 +129,11 @@
 
 
                                         </el-table-column>
+                                        <div slot = "append" class="table-loading"
+                          
+                                         v-show = "loading" v-loading = "loading">
+                                         <!-- sdfsf  element-loading-spinner="el-icon-loading"-->
+                                       </div>
                                     </el-table>
 
                             </el-row>
@@ -145,6 +150,7 @@ import{CHANGE_TITLE} from '../../model/store/storetypes.js'
 export default {
   data() {
     return {
+      loading:false,
       visible2: -1,
       bscroll: true, // 是否加载
       pageNo: 1, // 初始加载页数
@@ -224,13 +230,14 @@ export default {
         productName: searchObj.productName || "", // 优先级
         verName: searchObj.verName || "" // 类型
       };
-
+      // 滚动加载loading
+      this.loading = true 
       this.$http.post("/api/pdc/product/findAllProductVersion", obj, res => {
         // 使可以加载
         setTimeout(() => {
           this.bscroll = true;
         }, 350);
-
+        this.loading = false
         if (res.status === 200) {
           if (res.data.code === 200) {
             let data = res.data.data;
