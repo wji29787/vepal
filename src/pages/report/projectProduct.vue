@@ -82,7 +82,7 @@
 import { StandardPost } from '@/assets/js/util.js';
 import { mapMutations } from 'vuex';
 import { CHANGE_TITLE } from '../../model/store/storetypes.js'
-const EXPORT_PROJECT_PRODUCT = '/pjc/report/exportProjectAndProduct';
+const EXPORT_PROJECT_PRODUCT = '/api/pjc/report/exportProjectAndProduct';
 const GET_PROJECT_PRODUCT = '/api/pjc/report/findProjectAndProductList';
 const PRODUCT_NAME_SELECT = '/api/pdc/product/findAllProduct';
 const PROJECT_NAME_SELECT = '/api/pjc/project/findAllProjectName';

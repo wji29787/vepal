@@ -12,7 +12,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/pjc': {
-        target: 'http://192.168.112.168:8096',
+        target: 'http://localhost:8096',
         // target: 'http://192.168.95.136:8096',
         changeOrigin: true,
         pathRewrite: {
