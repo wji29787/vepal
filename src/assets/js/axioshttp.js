@@ -142,7 +142,7 @@ function apiAxios (method, url, params, response) {
     })
 }
 
-
+http.all =axios.all;
 export default {
   get: function (url, params, response) {
     return apiAxios('GET', url, params, response)

@@ -62,8 +62,8 @@
                                             ></el-input>
                                         </el-form-item>
                                         <el-form-item size="large">
-                                            <el-button type="primary" @click="onSubmit('form')">保存</el-button>
-                                            <el-button @click = "cancleBtn('form')">取消</el-button>
+                                            <el-button size = 'small' type="primary" @click="onSubmit('form')">保存</el-button>
+                                            <el-button size = 'small' @click = "cancleBtn('form')">取消</el-button>
                                         </el-form-item>
                                 </el-form>
                                 </el-col>
@@ -155,9 +155,12 @@ export default {
       isSuccess: false // 是否禁用
     };
   },
-  watch: {
-    $route(to, from) {
-      //   console.log(to);
+  watch:{
+    '$route'(){
+      this[CHANGE_TITLE](this.$route['meta']['title']);
+      if(this.type === 'add'){
+        this.resetForm('form')
+      }
     }
   },
 
@@ -342,7 +345,8 @@ export default {
      * 
      */
     cancleBtn(){
-      this.$router.back();
+      this.$router.push('../product')
+      // this.$router.back();
     }
   }
 };

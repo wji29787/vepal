@@ -17,7 +17,7 @@
                                        clearable
                                        v-model = "searchObj.productName"
                                        placeholder="请输入"
-
+                                       size = 'small'
                                         class = "itemL7">
                                         <el-option
                                           v-for="item in productobj.list"
@@ -29,16 +29,16 @@
                                   </el-col>
                                 <el-col :lg = "6"  :md= "8">
                                    <span>版本号：</span>
-                                  <el-input placeholder="请输入版本号" v-model = "searchObj.verName" class = "itemL6"></el-input>
+                                  <el-input placeholder="请输入版本号" size = 'small' v-model = "searchObj.verName" class = "itemL6"></el-input>
 
                                   </el-col>
 
-                                 <el-col :span = "1.5"><el-button @click = "searchData()">搜索</el-button></el-col>
+                                 <el-col :span = "1.5"><el-button size = 'small' @click = "searchData()">搜索</el-button></el-col>
 
                                  <el-col :span = "6"  class="fr">
                                    <!-- <div class="fr"> -->
-                                   <el-button class = "" @click = "addProduct">新增产品</el-button>
-                                   <el-popover
+                                   <el-button size = 'small' @click = "addProduct">新增产品</el-button>
+                                   <!-- <el-popover
                                       placement="left"
                                       width="160"
                                       v-model = "visible"
@@ -48,8 +48,9 @@
                                         <el-button size="mini" type="text" @click = "delcancle('all')">取消</el-button>
                                         <el-button type="primary" size="mini" @click = "delsure('all')">确定</el-button>
                                       </div>
-                                      <el-button slot="reference" type="primary"  class = "" @click= "deletebtn('all')">批量删除</el-button>
-                                  </el-popover>
+                                      
+                                  </el-popover> -->
+                                  <el-button  type="primary" size = 'small'  @click= "deletebtn('all')">批量删除</el-button>
                                    <!-- </div> -->
                                    </el-col>
 
@@ -67,6 +68,7 @@
                                         ref="multipleTable"
                                         height = "98%"
                                         header-cell-class-name = ""
+                                        row-class-name = "row-text"
                                         v-scroll = "{el:'.el-table__body-wrapper',scrollfn:scrollfn}"
                                         :header-cell-style = "setHeaderStyle"
                                         style="width: 100%; margin-top: 20px">
@@ -83,19 +85,7 @@
                                             <template slot-scope="scope1">
                                                   <template v-if = "index === 4">
                                                       <el-button type="text" @click="editVersion(scope1.row)" icon = "el-icon-tickets" ></el-button>
-                                                      <el-popover
-                                                          placement="left"
-                                                          width="160"
-                                                          v-model = "scope1.row.visible"
-                                                        >
-                                                          <p>确定删除吗？</p>
-                                                          <div style="text-align: right; margin: 0">
-                                                            <el-button size="mini" type="text" @click = "delcancle(scope1)">取消</el-button>
-                                                            <el-button type="primary" size="mini" @click = "delsure(scope1)">确定</el-button>
-                                                          </div>
-                                                          <el-button slot="reference" type="text"  class = "textColor" @click= "deletebtn(scope1)" icon = "el-icon-delete"></el-button>
-                                                      </el-popover>
-
+                                                      <el-button slot="reference" type="text"  class = "textColor" @click= "deletebtn(scope1)" icon = "el-icon-delete"></el-button>
                                                   </template>
                                                   <template v-else-if = "index === 0">
                                                     {{setTableindex(scope1['$index'])}}
@@ -144,6 +134,8 @@
     </div>
 </template>
 <script>
+const DELETE_PRODUCT_ALL = '/api/pdc/product/delProduct'
+const DELETE_PRODUCT = '/api/pdc/version/delVersionById'
 import tableList from "./productTableList.js";
 import { mapMutations } from 'vuex'
 import{CHANGE_TITLE} from '../../model/store/storetypes.js'
@@ -151,14 +143,12 @@ export default {
   data() {
     return {
       loading:false,
-      visible2: -1,
       bscroll: true, // 是否加载
       pageNo: 1, // 初始加载页数
-      pageSize: 15, // 初始每页数据数
+      pageSize: 20, // 初始每页数据数
       lastPage: false, //最后一页
       moveY: 0, // 滚动元素的总告诉
       scrollctx: null, // 滚动元素的上下文
-      visible: false, // 批量删除弹框显隐
       multipleSelection: [], // 批量删除的数据
       delMsg:'确定删除所有选中产品(产品删除时版本也会删除)吗？',
       searchObj: {
@@ -191,7 +181,7 @@ export default {
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
       if (
         columnIndex === 0 ||
-        columnIndex === 1 ||
+        // columnIndex === 1 ||
         columnIndex === 2 ||
         columnIndex === 6
       ) {
@@ -216,7 +206,8 @@ export default {
             text =i+1;
           }
         })
-        return text
+        // return text
+        return index+1
     },
     getData(pageNo) {
       if (!this.bscroll) {
@@ -247,9 +238,6 @@ export default {
               this.lastPage = true;
             }
             // 添加 删除按钮属性
-            // list.forEach(t => {
-            //   t.visible = false;
-            // });
             let arr = [],
               arrname = [];
             list.forEach((t, i) => {
@@ -266,7 +254,6 @@ export default {
                 arrname.push(obj);
                 t.versionList.forEach(k => {
                   k.name = t.productName;
-                  k.visible = false;
                   k.productId = t.productId;
                 });
                 arr = arr.concat(t.versionList);
@@ -329,66 +316,53 @@ export default {
     },
     // 删除按钮
     deletebtn(value) {
+      let _this = this;
       if (value === "all") {
           if(this.multipleSelection.length===0){
-          this.delMsg = '请选择至少一项'
-        }else{
-           this.delMsg = '确定删除所有选中产品(产品删除时版本也会删除)吗？'
-        }
-        this.visible = !this.visible
-        if(!this.visible){
-        this.multipleSelection = [];
-        this.$refs.multipleTable.clearSelection();
-        }
-      } else {
-        value.row.visible = true;
-      }
-    },
-    delcancle(value) {
-      if (value === "all") {
-        this.visible = false;
-        this.multipleSelection = [];
-        this.$refs.multipleTable.clearSelection();
-      } else {
-        value.row.visible = false;
-      }
-      // value.row.visible = false;
-    },
-    delsure(value) {
-      let obj = {},
-        url;
-      if (value === "all") {
-        url = "/api/pdc/product/delProduct";
-        if (this.multipleSelection.length === 0) {
-          // this.$message.error("请选择至少一项");
-          return;
-        } else {
-          obj.productId = this.multipleSelection.join(",");
-        }
-      } else {
-        url = "/api/pdc/version/delVersionById";
-        obj.productId = value.row.productId;
-        obj.versionId = value.row.versionId;
-      }
-      //  console.log(obj)
-      this.$http.post(url, obj, res => {
-        if (res.status === 200) {
-          if (res.data.code === 200) {
-            this.searchData();
-            this.$message({
-              message: "删除成功",
-              type: "success"
+          this.$message({
+                message: '请选择至少一项',
+                type: 'warning'
             });
-            if (value === "all") {
-              this.visible = false;
-            } else {
-              value.row.visible = false;
-            }
-          } else {
-            this.$message.error(res.data.msg);
+          }else{
+            let productId = this.multipleSelection.join(",");
+            del(DELETE_PRODUCT_ALL,{productId})
           }
-        }
-      });
+      } else {
+        del(DELETE_PRODUCT,{
+          productId:value.row.productId,
+          versionId:value.row.versionId
+        })
+      }
+      function del (url,_data){   
+              _this.$confirm('此操作将删除选中项目，是否继续？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+              }).then(() => {
+                   _this.$http.instance.post(url,_data)
+                   .then(res=>{
+                      if(res.data.code === 200){
+                         _this.searchData();
+                         _this.$message({
+                            message: res.data.data,
+                            type: "success"
+                         });
+                      }else{
+                        _this.$message.error(res.data.data)
+                      }
+                   }).catch( err =>{  
+                        _this.$message.error(err.toString())
+                   })   
+              }).catch((err) => {
+                  _this.$message({
+                      type: 'info',
+                      message: '已取消删除'
+                  });          
+              });
+          
+      }   
+
+    
     },
     // 选择change 时的回调
     elSelectionChange(selection) {

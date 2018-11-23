@@ -20,14 +20,19 @@
         <div class="view">
             <div class="zhou">
                 <span class="zhoutop">产品</span>
-                <span class="zhoucenter">套装(时间)</span>
+                <span class="zhoucenter">套装|时间</span>
                 <span class="zhoubottom">项目</span>
             </div>
         <ul class="viewbar">
             <li v-for="item in list" :key="item.suitId">
                 <div class="linetop">
                      <ul>
-                         <li :key="versionlist.versionId" :title="versionlist.productName+versionlist.verName" v-for="versionlist in item.versionVos">{{versionlist.productName}}{{versionlist.verName}}</li>
+                         <li 
+                         :key="versionlist.versionId" 
+                         :title="versionlist.productName+versionlist.verName" 
+                         v-for="versionlist in item.versionVos">
+                         <span style="color:#8C40FF;">{{versionlist.productName}}</span>/<span style="color:#FF4080;">{{versionlist.verName}}</span>
+                         </li>
                      </ul>
                 </div>
                 <div class="line">
@@ -123,26 +128,31 @@ import{ CHANGE_TITLE } from '../../model/store/storetypes.js'
     border-left: 1px solid #b5d2ec;
     width:1rem;
 }
-.zhoutop{
+.zhou >span{
     position: absolute;
-    top:-0.3rem;
-    left: -0.2rem;
-    font-weight: 600;
+    /* display: inline-block; */
+    width: 0.2rem;
     font-size: 0.2rem;
+    font-weight: 600;
+    word-wrap: break-word;/*英文的时候需要加上这句，自动换行*/ 
+    left: -0.3rem; 
+    text-align: center;
+    transform:translateY(-50%) ;
+}
+.zhoutop{
+    /* top:-0.3rem; */
+    /* left: -0.2rem; */
+    font-weight: 600;
+   
 }
 .zhoucenter{
-    position: absolute;
     top:50%;
-    left:-1rem;
-    font-size: 0.2rem;
+    transform:translateY(-50%) ;
     font-weight: 600;
 }
 .zhoubottom{
-    position: absolute;
     bottom:-0.3rem;
-    left:-0.2rem;
-    font-size: 0.2rem;
-    font-weight: 600;
+    /* transform:translateY(-50%) ; */
 }
 .viewbar{
    height: 100%;
@@ -200,8 +210,8 @@ import{ CHANGE_TITLE } from '../../model/store/storetypes.js'
     top:10px; 
 }
 .linetop li,.linebottom li{
-    line-height: 0.26rem;
-    font-size: 0.14rem;
+    line-height: 0.3rem;
+    font-size: 0.2rem;
     overflow: hidden;
     width:100%;
    

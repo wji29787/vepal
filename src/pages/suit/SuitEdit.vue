@@ -132,8 +132,17 @@ export default {
       } // 日期的配置选项
     };
   },
+  props:['type'],
+  watch:{
+    '$route'(){
+      this[CHANGE_TITLE](this.$route['meta']['title']);
+       if(this.type === 'add'){
+        this.resetData();
+      }
+    }
+  },
   mounted () {
-    this[CHANGE_TITLE]('套装新增');
+    this[CHANGE_TITLE](this.$route['meta']['title']);
     Promise.all([this._getUserList(), this._getPorjectList()]).then(res => {
       if (this.$route.query.suitId) {
         this.suitInfo();
@@ -293,7 +302,7 @@ export default {
     // 取消新增返回列表页面
     handleCancelBtnClick () {
       this.$router.replace({
-        name: 'Suit'
+        name: 'suit'
       });
     },
     // 新建套装点击事件
@@ -544,7 +553,7 @@ export default {
             this.form.testPerson = responseData.testPerson;
             this.form.remark = responseData.var1;
             this.infoTreeData = responseData.projectProductVers;
-            console.log(this.infoTreeData, 'infoTreeData');
+            // console.log(this.infoTreeData, 'infoTreeData');
             this.removalToData();
           } else {
             this.$message({

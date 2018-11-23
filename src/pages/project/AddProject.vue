@@ -133,8 +133,8 @@
                                              ></el-input>
                                         </el-form-item>
                                         <el-form-item size="large">
-                                            <el-button type="primary" @click="onSubmit('form')">保存</el-button>
-                                            <el-button @click = "cancleBtn('form')">取消</el-button>
+                                            <el-button size = 'small' type="primary" @click="onSubmit('form')">保存</el-button>
+                                            <el-button size = 'small' @click = "cancleBtn('form')">取消</el-button>
                                         </el-form-item>
                                 </el-form>
                                 </el-col>
@@ -260,10 +260,13 @@ export default {
       isSuccess: false, // 是否禁用
     };
   },
-  watch: {
-    'sizeForm.starttime'(){
-      // console.log(this.sizeForm.starttime)
-      // console.log(new Date(this.sizeForm.starttime))
+  watch:{
+    '$route'(to,from){
+      this[CHANGE_TITLE](this.$route['meta']['title']);
+      if(this.type === 'add'){
+        this.resetForm('form')
+      }
+      
     }
   },
 
@@ -519,7 +522,7 @@ export default {
      * 取消 离开
      * 
      */
-    cancleBtn(){
+    cancleBtn(formName){
       this.$refs[formName].resetFields();
       let obj = this.sizeForm;
       for (let k in obj) {
@@ -530,7 +533,7 @@ export default {
       this.sizeForm = obj;
       this.proverList = [];
       this.selectedOptions = [];
-      this.$router.back();
+      this.$router.push('../project')
     }
  
   }

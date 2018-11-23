@@ -37,7 +37,11 @@
       </el-row>
     </el-header>
     <el-main class="r-project-product__main">
-      <el-table :data="dataSource" :border="true" style="width: 100%" :span-method="objectSpanMethod">
+      <el-table 
+       :data="dataSource" 
+       :border="true" style="width: 100%" 
+        row-class-name = "row-text"
+       :span-method="objectSpanMethod">
         <el-table-column prop="number" label="序号" width="180"></el-table-column>
         <el-table-column prop="projectName" label="项目名称" width="180">
           <template slot-scope="scope">

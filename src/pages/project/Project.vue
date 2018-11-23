@@ -8,7 +8,7 @@
                           <el-container class="extend-h-w" direction = "vertical">
                             <el-row :gutter = "10" type="flex">
                                 <el-col :lg = "3"  :md= "5">
-                                    <el-select clearable filterable v-model = "searchObj.name" placeholder="请选择项目名称">
+                                    <el-select clearable size = 'small' filterable v-model = "searchObj.name" placeholder="请选择项目名称">
                                       <el-option v-for = "item in selectProjectNameList"
                                                 :key = "item.projectId"
                                                 :label = "item.name"
@@ -17,18 +17,19 @@
                                     </el-select>
                                 </el-col>
                                <el-col :lg = "3"  :md= "5">
-                                    <el-select clearable filterable v-model = "searchObj.needPerson" placeholder="请选择需求提出人">
+                                    <el-select clearable size = 'small' filterable v-model = "searchObj.needPerson" placeholder="请选择需求提出人">
                                       <el-option
                                           v-for = "item in rdList"
                                           :key = "item.userId"
                                           :label = "item.userName" 
-                                          :value = "item.userName">
+                                          :value = "item.userId">
                                       </el-option>
                                     </el-select>
                                </el-col>                                    
                                 <el-col :lg = "3"  :md= "5">
                                     <el-date-picker
                                         class = "extend-w"
+                                        size = 'small'
                                         type="date"
                                         placeholder="开始时间"
                                         value-format = "yyyy-MM-dd"
@@ -40,6 +41,7 @@
                                 <el-col :lg = "3"  :md= "5">
                                   <el-date-picker
                                         class = "extend-w"
+                                        size = 'small'
                                         type="date"
                                         value-format = "yyyy-MM-dd"
                                         placeholder="结束时间"
@@ -48,7 +50,7 @@
                                       </el-date-picker>
                                 </el-col>
                                 <el-col :lg = "2"  :md= "4" >
-                                  <el-select clearable v-model = "searchObj.typeId" placeholder="项目类型">
+                                  <el-select clearable size = 'small' v-model = "searchObj.typeId" placeholder="项目类型">
                                       <el-option
                                         v-for="item in typeList"
                                         :key="item.projecttypeId"
@@ -59,7 +61,7 @@
 
                                   </el-col>
                                  <el-col :lg = "2"  :md= "4">
-                                    <el-select clearable v-model = "searchObj.priorityId" placeholder="优先级">
+                                    <el-select clearable size = 'small' v-model = "searchObj.priorityId" placeholder="优先级">
                                         <el-option
                                           v-for="item in priorityList"
                                           :key="item.priorityId"
@@ -70,23 +72,12 @@
                                    
                                    </el-col>  
                                   
-                                 <el-col :span = "1.5"><el-button @click = "searchData">搜索</el-button></el-col>    
-                                 <el-col :span = "1.5" ><el-button @click = "tableExport">导出</el-button></el-col>    
+                                 <el-col :span = "1.5"><el-button size = 'small' @click = "searchData">搜索</el-button></el-col>    
+                                 <el-col :span = "1.5" ><el-button size = 'small' @click = "tableExport">导出</el-button></el-col>    
                                  <!-- <el-col :span = "4"  class="fr"> -->
                                    <div class="addbtn">
-                                      <el-button class="" @click="addProject">新增项目</el-button>
-                                      <el-popover
-                                          placement="left"
-                                          width="160"
-                                          v-model = "visible"
-                                        >
-                                          <p>{{delMsg}}</p>
-                                          <div style="text-align: right; margin: 0">
-                                            <el-button size="mini" type="text" @click = "delcancle('all')">取消</el-button>
-                                            <el-button type="primary" size="mini" @click = "delsure('all')">确定</el-button>
-                                          </div>
-                                          <el-button slot="reference" type="primary"  class = "" @click= "deletebtn('all')">批量删除</el-button>
-                                      </el-popover>
+                                      <el-button size = 'small' @click="addProject">新增项目</el-button>
+                                       <el-button size = 'small' slot="reference" type="primary"  class = "" @click= "deletebtn('all')">批量删除</el-button>
                                    </div>
                                   
                                 <!-- </el-col>     -->
@@ -105,6 +96,8 @@
                                         border 
                                         height = "98%"
                                         header-cell-class-name = ""
+                                         row-class-name = "row-text"
+                                         :cell-style = "priorityStyle"
                                         v-scroll = "{el:'.el-table__body-wrapper',scrollfn:scrollfn}"
                                         style="width: 100%; margin-top: 20px">
                                         <el-table-column
@@ -121,18 +114,6 @@
                                             <template slot-scope="scope1">
                                                   <template v-if = "index === 8">
                                                       <el-button type="text" @click="editProject(scope1.row)" icon = "el-icon-tickets" ></el-button>
-                                                      <el-popover
-                                                          placement="left"
-                                                          width="160"
-                                                          v-model = "scope1.row.visible"
-                                                        >
-                                                          <p>确定删除此项目吗？</p>
-                                                          <div style="text-align: right; margin: 0">
-                                                            <el-button size="mini" type="text" @click = "delcancle(scope1)">取消</el-button>
-                                                            <el-button type="primary" size="mini" @click = "delsure(scope1)">确定</el-button>
-                                                          </div>
-                                                          <el-button slot="reference" type="text"  class = "textColor" @click= "deletebtn(scope1)" icon = "el-icon-delete"></el-button>
-                                                      </el-popover>
                                                   </template>
                                                   <template v-else-if = "index === 0">
                                                     {{scope1['$index']+1}}
@@ -164,19 +145,25 @@ import { mapMutations } from 'vuex'
 import{CHANGE_TITLE} from '../../model/store/storetypes.js'
 import tableList from "./projectTableList.js";
 import {StandardPost} from '../../assets/js/util.js'
+const DELETE_PROJECT = '/api/pjc/project/delProject'
 // const PROJECT_NAME_SELECT = "/api/pjc/project/findAllProjectName";
+const priorityStyle =[
+  {type:'高',bgc:'#F56C6C'}, //红
+  {type:'中高',bgc:'#E6A23C'}, //黄
+  {type:'中',bgc:'#B340FF'}, // 紫
+  {type:'中低',bgc:'#67C23A'}, // 绿
+  {type:'低',bgc:'#409EFF'}, //蓝
+]
 export default {
   data() {
     return {
       loading:false,
-      visible2: -1,
       bscroll: true, // 是否加载
       pageNo: 1, // 初始加载页数
-      pageSize: 15, // 初始每页数据数
+      pageSize: 20, // 初始每页数据数
       lastPage: false, //最后一页
       moveY: 0, // 滚动元素的总告诉
       scrollctx: null, // 滚动元素的上下文
-      visible:false,  // 批量删除弹框显隐
       multipleSelection: [], // 批量删除的数据
       delMsg:'确定删除所有选中项目吗？',
       searchObj: {
@@ -211,6 +198,9 @@ export default {
   },
   computed:{
 
+  },
+  watch:{
+  
   },
   mounted() {
     this[CHANGE_TITLE]('项目管理列表');
@@ -296,10 +286,6 @@ export default {
             if ((list && list.length < this.pageSize)||data.isLastPage) {
               this.lastPage = true;
             }
-            // 添加 删除按钮属性
-            list.forEach(t => {
-              t.visible = false;
-            });
             // 搜索或者加载
             // if(!pageNo){
             // 搜索时 重置数据
@@ -441,69 +427,41 @@ export default {
       });
     },
     // 删除按钮
-    deletebtn(value) {
-      if(value === 'all'){
-        if(this.multipleSelection.length===0){
-         this.delMsg = '请选择至少一项'
-        }else{
-           this.delMsg = '确定删除所有选中项目吗？'
-        }
-        this.visible = !this.visible
-        if(!this.visible){
-        this.multipleSelection = [];
-        this.$refs.multipleTable.clearSelection();
-        }
-      }else{
-        value.row.visible = true;
-      }
-      
-    },
-    delcancle(value) {
-      if(value === 'all'){
-        this.visible = false
-        this.multipleSelection = [];
-        this.$refs.multipleTable.clearSelection();
-      }else{
-        value.row.visible = false;
-      }
-    },
-    delsure(value) {
-      let projectIds ;
-      if(value === 'all'){
-        if(this.multipleSelection.length===0){
-          // this.$message.error('请选择至少一项')
-          return;
-        }else{
-          projectIds = this.multipleSelection.join(',');
-        }
-      }else{
-        projectIds = value.row.projectId
-      }
-      this.$http.post(
-        "/api/pjc/project/delProject",
-        {
-          projectId: projectIds
-        },
-        res => {
-          if (res.status === 200) {
-            if (res.data.code === 200) {
-              this.searchData();
-              if(value === 'all'){
-                this.visible = false;
-              }else{
-                 value.row.visible = false;
-              }
-             
-              this.$message({
-                message: "删除成功",
-                type: "success"
+    deletebtn(value) { 
+          
+          if(this.multipleSelection.length > 0){
+              this.$confirm('此操作将删除选中项目，是否继续？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+              }).then(() => {
+                  let projectIds = this.multipleSelection.join(',');
+                   this.$http.instance.post(DELETE_PROJECT,{projectId:projectIds})
+                   .then(res=>{
+                      if(res.data.code === 200){
+                         this.searchData();
+                         this.$message({
+                            message: res.data.data,
+                            type: "success"
+                         });
+                      }else{
+                        this.$message.error(res.data.data)
+                      }
+                   }).catch( err =>{  
+                        this.$message.error(err.toString())
+                   })   
+              }).catch((err) => {
+                  this.$message({
+                      type: 'info',
+                      message: '已取消删除'
+                  });          
               });
-            } else {
-              this.$message.error(res.data.msg);
-            }
+          }else{
+            this.$message({
+                message: '请选择至少一项',
+                type: 'warning'
+            });
           }
-        }
-      );
     },
         // 单击选中的回调
     elSelect(selection, row){
@@ -515,7 +473,6 @@ export default {
     },
     // 选择change 时的回调
     elSelectionChange(selection){
-      //  console.log(selection) 
       let arr = [];
       selection.forEach(t =>{
          arr.push(t.projectId)
@@ -592,6 +549,21 @@ export default {
         }
         return header;
       };
+    },
+    /**
+     * 
+     * 优先级颜色
+     * 
+     */
+    priorityStyle({row, column, rowIndex, columnIndex}){
+          if(columnIndex ===4){
+              let priorityName = row.priorityName
+              priorityStyle.find( t => t.type === priorityName)
+              return {
+                background:priorityStyle.find( t => t.type === priorityName).bgc,
+                color:'#fff'
+              }
+          }
     },
     /**
      * 

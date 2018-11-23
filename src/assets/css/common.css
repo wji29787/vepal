@@ -75,3 +75,6 @@
 .table-loading{
     height: 1rem;
 }
+.row-text td{
+    padding: 0 0;
+}

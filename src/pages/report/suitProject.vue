@@ -40,6 +40,7 @@
       <el-table
         :data="dataSource"
         :span-method="objectSpanMethod"
+         row-class-name = "row-text"
         border
         style="width: 100%; margin-top: 20px">
         <el-table-column prop="number" label="序号" width="180"></el-table-column>

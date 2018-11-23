@@ -6,7 +6,7 @@
           <el-row :gutter="24">
             <el-col :span="7" style="padding-top:13px;">套装名称</el-col>
             <el-col :span="17">
-              <el-select v-model="searchObj.suitId" filterable clearable>
+              <el-select size = 'small' v-model="searchObj.suitId" filterable clearable>
                 <el-option v-for="(item, index) in suitSelectList"
                             :key="index"
                             :label="item.suitName"
@@ -20,7 +20,7 @@
           <el-row :gutter="24">
             <el-col :span="7" style="padding-top:13px;">项目名称</el-col>
             <el-col :span="17">
-              <el-select v-model="searchObj.projectId" filterable clearable>
+              <el-select size = 'small' v-model="searchObj.projectId" filterable clearable>
                 <el-option v-for="(item, index) in selectProjectNameList"
                           :key="index"
                           :label="item.name"
@@ -34,7 +34,7 @@
           <el-row :gutter="24">
             <el-col :span="7" style="padding-top:13px;">产品名称</el-col>
             <el-col :span="17">
-              <el-select v-model="searchObj.productId" filterable clearable>
+              <el-select size = 'small' v-model="searchObj.productId" filterable clearable>
                 <el-option v-for="(item, index) in productNameSelectList"
                           :key="index"
                           :label="item.productName"
@@ -45,8 +45,8 @@
           </el-row>
         </el-col>
         <el-col :span="6">
-            <el-button type="primary" @click="searchData">搜索</el-button>
-            <el-button type="primary" @click= "tableExport">导出</el-button>
+            <el-button size = 'small' type="primary" @click="searchData">搜索</el-button>
+            <el-button size = 'small' type="primary" @click= "tableExport">导出</el-button>
         </el-col>
       </el-row>
     </el-header>
@@ -58,6 +58,7 @@
                   :span-method="objectSpanMethod"
                   border
                   ref="multipleTable"
+                   row-class-name = "row-text"
                   height = "98%"
                   v-scroll = "{el:'.el-table__body-wrapper',scrollfn:scrollfn}"
                   style="width: 100%;">
@@ -124,7 +125,7 @@ export default {
     return {
       bscroll: true, // 是否加载
       pageNo: 1, // 初始加载页数
-      pageSize: 10, // 初始每页数据数
+      pageSize: 20, // 初始每页数据数
       lastPage: false, //最后一页
       moveY: 0, // 滚动元素的总告诉
       scrollctx: null, // 滚动元素的上下文

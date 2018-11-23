@@ -36,6 +36,7 @@
                             border
                             class="table-view"
                             :row-style="tableRowStyle"
+                             row-class-name = "row-text"
                             ref="multipleTable"
                             @selection-change="handleSelectionChange"
                             style="width: 100%">
@@ -90,12 +91,12 @@
                                 size="small">
                                 编辑
                                 </el-button>
-                                <el-button
+                                <!-- <el-button
                                 @click.native.prevent="deleteRow(suitId)"
                                 type="text"
                                 size="small">
                                 删除
-                                </el-button>
+                                </el-button> -->
                             </template>
                             </el-table-column>
                         </el-table>
@@ -231,14 +232,14 @@ const SUIT_NAME_SELECT = '/api/suit/suit/findAllSuitName';
             editRow(obj){
                 var suitId = obj.row.suitId;
                 this.$router.push({
-                    name: 'addSuit',
+                    name: 'suit/editsuit',
                     query: {
                         suitId: suitId
                     }
                 })
             },
             tableRowStyle (row, rowIndex) {
-                console.log(row, 'rowsss');
+                // console.log(row, 'rowsss');
             }
         }
     }

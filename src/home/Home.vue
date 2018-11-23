@@ -12,7 +12,7 @@
                     <!-- <sl-vepal/> -->
                    <el-container class="extend-h-w">
                         <!-- left -->
-                        <el-aside>
+                        <el-aside width = "2rem">
                             <sl-sides/>
                         </el-aside>
                         <!-- right -->

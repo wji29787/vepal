@@ -52,7 +52,7 @@ export default new Router({
       children:[
         {
           path:'/',
-          redirect: 'project'
+          redirect: 'report/pptView'
         },
         // 项目管理
         {
@@ -130,51 +130,68 @@ export default new Router({
         // 套装管理
         {
           path: 'suit',
-          name: 'Suit',
+          name: 'suit',
           component: Suit,
           meta:{
             title:'套装管理'
           }  
         },
+        // 套装新增
         {
-          path: 'addsuit',
-          name: 'addSuit',
+          path: 'suit/addsuit',
+          name: 'suit/addsuit',
           component: addSuit,
           meta:{
-            title:'套装管理'
+            title:'套装新增'
+          },
+          props:{
+            type:'add'
           }  
         },
+        // 套装编辑
         {
-          path:'vepal',
-          name:'vepal',
+          path: 'suit/editsuit',
+          name: 'suit/editsuit',
+          component: addSuit,
+          meta:{
+            title:'套装编辑'
+          },
+          props:{
+            type:'edit'
+          }  
+        },
+        // 报表管理
+        {
+          path:'report/vepal',
+          name:'report/vepal',
           component:Vepal,
           meta:{
             title:'图表展示'
           }
         },{
-          path:'pptView',
-          name:'pptView',
+          path:'report/pptView',
+          name:'report/pptView',
           component:pptView,
           meta:{
             title:'ppt横图'
           }
         },{
-          path:'suitprojectview',
-          name: 'suitProjectView',
+          path:'report/suitprojectview',
+          name: 'report/suitProjectView',
           component: suitProjectView,
           meta: {
             title: '套装项目报表'
           }
         },{
-          path: 'suitProductView',
-          name: 'suitProductView',
+          path: 'report/suitProductView',
+          name: 'report/suitProductView',
           component: suitProductView,
           meta: {
             title: '套装产品报表'
           }
         },{
-          path: 'projectproductview',
-          name: 'projectProductView',
+          path: 'report/projectproductview',
+          name: 'report/projectProductView',
           component: projectProductView,
           meta: {
             title: '项目产品报表'

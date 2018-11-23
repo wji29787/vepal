@@ -38,10 +38,10 @@
                         <span>套装管理</span>
                     </template>         
                     <el-menu-item index="3-1"
-                     :route = "{name:'Suit'}"
+                     :route = "{name:'suit'}"
                     >套装列表</el-menu-item>
                     <el-menu-item index="3-2"
-                     :route = "{name:'addSuit'}"
+                     :route = "{name:'suit/addsuit'}"
                     >套装新增</el-menu-item>
                 </el-submenu>
                 <el-submenu index="4">
@@ -50,23 +50,23 @@
                         <span>报表管理</span>
                     </template>
                     <el-menu-item index="4-1"
-                    :route="{name: 'suitProjectView'}">
+                    :route="{name: 'report/suitProjectView'}">
                     套装项目报表
                     </el-menu-item>
                     <el-menu-item index="4-2"
-                    :route="{name: 'suitProductView'}">
+                    :route="{name: 'report/suitProductView'}">
                     套装产品报表
                     </el-menu-item>
                     <el-menu-item index="4-3"
-                    :route="{name: 'vepal'}">
+                    :route="{name: 'report/vepal'}">
                     套装展示
                     </el-menu-item>
                     <el-menu-item index="4-4"
-                    :route="{name: 'pptView'}">
+                    :route="{name: 'report/pptView'}">
                     横图
                     </el-menu-item>
                     <el-menu-item index="4-5"
-                    :route="{name: 'projectProductView'}">
+                    :route="{name: 'report/projectProductView'}">
                     项目产品报表
                     </el-menu-item>
                 </el-submenu>
@@ -91,17 +91,19 @@
      'project/addproject':'2-2',
      'project/editproject':'2-1',
      'suit':'3-1',
-     'vepal':'4-3',
-     'pptView':'4-4',
-     'suitProductView':'4-2',
-     'suitprojectview':'4-1',
-     'projectproductview':'4-5',
+     'suit/addsuit':'3-2',
+     'suit/editsuit':'3-1',
+     'report/vepal':'4-3',
+     'report/pptView':'4-4',
+     'report/uitProductView':'4-2',
+     'report/suitprojectview':'4-1',
+     'report/projectproductview':'4-5',
  }
 export default {
     name:'sl-sides',
     data(){
         return {
-            activeIndex:'2-1'
+            activeIndex:'4-4'
         }
     },
     watch:{
