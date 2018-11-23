@@ -24,6 +24,8 @@
     </div>    
 </template>
 <script>
+import { mapActions } from 'vuex';
+import {GETPROJECT_TYPE} from '../model/store/storetypes.js'
 // import menu from "./menu";
 // import vepal from "./vepal";
 import SideList from '../components/SideList'
@@ -44,9 +46,18 @@ export default {
       return this.$store.state.title
     }
   },
-  created() {},
+  created() {
+
+  },
+  mounted(){
+    this[GETPROJECT_TYPE]('api/pjc/project/findAllProjectType')
+  },
   methods: {
     // itemClick() {}
+    ...mapActions([
+      // 获取项目所属类型
+      GETPROJECT_TYPE
+    ])
   }
 };
 </script>

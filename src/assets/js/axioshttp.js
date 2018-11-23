@@ -143,6 +143,7 @@ function apiAxios (method, url, params, response) {
 }
 
 http.all =axios.all;
+http.spread = axios.spread;
 export default {
   get: function (url, params, response) {
     return apiAxios('GET', url, params, response)
